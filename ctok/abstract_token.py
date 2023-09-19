@@ -29,5 +29,5 @@ class AbstractToken(ABC):
         self._cancelled = True
 
     @abstractmethod
-    def superpower(self) -> bool:
+    def superpower(self) -> bool:  # pragma: no cover
         pass
