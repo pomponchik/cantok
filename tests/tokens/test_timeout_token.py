@@ -1,3 +1,5 @@
+from time import sleep
+
 import pytest
 
 from ctok import TimeoutToken
@@ -9,6 +11,8 @@ from ctok import TimeoutToken
 )
 def test_zero_timeout(zero_timeout):
     token = TimeoutToken(zero_timeout)
+
+    sleep(0.0001)
 
     assert token.cancelled == True
     assert token.cancelled == True
