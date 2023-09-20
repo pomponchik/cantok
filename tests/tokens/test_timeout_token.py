@@ -6,11 +6,22 @@ from ctok import TimeoutToken
 
 
 @pytest.mark.parametrize(
-    'zero_timeout',
-    [0, 0.0],
+    'options',
+    [
+        {},
+        {'monotonic': True},
+        {'monotonic': False},
+    ],
 )
-def test_zero_timeout(zero_timeout):
-    token = TimeoutToken(zero_timeout)
+@pytest.mark.parametrize(
+    'zero_timeout',
+    [
+        0,
+        0.0,
+    ],
+)
+def test_zero_timeout(zero_timeout, options):
+    token = TimeoutToken(zero_timeout, **options)
 
     assert token.cancelled == True
     assert token.cancelled == True
