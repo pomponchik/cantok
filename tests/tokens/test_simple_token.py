@@ -13,6 +13,7 @@ def test_just_created_token_without_arguments():
     ([SimpleToken(), SimpleToken().cancel()], True),
     ([SimpleToken()], False),
     ([SimpleToken().cancel()], True),
+    ([SimpleToken(SimpleToken().cancel())], True),
     ([SimpleToken(), SimpleToken()], False),
     ([SimpleToken(), SimpleToken(), SimpleToken()], False),
     ([SimpleToken(), SimpleToken(), SimpleToken(), SimpleToken()], False),
@@ -30,3 +31,9 @@ def test_stopped_token_is_not_going_on():
     assert token.cancelled == True
     assert token.is_cancelled() == True
     assert token.keep_on() == False
+
+
+def test_chain_with_simple_tokens():
+    assert SimpleToken(SimpleToken(SimpleToken(SimpleToken(SimpleToken(cancelled=True))))).cancelled == True
+    assert SimpleToken(SimpleToken(SimpleToken(SimpleToken(SimpleToken().cancel())))).cancelled == True
+    assert SimpleToken(SimpleToken(SimpleToken(SimpleToken(SimpleToken())))).cancelled == False
