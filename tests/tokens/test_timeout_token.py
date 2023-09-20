@@ -1,10 +1,18 @@
+import pytest
+
 from ctok import TimeoutToken
 
 
-def test_zero_timeout():
-    assert TimeoutToken(0).cancelled == True
-    assert TimeoutToken(0.0).cancelled == True
-    assert TimeoutToken(0).is_cancelled() == True
-    assert TimeoutToken(0.0).is_cancelled() == True
-    assert TimeoutToken(0).keep_on() == False
-    assert TimeoutToken(0.0).keep_on() == False
+@pytest.mark.parametrize(
+    'zero_timeout',
+    [0, 0.0],
+)
+def test_zero_timeout(zero_timeout):
+    token = TimeoutToken(zero_timeout)
+
+    assert token.cancelled == True
+    assert token.cancelled == True
+    assert token.is_cancelled() == True
+    assert token.is_cancelled() == True
+    assert token.keep_on() == False
+    assert token.keep_on() == False
