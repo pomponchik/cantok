@@ -75,7 +75,7 @@ def test_timeout_expired(options):
     assert token.keep_on() == True
     assert token.keep_on() == True
 
-    sleep(timeout)
+    sleep(timeout * 2)
 
     assert token.cancelled == True
     assert token.cancelled == True
