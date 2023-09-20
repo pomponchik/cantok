@@ -4,11 +4,14 @@ from setuptools import setup, find_packages
 with open('README.md', 'r', encoding='utf8') as readme_file:
     readme = readme_file.read()
 
+with open('version.txt', 'r', encoding='utf8') as version_file:
+    version = version_file.read().strip()
+
 requirements = []
 
 setup(
     name='ctok',
-    version='0.0.1',
+    version=version,
     author='Evgeniy Blinov',
     author_email='zheni-b@yandex.ru',
     description='Implementation of the "Cancellation Token" pattern',

@@ -21,6 +21,13 @@ jobs:
       with:
           python-version: ${{ matrix.python-version }}
 
+    - name: Create release
+      uses: ncipollo/release-action@v1
+      with:
+      tag: ${{ steps.set-tag.outputs.tag_name }}
+      bodyFile: './release_notes.txt'
+      token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Upload to pypi
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
