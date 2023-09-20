@@ -10,7 +10,10 @@ class AbstractToken(ABC):
         other_tokens = ', '.join([repr(x) for x in self.tokens])
         if other_tokens:
             other_tokens += ', '
-        return f'{type(self).__name__}({other_tokens}cancelled={self.cancelled})'
+        superpower = self.text_representation_of_superpower()
+        if superpower:
+            superpower += ', '
+        return f'{type(self).__name__}({superpower}{other_tokens}cancelled={self.cancelled})'
 
     def __str__(self):
         cancelled_flag = 'cancelled' if self.cancelled else 'not cancelled'
