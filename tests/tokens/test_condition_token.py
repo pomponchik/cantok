@@ -53,3 +53,8 @@ def test_just_created_condition_token_with_arguments(arguments, expected_cancell
     assert ConditionToken(lambda: False, *arguments).cancelled == expected_cancelled_status
     assert ConditionToken(lambda: False, *arguments).is_cancelled() == expected_cancelled_status
     assert ConditionToken(lambda: False, *arguments).keep_on() == (not expected_cancelled_status)
+
+
+def test_raise_without_first_argument():
+    with pytest.raises(TypeError):
+        ConditionToken()
