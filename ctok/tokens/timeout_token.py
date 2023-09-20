@@ -1,7 +1,4 @@
-try:
-    from time import monotonic_ns as current_time
-except ImportError:
-    from time import monotonic as current_time
+from time import monotonic_ns as current_time
 
 from typing import Union
 
@@ -13,6 +10,8 @@ class TimeoutToken(ConditionToken):
     def __init__(self, timeout: Union[int, float], *tokens: AbstractToken, cancelled: bool = False):
         if timeout < 0:
             raise ValueError
+
+        timeout *= 1_000_000_000
 
         start_time = current_time()
         def function() -> bool:
