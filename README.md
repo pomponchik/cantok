@@ -5,5 +5,6 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/ctok.svg)](https://pypi.python.org/pypi/ctok)
 [![PyPI version](https://badge.fury.io/py/ctok.svg)](https://badge.fury.io/py/ctok)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 # ctok
