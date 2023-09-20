@@ -12,6 +12,7 @@ class TimeoutToken(ConditionToken):
             raise ValueError('You cannot specify a timeout less than zero.')
 
         self.timeout = timeout
+        self.monotonic = monotonic
 
         if monotonic:
             timeout *= 1_000_000_000
@@ -29,3 +30,6 @@ class TimeoutToken(ConditionToken):
 
     def text_representation_of_superpower(self) -> str:
         return str(self.timeout)
+
+    def text_representation_of_extra_kwargs(self) -> str:
+        return f'monotonic={self.monotonic}'

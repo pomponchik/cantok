@@ -13,7 +13,10 @@ class AbstractToken(ABC):
         superpower = self.text_representation_of_superpower()
         if superpower:
             superpower += ', '
-        return f'{type(self).__name__}({superpower}{other_tokens}cancelled={self.cancelled})'
+        extra_kwargs = self.text_representation_of_extra_kwargs()
+        if extra_kwargs:
+            extra_kwargs = ', ' + extra_kwargs
+        return f'{type(self).__name__}({superpower}{other_tokens}cancelled={self.cancelled}{extra_kwargs})'
 
     def __str__(self):
         cancelled_flag = 'cancelled' if self.cancelled else 'not cancelled'
@@ -57,3 +60,6 @@ class AbstractToken(ABC):
     @abstractmethod
     def text_representation_of_superpower(self) -> str:  # pragma: no cover
         pass
+
+    def text_representation_of_extra_kwargs(self) -> str:
+        return  ''

@@ -94,3 +94,19 @@ def test_condition_function_returning_not_bool_value():
 
     with pytest.raises(TypeError):
         ConditionToken(lambda: 'kek', suppress_exceptions=False).cancelled
+
+
+@pytest.mark.parametrize(
+    'suppress_exceptions_flag',
+    [True, False],
+)
+@pytest.mark.parametrize(
+    'default_flag',
+    [True, False],
+)
+def test_test_representaion_of_extra_kwargs(suppress_exceptions_flag, default_flag):
+    assert ConditionToken(
+        lambda: False,
+        suppress_exceptions=suppress_exceptions_flag,
+        default=default_flag,
+    ).text_representation_of_extra_kwargs() == f'suppress_exceptions={suppress_exceptions_flag}, default={default_flag}'

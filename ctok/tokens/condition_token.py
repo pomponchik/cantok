@@ -5,7 +5,7 @@ from ctok.tokens.abstract_token import AbstractToken
 
 
 class ConditionToken(AbstractToken):
-    def __init__(self, function: Callable[[], bool], *tokens: AbstractToken, suppress_exceptions: bool = True, cancelled: bool = False, default: bool = False):
+    def __init__(self, function: Callable[[], bool], *tokens: AbstractToken, cancelled: bool = False, suppress_exceptions: bool = True, default: bool = False):
         super().__init__(*tokens, cancelled=cancelled)
         self.function = function
         self.suppress_exceptions = suppress_exceptions
@@ -34,3 +34,10 @@ class ConditionToken(AbstractToken):
 
     def text_representation_of_superpower(self) -> str:
         return repr(self.function)
+
+    def text_representation_of_extra_kwargs(self) -> str:
+        extra_kwargs = {
+            'suppress_exceptions': self.suppress_exceptions,
+            'default': self.default,
+        }
+        return  ', '.join([f'{key}={value}' for key, value in extra_kwargs.items()])

@@ -63,8 +63,9 @@ def test_change_attribute_cancelled(token_fabric, first_cancelled_flag, second_c
 def test_repr(token_fabric):
     token = token_fabric()
     superpower_text = token.text_representation_of_superpower()
+    extra_kwargs_text = token.text_representation_of_extra_kwargs()
 
-    assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + 'cancelled=False' + ')'
+    assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + 'cancelled=False' + (', ' + extra_kwargs_text if extra_kwargs_text else '') + ')'
 
 
 @pytest.mark.parametrize(
@@ -76,8 +77,9 @@ def test_repr_with_another_token(token_fabric):
     token = token_fabric(another_token)
 
     superpower_text = token.text_representation_of_superpower()
+    extra_kwargs_text = token.text_representation_of_extra_kwargs()
 
-    assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + repr(another_token) + ', ' + 'cancelled=False' + ')'
+    assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + repr(another_token) + ', ' + 'cancelled=False' + (', ' + extra_kwargs_text if extra_kwargs_text else '') + ')'
 
 
 @pytest.mark.parametrize(
