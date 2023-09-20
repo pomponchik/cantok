@@ -4,5 +4,6 @@
 [![Test-Package](https://github.com/pomponchik/ctok/actions/workflows/tests_and_coverage.yml/badge.svg)](https://github.com/pomponchik/ctok/actions/workflows/tests_and_coverage.yml)
 [![Python versions](https://img.shields.io/pypi/pyversions/ctok.svg)](https://pypi.python.org/pypi/ctok)
 [![PyPI version](https://badge.fury.io/py/ctok.svg)](https://badge.fury.io/py/ctok)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
 # ctok
