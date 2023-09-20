@@ -7,7 +7,7 @@ from ctok import ConditionToken
 
 
 class TimeoutToken(ConditionToken):
-    def __init__(self, timeout: Union[int, float], *tokens: AbstractToken, cancelled: bool = False, monotonic: bool = True):
+    def __init__(self, timeout: Union[int, float], *tokens: AbstractToken, cancelled: bool = False, monotonic: bool = False):
         if timeout < 0:
             raise ValueError('You cannot specify a timeout less than zero.')
 
