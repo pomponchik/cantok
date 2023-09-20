@@ -11,6 +11,8 @@ class TimeoutToken(ConditionToken):
         if timeout < 0:
             raise ValueError('You cannot specify a timeout less than zero.')
 
+        self.timeout = timeout
+
         if monotonic:
             timeout *= 1_000_000_000
 
@@ -24,3 +26,6 @@ class TimeoutToken(ConditionToken):
                 return perf_counter() >= (start_time + timeout)
 
         super().__init__(function, *tokens, cancelled=cancelled)
+
+    def text_representation_of_superpower(self) -> str:
+        return str(self.timeout)

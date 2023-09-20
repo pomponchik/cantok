@@ -50,3 +50,7 @@ class AbstractToken(ABC):
     @abstractmethod
     def superpower(self) -> bool:  # pragma: no cover
         pass
+
+    @abstractmethod
+    def text_representation_of_superpower(self) -> str:  # pragma: no cover
+        pass

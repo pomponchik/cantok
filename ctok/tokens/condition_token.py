@@ -19,3 +19,6 @@ class ConditionToken(AbstractToken):
                 return self.function()
 
         return False
+
+    def text_representation_of_superpower(self) -> str:
+        return repr(self.function)
