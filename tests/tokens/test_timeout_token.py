@@ -12,7 +12,7 @@ from ctok import TimeoutToken
 def test_zero_timeout(zero_timeout):
     token = TimeoutToken(zero_timeout)
 
-    sleep(1)
+    sleep(0.1)
 
     assert token.cancelled == True
     assert token.cancelled == True
