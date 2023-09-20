@@ -58,3 +58,31 @@ def test_just_created_condition_token_with_arguments(arguments, expected_cancell
 def test_raise_without_first_argument():
     with pytest.raises(TypeError):
         ConditionToken()
+
+
+def test_suppress_exception_false():
+    def condition():
+        raise ValueError
+
+    token = ConditionToken(condition, suppress_exceptions=False)
+
+    with pytest.raises(ValueError):
+        token.cancelled
+
+
+def test_suppress_exception_true():
+    def condition():
+        raise ValueError
+
+    token = ConditionToken(condition, suppress_exceptions=True)
+
+    assert token.cancelled == False
+
+
+def test_suppress_exception_default_true():
+    def condition():
+        raise ValueError
+
+    token = ConditionToken(condition)
+
+    assert token.cancelled == False
