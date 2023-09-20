@@ -1,6 +1,6 @@
 from time import monotonic_ns, perf_counter
 
-from typing import Union
+from typing import Union, Callable
 
 from ctok.tokens.abstract_token import AbstractToken
 from ctok import ConditionToken
@@ -14,17 +14,16 @@ class TimeoutToken(ConditionToken):
         self.timeout = timeout
         self.monotonic = monotonic
 
+        timer: Callable[[], Union[int, float]]
         if monotonic:
             timeout *= 1_000_000_000
-
-            start_time = monotonic_ns()
-            def function() -> bool:
-                return monotonic_ns() >= (start_time + timeout)
-
+            timer = monotonic_ns
         else:
-            start_time = perf_counter()
-            def function() -> bool:
-                return perf_counter() >= (start_time + timeout)
+            timer = perf_counter
+
+        start_time: Union[int, float] = timer()
+        def function() -> bool:
+            return timer() >= (start_time + timeout)
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
