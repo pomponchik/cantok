@@ -71,6 +71,19 @@ def test_repr(token_fabric):
     'token_fabric',
     ALL_TOKENS_FABRICS,
 )
+def test_repr_with_another_token(token_fabric):
+    another_token = token_fabric()
+    token = token_fabric(another_token)
+
+    superpower_text = token.text_representation_of_superpower()
+
+    assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + repr(another_token) + ', ' + 'cancelled=False' + ')'
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
 def test_str(token_fabric):
     token = token_fabric()
 
