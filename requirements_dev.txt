@@ -3,3 +3,4 @@ coverage==7.2.7
 twine==4.0.2
 wheel==0.40.0
 mypy==1.5.1
+ruff==0.0.290
