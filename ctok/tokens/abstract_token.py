@@ -20,6 +20,14 @@ class AbstractToken(ABC):
     def cancelled(self) -> bool:
         return self.is_cancelled()
 
+    @cancelled.setter
+    def cancelled(self, new_value) -> None:
+        if new_value == True:
+            self._cancelled = True
+        else:
+            if self._cancelled == True:
+                raise ValueError('You cannot restore a cancelled token.')
+
     def keep_on(self) -> bool:
         return not self.is_cancelled()
 
