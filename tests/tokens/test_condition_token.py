@@ -110,3 +110,29 @@ def test_test_representaion_of_extra_kwargs(suppress_exceptions_flag, default_fl
         suppress_exceptions=suppress_exceptions_flag,
         default=default_flag,
     ).text_representation_of_extra_kwargs() == f'suppress_exceptions={suppress_exceptions_flag}, default={default_flag}'
+
+
+@pytest.mark.parametrize(
+    'default',
+    [True, False],
+)
+def test_default_if_exception(default):
+    def condition():
+        raise ValueError
+
+    token = ConditionToken(condition, suppress_exceptions=True, default=default)
+
+    assert token.cancelled == default
+
+
+@pytest.mark.parametrize(
+    'default',
+    [True, False],
+)
+def test_default_if_not_bool(default):
+    def condition():
+        return 'kek'
+
+    token = ConditionToken(condition, suppress_exceptions=True, default=default)
+
+    assert token.cancelled == default
