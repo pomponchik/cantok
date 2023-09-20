@@ -1,4 +1,8 @@
-from time import monotonic as current_time
+try:
+    from time import monotonic_ns as current_time
+except ImportError:
+    from time import monotonic as current_time
+
 from typing import Union
 
 from ctok.tokens.abstract_token import AbstractToken
