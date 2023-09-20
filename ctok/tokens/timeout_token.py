@@ -15,6 +15,6 @@ class TimeoutToken(ConditionToken):
 
         start_time = current_time()
         def function() -> bool:
-            return current_time() > (start_time + timeout)
+            return current_time() >= (start_time + timeout)
 
         super().__init__(function, *tokens, cancelled=cancelled)
