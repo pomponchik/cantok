@@ -1,3 +1,5 @@
+from time import sleep
+
 import pytest
 
 from ctok import TimeoutToken
@@ -52,3 +54,32 @@ def test_less_than_zero_timeout(options, timeout):
 def test_raise_without_first_argument():
     with pytest.raises(TypeError):
         TimeoutToken()
+
+
+@pytest.mark.parametrize(
+    'options',
+    [
+        {},
+        {'monotonic': True},
+        {'monotonic': False},
+    ],
+)
+def test_timeout_expired(options):
+    timeout = 0.1
+    token = TimeoutToken(timeout, **options)
+
+    assert token.cancelled == False
+    assert token.cancelled == False
+    assert token.is_cancelled() == False
+    assert token.is_cancelled() == False
+    assert token.keep_on() == True
+    assert token.keep_on() == True
+
+    sleep(timeout)
+
+    assert token.cancelled == True
+    assert token.cancelled == True
+    assert token.is_cancelled() == True
+    assert token.is_cancelled() == True
+    assert token.keep_on() == False
+    assert token.keep_on() == False
