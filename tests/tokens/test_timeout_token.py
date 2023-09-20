@@ -85,7 +85,7 @@ def test_timeout_expired(options):
     assert token.keep_on() == False
 
 
-def test_test_representaion_of_extra_kwargs():
+def test_text_representaion_of_extra_kwargs():
     assert TimeoutToken(5, monotonic=False).text_representation_of_extra_kwargs() == 'monotonic=False'
     assert TimeoutToken(5, monotonic=True).text_representation_of_extra_kwargs() == 'monotonic=True'
-    assert TimeoutToken(5).text_representation_of_extra_kwargs() == 'monotonic=True'
+    assert TimeoutToken(5).text_representation_of_extra_kwargs() == 'monotonic=False'
