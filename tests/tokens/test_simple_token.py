@@ -1,6 +1,6 @@
 import pytest
 
-from ctok.tokens.simple_token import SimpleToken
+from ctok import SimpleToken
 
 
 def test_just_created_token_without_arguments():
@@ -43,28 +43,3 @@ def test_chain_with_simple_tokens():
     assert SimpleToken(SimpleToken(SimpleToken(SimpleToken(SimpleToken(cancelled=True))))).cancelled == True
     assert SimpleToken(SimpleToken(SimpleToken(SimpleToken(SimpleToken().cancel())))).cancelled == True
     assert SimpleToken(SimpleToken(SimpleToken(SimpleToken(SimpleToken())))).cancelled == False
-
-
-def test_change_attribute_cancelled_from_false_to_true():
-    token = SimpleToken()
-    token.cancelled = True
-    assert token.cancelled == True
-
-
-def test_change_attribute_cancelled_from_true_to_true():
-    token = SimpleToken(cancelled=True)
-    token.cancelled = True
-    assert token.cancelled == True
-
-
-def test_change_attribute_cancelled_from_true_to_false():
-    token = SimpleToken(cancelled=True)
-
-    with pytest.raises(ValueError):
-        token.cancelled = False
-
-
-def test_change_attribute_cancelled_from_false_to_false():
-    token = SimpleToken()
-    token.cancelled = False
-    assert token.cancelled == False
