@@ -86,3 +86,11 @@ def test_suppress_exception_default_true():
     token = ConditionToken(condition)
 
     assert token.cancelled == False
+
+
+def test_condition_function_returning_not_bool_value():
+    assert ConditionToken(lambda: 'kek', suppress_exceptions=True).cancelled == False
+    assert ConditionToken(lambda: 'kek').cancelled == False
+
+    with pytest.raises(TypeError):
+        ConditionToken(lambda: 'kek', suppress_exceptions=False).cancelled

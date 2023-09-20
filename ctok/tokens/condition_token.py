@@ -12,13 +12,24 @@ class ConditionToken(AbstractToken):
 
     def superpower(self) -> bool:
         if not self.suppress_exceptions:
-            return self.function()
+            return self.run_function()
 
         else:
             with suppress(Exception):
-                return self.function()
+                return self.run_function()
 
         return False
+
+    def run_function(self) -> bool:
+        result = self.function()
+
+        if not isinstance(result, bool):
+            if not self.suppress_exceptions:
+                raise TypeError(f'The condition function can only return a bool value. The passed function returned "{result}" ({type(result).__name__}).')
+            else:
+                return False
+
+        return result
 
     def text_representation_of_superpower(self) -> str:
         return repr(self.function)
