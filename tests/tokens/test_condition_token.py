@@ -5,6 +5,7 @@ import pytest
 from ctok.tokens.condition_token import ConditionToken
 from ctok.tokens.simple_token import SimpleToken
 
+
 def test_condition_counter():
     loop_size = 5
     def condition():
