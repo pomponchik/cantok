@@ -1,4 +1,4 @@
-![logo](https://raw.githubusercontent.com/pomponchik/ctok/main/docs/assets/logo_2.png)
+![logo](https://raw.githubusercontent.com/pomponchik/ctok/develop/docs/assets/logo_2.png)
 
 [![Downloads](https://static.pepy.tech/badge/ctok/month)](https://pepy.tech/project/ctok)
 [![Downloads](https://static.pepy.tech/badge/ctok)](https://pepy.tech/project/ctok)
