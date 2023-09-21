@@ -20,3 +20,8 @@ def test_counter(iterations):
         counter += 1
 
     assert counter == iterations
+
+
+def test_counter_less_than_zero():
+    with pytest.raises(ValueError):
+        CounterToken(-1)
