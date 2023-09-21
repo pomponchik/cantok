@@ -2,8 +2,8 @@ from time import monotonic_ns, perf_counter
 
 from typing import Union, Callable
 
-from ctok.tokens.abstract_token import AbstractToken
-from ctok import ConditionToken
+from cantok.tokens.abstract_token import AbstractToken
+from cantok import ConditionToken
 
 
 class TimeoutToken(ConditionToken):

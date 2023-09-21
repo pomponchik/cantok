@@ -1,7 +1,7 @@
 from threading import RLock
 
-from ctok.tokens.abstract_token import AbstractToken
-from ctok import ConditionToken
+from cantok.tokens.abstract_token import AbstractToken
+from cantok import ConditionToken
 
 
 class CounterToken(ConditionToken):

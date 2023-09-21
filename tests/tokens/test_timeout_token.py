@@ -2,7 +2,7 @@ from time import sleep
 
 import pytest
 
-from ctok import TimeoutToken
+from cantok import TimeoutToken
 
 
 @pytest.mark.parametrize(

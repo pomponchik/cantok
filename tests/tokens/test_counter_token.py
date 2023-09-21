@@ -2,7 +2,7 @@ from threading import Thread
 
 import pytest
 
-from ctok.tokens.counter_token import CounterToken
+from cantok.tokens.counter_token import CounterToken
 
 
 @pytest.mark.parametrize(

@@ -2,8 +2,8 @@ from functools import partial
 
 import pytest
 
-from ctok.tokens.abstract_token import AbstractToken
-from ctok import SimpleToken, ConditionToken, TimeoutToken, CounterToken
+from cantok.tokens.abstract_token import AbstractToken
+from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken
 
 
 ALL_TOKEN_CLASSES = [SimpleToken, ConditionToken, TimeoutToken, CounterToken]

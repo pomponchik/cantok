@@ -1,6 +1,6 @@
 import pytest
 
-from ctok import SimpleToken
+from cantok import SimpleToken
 
 
 def test_just_created_token_without_arguments():

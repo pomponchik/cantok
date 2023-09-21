@@ -1,7 +1,7 @@
 from typing import Callable
 from contextlib import suppress
 
-from ctok.tokens.abstract_token import AbstractToken
+from cantok.tokens.abstract_token import AbstractToken
 
 
 class ConditionToken(AbstractToken):

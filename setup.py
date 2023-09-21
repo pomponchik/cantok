@@ -10,14 +10,14 @@ with open('version.txt', 'r', encoding='utf8') as version_file:
 requirements = []
 
 setup(
-    name='ctok',
+    name='cantok',
     version=version,
     author='Evgeniy Blinov',
     author_email='zheni-b@yandex.ru',
     description='Implementation of the "Cancellation Token" pattern',
     long_description=readme,
     long_description_content_type='text/markdown',
-    url='https://github.com/pomponchik/ctok',
+    url='https://github.com/pomponchik/cantok',
     packages=find_packages(exclude=['tests']),
     install_requires=requirements,
     classifiers=[

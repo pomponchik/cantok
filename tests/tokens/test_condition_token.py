@@ -2,7 +2,7 @@ from functools import partial
 
 import pytest
 
-from ctok import SimpleToken, ConditionToken
+from cantok import SimpleToken, ConditionToken
 
 
 def test_condition_counter():

@@ -25,8 +25,8 @@ jobs:
 
     - name: Run mypy
       shell: bash
-      run: mypy ctok
+      run: mypy cantok
 
     - name: Run ruff
       shell: bash
-      run: ruff ctok
+      run: ruff cantok
