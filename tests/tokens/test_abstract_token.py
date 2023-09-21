@@ -3,11 +3,11 @@ from functools import partial
 import pytest
 
 from ctok.tokens.abstract_token import AbstractToken
-from ctok import SimpleToken, ConditionToken, TimeoutToken
+from ctok import SimpleToken, ConditionToken, TimeoutToken, CounterToken
 
 
-ALL_TOKEN_CLASSES = [SimpleToken, ConditionToken, TimeoutToken]
-ALL_ARGUMENTS_FOR_TOKEN_CLASSES = [tuple(), (lambda: False, ), (15, )]
+ALL_TOKEN_CLASSES = [SimpleToken, ConditionToken, TimeoutToken, CounterToken]
+ALL_ARGUMENTS_FOR_TOKEN_CLASSES = [tuple(), (lambda: False, ), (15, ), (15, )]
 ALL_TOKENS_FABRICS = [partial(token_class, *arguments) for token_class, arguments in zip(ALL_TOKEN_CLASSES, ALL_ARGUMENTS_FOR_TOKEN_CLASSES)]
 
 
