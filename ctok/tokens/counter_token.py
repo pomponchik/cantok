@@ -1,4 +1,4 @@
-from threading import Lock
+from threading import RLock
 
 from ctok.tokens.abstract_token import AbstractToken
 from ctok import ConditionToken
@@ -10,7 +10,7 @@ class CounterToken(ConditionToken):
             raise ValueError('The counter must be greater than or equal to zero.')
 
         self.counter = counter
-        self.lock = Lock()
+        self.lock = RLock()
 
         def function() -> bool:
             with self.lock:
