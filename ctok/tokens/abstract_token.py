@@ -41,13 +41,16 @@ class AbstractToken(ABC):
         if self._cancelled:
             return True
 
-        elif any(x.is_cancelled() for x in self.tokens):
+        elif any(x.is_cancelled_reflect() for x in self.tokens):
             return True
 
         elif self.superpower():
             return True
 
         return False
+
+    def is_cancelled_reflect(self):
+        return self.is_cancelled()
 
     def cancel(self) -> 'AbstractToken':
         self._cancelled = True
