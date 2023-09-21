@@ -1,3 +1,5 @@
+![logo](https://raw.githubusercontent.com/pomponchik/ctok/main/docs/assets/logo_2.png)
+
 [![Downloads](https://static.pepy.tech/badge/ctok/month)](https://pepy.tech/project/ctok)
 [![Downloads](https://static.pepy.tech/badge/ctok)](https://pepy.tech/project/ctok)
 [![codecov](https://codecov.io/gh/pomponchik/ctok/graph/badge.svg?token=eZ4eK6fkmx)](https://codecov.io/gh/pomponchik/ctok)
