@@ -1,3 +1,5 @@
+from threading import Lock
+
 from ctok.tokens.abstract_token import AbstractToken
 from ctok import ConditionToken
 
@@ -8,12 +10,14 @@ class CounterToken(ConditionToken):
             raise ValueError('The counter must be greater than or equal to zero.')
 
         self.counter = counter
+        self.lock = Lock()
 
         def function() -> bool:
-            if not self.counter:
-                return True
-            self.counter -= 1
-            return False
+            with self.lock:
+                if not self.counter:
+                    return True
+                self.counter -= 1
+                return False
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
@@ -30,10 +34,11 @@ class CounterToken(ConditionToken):
         return f'<{type(self).__name__} ({cancelled_flag})>'
 
     def get_cancelled_status_without_decrementing_counter(self) -> bool:
-        result = self.cancelled
-        if not result:
-            self.counter += 1
-        return result
+        with self.lock:
+            result = self.cancelled
+            if not result:
+                self.counter += 1
+            return result
 
     def is_cancelled_reflect(self):
         return self.get_cancelled_status_without_decrementing_counter()
