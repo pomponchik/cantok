@@ -63,4 +63,5 @@ def test_race_condition_for_counter(iterations, number_of_threads):
     for thread in threads:
         thread.join()
 
-    assert sum(results) == iterations
+    result = sum(results)
+    assert result == iterations
