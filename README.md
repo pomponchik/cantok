@@ -58,6 +58,8 @@ print(counter)
 
 In this example, we pass a token to the function that describes several restrictions: on the number of iterations of the cycle, on time, as well as on the occurrence of a random unlikely event. When any of the indicated events occur, the cycle stops.
 
+Read more about the [possibilities of tokens](#tokens), as well as about the [pattern in general](#the-pattern).
+
 ## The pattern
 
 
