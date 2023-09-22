@@ -73,4 +73,4 @@ class AbstractToken(ABC):
         pass
 
     def text_representation_of_extra_kwargs(self) -> str:
-        return  ''
+        return ''
