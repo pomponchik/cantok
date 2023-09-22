@@ -63,6 +63,9 @@ Read more about the [possibilities of tokens](#tokens), as well as about the [pa
 
 ## The pattern
 
+The essence of the pattern is that we pass special objects to functions and constructors, by which the executed code can understand whether it should continue its execution or not. When deciding whether to allow code execution to continue, this object can take into account both the restrictions specified to it, such as the maximum code execution time, and receive signals about the need to stop from the outside, for example from another thread or a coroutine. Thus, we do not nail down the logic associated with stopping code execution, for example, by directly tracking cycle counters, but implement Dependency Injection of this restriction.
+
+In addition, the pattern assumes that various restrictions can be combined indefinitely with each other: if at least one of the restrictions is not met, code execution will be interrupted. It is assumed that each function in the call stack will call other functions, throwing its token directly to them, or wrapping it in another token, with a stricter restriction imposed on it.
 
 ## Tokens
 
