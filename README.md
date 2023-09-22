@@ -13,4 +13,12 @@
 Cancellation Token is a pattern that allows us to refuse to continue calculations that we no longer need. It is implemented out of the box in many programming languages, for example in [C#](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken) and in [Go](https://pkg.go.dev/context). However, there was still no sane implementation in Python, until the [cantok](https://github.com/pomponchik/cantok) library appeared.
 
 
+## Table of contents
+
+- [**Quick start**](#quick-start)
+- [**The pattern**](#the-pattern)
+
+
+## Quick start
+
 ## The pattern
