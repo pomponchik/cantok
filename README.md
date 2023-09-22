@@ -48,7 +48,7 @@ def function(token):
     while not token.cancelled:
         counter += 1
 
-token = SimpleToken() + ConditionToken(lambda: randint(1, 1_000_000_000) == 1984) + CounterToken(1_000) + TimeoutToken(1)
+token = ConditionToken(lambda: randint(1, 1_000_000_000) == 1984) + CounterToken(1_000) + TimeoutToken(1)
 thread = Thread(target=function, args=(token, ))
 thread.start()
 thread.join()
