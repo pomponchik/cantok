@@ -5,11 +5,12 @@ from cantok import ConditionToken
 
 
 class CounterToken(ConditionToken):
-    def __init__(self, counter: int, *tokens: AbstractToken, cancelled: bool = False):
+    def __init__(self, counter: int, *tokens: AbstractToken, cancelled: bool = False, direct: bool = True):
         if counter < 0:
             raise ValueError('The counter must be greater than or equal to zero.')
 
         self.counter = counter
+        self.direct = direct
         self.lock = RLock()
 
         def function() -> bool:
@@ -27,7 +28,7 @@ class CounterToken(ConditionToken):
             other_tokens += ', '
         superpower = self.text_representation_of_superpower() + ', '
         cancelled = self.get_cancelled_status_without_decrementing_counter()
-        return f'{type(self).__name__}({superpower}{other_tokens}cancelled={cancelled})'
+        return f'{type(self).__name__}({superpower}{other_tokens}cancelled={cancelled}, direct={self.direct})'
 
     def __str__(self):
         cancelled_flag = 'cancelled' if self.get_cancelled_status_without_decrementing_counter() else 'not cancelled'
@@ -40,11 +41,13 @@ class CounterToken(ConditionToken):
                 self.counter += 1
             return result
 
-    def is_cancelled_reflect(self):
-        return self.get_cancelled_status_without_decrementing_counter()
+    def is_cancelled_reflect(self) -> bool:
+        if self.direct:
+            return self.get_cancelled_status_without_decrementing_counter()
+        return self.cancelled
 
     def text_representation_of_superpower(self) -> str:
         return str(self.counter)
 
     def text_representation_of_extra_kwargs(self) -> str:
-        return ''
+        return f'direct={self.direct}'

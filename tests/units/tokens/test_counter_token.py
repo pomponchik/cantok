@@ -2,7 +2,7 @@ from threading import Thread
 
 import pytest
 
-from cantok.tokens.counter_token import CounterToken
+from cantok import CounterToken, SimpleToken
 
 
 @pytest.mark.parametrize(
@@ -65,3 +65,22 @@ def test_race_condition_for_counter(iterations, number_of_threads):
 
     result = sum(results)
     assert result == iterations
+
+
+@pytest.mark.parametrize(
+    'kwargs,expected_result',
+    [
+        ({}, 5),
+        ({'direct': True}, 5),
+        ({'direct': False}, 4),
+    ],
+)
+def test_direct_default_counter(kwargs, expected_result):
+    first_token = CounterToken(5, **kwargs)
+    second_token = SimpleToken(first_token)
+
+    assert not second_token.cancelled
+    assert first_token.counter == expected_result
+
+    assert not first_token.cancelled
+    assert first_token.counter == expected_result - 1
