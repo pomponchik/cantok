@@ -170,8 +170,7 @@ def function(token: AbstractToken):
   ...
 ```
 
-
-
+Read on about the features of each type of tokens in more detail.
 
 
 ### Simple token
