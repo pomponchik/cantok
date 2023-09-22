@@ -74,6 +74,7 @@ It is highly desirable for library developers to use this pattern for any long-t
 
 ## Tokens
 
+All token classes presented in this library have a uniform interface. And they are all inherited from one class: `AbstractToken`.
 
 ### Simple token
 ### Condition token
