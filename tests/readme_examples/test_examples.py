@@ -1,7 +1,7 @@
-from time import sleep
 from threading import Thread
+from random import randint
 
-from cantok import SimpleToken
+from cantok import SimpleToken, ConditionToken, CounterToken, TimeoutToken
 
 
 def test_cancel_simple_token():
@@ -12,13 +12,10 @@ def test_cancel_simple_token():
         while not token.cancelled:
             counter += 1
 
-    token = SimpleToken()
+    token = SimpleToken() + ConditionToken(lambda: randint(1, 1_000_000_000)) + CounterToken(100_000) + TimeoutToken(1)
     thread = Thread(target=function, args=(token, ))
     thread.start()
 
-    sleep(1)
-
-    token.cancel()
     thread.join()
 
     assert counter

@@ -35,29 +35,28 @@ pip install cantok
 And use:
 
 ```python
-from time import sleep
+from random import randint
 from threading import Thread
-from cantok import SimpleToken
+
+from cantok import SimpleToken, ConditionToken, CounterToken, TimeoutToken
 
 
 counter = 0
 
 def function(token):
-    nonlocal counter
+    global counter
     while not token.cancelled:
         counter += 1
 
-token = SimpleToken()
+token = SimpleToken() + ConditionToken(lambda: randint(1, 1_000_000_000) == 1984) + CounterToken(1_000) + TimeoutToken(1)
 thread = Thread(target=function, args=(token, ))
 thread.start()
-
-sleep(1)
-
-token.cancel()
 thread.join()
 
-assert counter
+print(counter)
 ```
+
+In this example, we pass a token to the function that describes several restrictions: on the number of iterations of the cycle, on time, as well as on the occurrence of a random unlikely event. When any of the indicated events occur, the cycle stops.
 
 ## The pattern
 
