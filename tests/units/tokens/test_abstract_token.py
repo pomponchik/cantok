@@ -94,3 +94,44 @@ def test_str(token_fabric):
     token.cancel()
 
     assert str(token) == '<' + type(token).__name__ + ' (cancelled)>'
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_add_tokens(first_token_fabric, second_token_fabric):
+    first_token = first_token_fabric()
+    second_token = second_token_fabric()
+
+    tokens_sum = first_token + second_token
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 2
+    assert tokens_sum.tokens[0] is first_token
+    assert tokens_sum.tokens[1] is second_token
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'another_object',
+    [
+        1,
+        'kek',
+        '',
+        None,
+    ],
+)
+def test_add_token_and_not_token(token_fabric, another_object):
+    with pytest.raises(TypeError):
+        token_fabric() + another_object
+
+    with pytest.raises(TypeError):
+        another_object + token_fabric()
