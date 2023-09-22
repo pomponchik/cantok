@@ -2,7 +2,7 @@ from functools import partial
 
 import pytest
 
-from cantok.tokens.abstract_token import AbstractToken
+from cantok import AbstractToken
 from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken
 
 

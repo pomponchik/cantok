@@ -1,4 +1,4 @@
-from cantok.tokens.abstract_token import AbstractToken
+from cantok import AbstractToken
 
 
 class SimpleToken(AbstractToken):

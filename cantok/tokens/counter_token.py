@@ -1,6 +1,6 @@
 from threading import RLock
 
-from cantok.tokens.abstract_token import AbstractToken
+from cantok import AbstractToken
 from cantok import ConditionToken
 
 

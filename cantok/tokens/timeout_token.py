@@ -2,7 +2,7 @@ from time import monotonic_ns, perf_counter
 
 from typing import Union, Callable
 
-from cantok.tokens.abstract_token import AbstractToken
+from cantok import AbstractToken
 from cantok import ConditionToken
 
 
