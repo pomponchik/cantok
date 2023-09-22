@@ -26,7 +26,38 @@ Cancellation Token is a pattern that allows us to refuse to continue calculation
 
 ## Quick start
 
+Install [it](https://pypi.org/project/cantok/):
 
+```bash
+pip install cantok
+```
+
+And use:
+
+```python
+from time import sleep
+from threading import Thread
+from cantok import SimpleToken
+
+
+counter = 0
+
+def function(token):
+    nonlocal counter
+    while not token.cancelled:
+        counter += 1
+
+token = SimpleToken()
+thread = Thread(target=function, args=(token, ))
+thread.start()
+
+sleep(1)
+
+token.cancel()
+thread.join()
+
+assert counter
+```
 
 ## The pattern
 
