@@ -67,6 +67,11 @@ The essence of the pattern is that we pass special objects to functions and cons
 
 In addition, the pattern assumes that various restrictions can be combined indefinitely with each other: if at least one of the restrictions is not met, code execution will be interrupted. It is assumed that each function in the call stack will call other functions, throwing its token directly to them, or wrapping it in another token, with a stricter restriction imposed on it.
 
+Unlike other ways of interrupting code execution, tokens do not force the execution thread to be interrupted forcibly. The interruption occurs "gently", allowing the code to terminate correctly, return all occupied resources and restore consistency.
+
+It is highly desirable for library developers to use this pattern for any long-term composite operations. Your function can accept a token as an optional argument, with a default value that imposes minimal restrictions or none at all. If the user wishes, he can transfer his token there, imposing stricter restrictions on the library code. In addition to a more convenient and extensible API, this will give the library an advantage in the form of better testability, because the restrictions are no longer sewn directly into the function, which means they can be made whatever you want for the test. In addition, the library developer no longer needs to think about all the numerous restrictions that can be imposed on his code - the user can take care of it himself if he needs to.
+
+
 ## Tokens
 
 
