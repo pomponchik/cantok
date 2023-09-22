@@ -38,7 +38,7 @@ And use:
 from random import randint
 from threading import Thread
 
-from cantok import SimpleToken, ConditionToken, CounterToken, TimeoutToken
+from cantok import ConditionToken, CounterToken, TimeoutToken
 
 
 counter = 0
@@ -74,7 +74,81 @@ It is highly desirable for library developers to use this pattern for any long-t
 
 ## Tokens
 
-All token classes presented in this library have a uniform interface. And they are all inherited from one class: `AbstractToken`.
+All token classes presented in this library have a uniform interface. And they are all inherited from one class: `AbstractToken`. The only reason why you might want to import it is to use it for a type hint. This example illustrates a type hint suitable for any of the tokens:
+
+```python
+from cantok import AbstractToken
+
+def function(token: AbstractToken):
+  ...
+```
+
+Each token object has a `cancelled` attribute and a `cancel()` method. By the attribute, you can find out whether this token has been canceled:
+
+```python
+from cantok import SimpleToken
+
+token = SimpleToken()
+print(token.cancelled)  # False
+token.cancel()
+print(token.cancelled)  # True
+```
+
+The cancelled attribute is dynamically calculated and takes into account, among other things, specific conditions that are checked by a specific token. Here is an example with a [token that measures time](#timeout-token):
+
+```python
+from time import sleep
+from cantok import TimeoutToken
+
+token = TimeoutToken(5)
+print(token.cancelled)  # False
+sleep(10)
+print(token.cancelled)  # True
+```
+
+In addition to this attribute, each token implements the `is_cancelled()` method. It does exactly the same thing as the attribute:
+
+```python
+from cantok import SimpleToken
+
+token = SimpleToken()
+print(token.cancelled)  # False
+print(token.is_cancelled())  # False
+token.cancel()
+print(token.cancelled)  # True
+print(token.is_cancelled())  # True
+```
+
+Choose what you like best. To the author of the library, the use of the attribute seems more beautiful, but the method call more clearly reflects the complexity of the work that is actually being done to answer the question "has the token been canceled?".
+
+There is another method opposite to `is_cancelled()` - `keep_on()`. It answers the opposite question, and can be used in the same situations:
+
+```python
+from cantok import SimpleToken
+
+token = SimpleToken()
+print(token.cancelled)  # False
+print(token.keep_on())  # True
+token.cancel()
+print(token.cancelled)  # True
+print(token.keep_on())  # False
+```
+
+An unlimited number of other tokens can be embedded in one token as arguments during initialization. Each time checking whether it has been canceled, the token first checks its cancellation rules, and if it has not been canceled itself, then it checks the tokens nested in it. Thus, one cancelled token nested in another non-cancelled token cancels it:
+
+```python
+from cantok import SimpleToken
+
+first_token = SimpleToken()
+second_token = SimpleToken()
+third_token = SimpleToken(first_token, second_token)
+
+first_token.cancel()
+
+print(first_token.cancelled)  # True
+print(second_token.cancelled)  # False
+print(third_token.cancelled)  # True
+```
 
 ### Simple token
 ### Condition token
