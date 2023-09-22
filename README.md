@@ -200,7 +200,7 @@ There is not much more to tell about it if you have read [the story](#tokens) ab
 
 ### Condition token
 
-A slightly more complex type of token than `SimpleToken` is `ConditionToken`. In addition to everything that `SimpleToken` does, it also checks the condition passed to it as an argument, answering the question whether it has been canceled.
+A slightly more complex type of token than [`SimpleToken`](#simple-token) is `ConditionToken`. In addition to everything that `SimpleToken` does, it also checks the condition passed to it as an argument, answering the question whether it has been canceled.
 
 To initialize `ConditionToken`, pass a function to it that does not accept arguments and returns a boolean value. If it returns `True`, it means that the operation has been canceled:
 
