@@ -1,4 +1,3 @@
-from typing import TypeVar
 from abc import ABC, abstractmethod
 
 
@@ -23,7 +22,7 @@ class AbstractToken(ABC):
         cancelled_flag = 'cancelled' if self.cancelled else 'not cancelled'
         return f'<{type(self).__name__} ({cancelled_flag})>'
 
-    def __add__(self, item: 'AbstractToken') -> TypeVar['SimpleToken']:
+    def __add__(self, item: 'AbstractToken') -> 'AbstractToken':
         if not isinstance(item, AbstractToken):
             raise TypeError('Cancellation Token can only be combined with another Cancellation Token.')
 
