@@ -1,0 +1,11 @@
+venv
+.pytest_cache
+*.egg-info
+build
+dist
+__pycache__
+.idea
+test.py
+.mypy_cache
+.ruff_cache
+venv2
