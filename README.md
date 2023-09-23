@@ -19,7 +19,7 @@ Cancellation Token is a pattern that allows us to refuse to continue calculation
 - [**The pattern**](#the-pattern)
 - [**Tokens**](#tokens)
   - [**Simple token**](#simple-token)
-  - [**Condition token**](#simple-token)
+  - [**Condition token**](#condition-token)
   - [**Timeout token**](#timeout-token)
   - [**Counter token**](#counter-token)
 
