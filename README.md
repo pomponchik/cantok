@@ -312,3 +312,5 @@ from cantok import SimpleToken, CounterToken, TimeoutToken
 
 token = CounterToken(15, SimpleToken(), TimeoutToken(5))
 ```
+
+`CounterToken` is thread-safe.
