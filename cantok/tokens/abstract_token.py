@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from cantok.errors import AbstractCancellationError, CancellationError
 
 
-class CancelCause:
+class CancelCause(Enum):
     CANCELLED = 1
     SUPERPOWER = 2
     NOT_CANCELLED = 4
