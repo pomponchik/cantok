@@ -1,16 +1,15 @@
+from enum import Enum
 from abc import ABC, abstractmethod
 from threading import RLock
+from dataclasses import dataclass
 
 from cantok.errors import AbstractCancellationError, CancellationError
 
 
-from enum import Enum
 class CancelCause:
     CANCELLED = 1
     SUPERPOWER = 2
     NOT_CANCELLED = 4
-
-from dataclasses import dataclass
 
 @dataclass
 class CancellationReport:
