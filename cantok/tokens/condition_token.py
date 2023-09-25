@@ -2,9 +2,12 @@ from typing import Callable
 from contextlib import suppress
 
 from cantok import AbstractToken
+from cantok.errors import ConditionCancellationError
 
 
 class ConditionToken(AbstractToken):
+    exception = ConditionCancellationError
+
     def __init__(self, function: Callable[[], bool], *tokens: AbstractToken, cancelled: bool = False, suppress_exceptions: bool = True, default: bool = False):
         super().__init__(*tokens, cancelled=cancelled)
         self.function = function
@@ -41,3 +44,6 @@ class ConditionToken(AbstractToken):
             'default': self.default,
         }
         return  ', '.join([f'{key}={value}' for key, value in extra_kwargs.items()])
+
+    def raise_superpower_exception(self):
+        raise self.exception()

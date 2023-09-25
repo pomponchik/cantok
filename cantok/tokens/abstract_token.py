@@ -1,10 +1,30 @@
 from abc import ABC, abstractmethod
+from threading import RLock
+
+from cantok.errors import AbstractCancellationError, CancellationError
+
+
+from enum import Enum
+class CancelCause:
+    CANCELLED = 1
+    SUPERPOWER = 2
+    NOT_CANCELLED = 4
+
+from dataclasses import dataclass
+
+@dataclass
+class CancellationReport:
+    cause: CancelCause
+    from_token: 'AbstractToken'
 
 
 class AbstractToken(ABC):
+    exception = AbstractCancellationError
+
     def __init__(self, *tokens: 'AbstractToken', cancelled=False):
         self.tokens = tokens
         self._cancelled = cancelled
+        self.lock = RLock()
 
     def __repr__(self):
         other_tokens = ', '.join([repr(x) for x in self.tokens])
@@ -46,16 +66,28 @@ class AbstractToken(ABC):
         return not self.is_cancelled()
 
     def is_cancelled(self) -> bool:
+        return self.get_report().cause != CancelCause.NOT_CANCELLED
+
+    def get_report(self) -> CancellationReport:
         if self._cancelled:
-            return True
-
-        elif any(x.is_cancelled_reflect() for x in self.tokens):
-            return True
-
+            return CancellationReport(
+                cause=CancelCause.CANCELLED,
+                from_token=self,
+            )
         elif self.superpower():
-            return True
+            return CancellationReport(
+                cause=CancelCause.SUPERPOWER,
+                from_token=self,
+            )
 
-        return False
+        for token in self.tokens:
+            if token.is_cancelled_reflect():
+                return token.get_report()
+
+        return CancellationReport(
+            cause=CancelCause.NOT_CANCELLED,
+            from_token=self,
+        )
 
     def is_cancelled_reflect(self):
         return self.is_cancelled()
@@ -74,3 +106,21 @@ class AbstractToken(ABC):
 
     def text_representation_of_extra_kwargs(self) -> str:
         return ''
+
+    def check(self):
+        with self.lock:
+            if self.is_cancelled_reflect():
+                report = self.get_report()
+
+                if report.cause == CancelCause.CANCELLED:
+                    report.token.raise_cancelled_exception()
+
+                elif report.cause == CancelCause.SUPERPOWER:
+                    report.token.raise_superpower_exception()
+
+    def raise_cancelled_exception(self):
+        raise CancellationError()
+
+    @abstractmethod
+    def raise_superpower_exception(self):
+        raise self.exception('You have done the impossible to see this error.')

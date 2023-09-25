@@ -4,5 +4,7 @@ from cantok.tokens.condition_token import ConditionToken  # noqa: F401
 from cantok.tokens.counter_token import CounterToken  # noqa: F401
 from cantok.tokens.timeout_token import TimeoutToken
 
+from cantok.errors import AbstractCancellationError, CancellationError, ConditionCancellationError, CounterCancellationError, TimeoutCancellationError
+
 
 TimeOutToken = TimeoutToken
