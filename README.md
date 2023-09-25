@@ -207,7 +207,7 @@ To initialize `ConditionToken`, pass a function to it that does not accept argum
 ```python
 from cantok import ConditionToken
 
-counter = 5
+counter = 0
 token = ConditionToken(lambda: counter >= 5)
 
 while not token.cancelled:
