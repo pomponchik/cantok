@@ -11,6 +11,7 @@ class CounterToken(ConditionToken):
             raise ValueError('The counter must be greater than or equal to zero.')
 
         self.counter = counter
+        self.initial_counter = counter
         self.direct = direct
 
         def function() -> bool:
@@ -52,5 +53,5 @@ class CounterToken(ConditionToken):
     def text_representation_of_extra_kwargs(self) -> str:
         return f'direct={self.direct}'
 
-    def raise_superpower_exception(self):
-        raise self.exception()
+    def get_superpower_exception_message(self) -> str:
+        return f'After {self.initial_counter} attempts, the counter was reset to zero.'

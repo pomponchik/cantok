@@ -2,8 +2,8 @@ from functools import partial
 
 import pytest
 
-from cantok import AbstractToken
-from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken
+from cantok.tokens.abstract_token import AbstractToken, CancelCause, CancellationReport
+from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, CancellationError
 
 
 ALL_TOKEN_CLASSES = [SimpleToken, ConditionToken, TimeoutToken, CounterToken]
@@ -135,3 +135,113 @@ def test_add_token_and_not_token(token_fabric, another_object):
 
     with pytest.raises(TypeError):
         another_object + token_fabric()
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_check_cancelled_token(token_fabric):
+    token = token_fabric()
+    token.cancel()
+
+    with pytest.raises(CancellationError):
+        token.check()
+
+    try:
+        token.check()
+    except CancellationError as e:
+        assert type(e) is CancellationError
+        assert e.token is token
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_check_superpower_not_raised(token_fabric):
+    token = token_fabric()
+
+    assert token.check() is None
+
+
+@pytest.mark.parametrize(
+    'token_fabric_1',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'token_fabric_2',
+    ALL_TOKENS_FABRICS,
+)
+def test_check_superpower_not_raised_nested(token_fabric_1, token_fabric_2):
+    token = token_fabric_1(token_fabric_2())
+
+    assert token.check() is None
+
+
+@pytest.mark.parametrize(
+    'token_fabric_1',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'token_fabric_2',
+    ALL_TOKENS_FABRICS,
+)
+def test_check_cancelled_token_nested(token_fabric_1, token_fabric_2):
+    nested_token = token_fabric_1()
+    token = token_fabric_2(nested_token)
+    nested_token.cancel()
+
+    with pytest.raises(CancellationError):
+        token.check()
+
+    try:
+        token.check()
+    except CancellationError as e:
+        assert type(e) is CancellationError
+        assert e.token is nested_token
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_get_report_not_cancelled(token_fabric):
+    token = token_fabric()
+    report = token.get_report()
+
+    assert isinstance(report, CancellationReport)
+    assert report.cause == CancelCause.NOT_CANCELLED
+    assert report.from_token is token
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_get_report_not_cancelled_nested(token_fabric):
+    token = token_fabric(token_fabric())
+    report = token.get_report()
+
+    assert isinstance(report, CancellationReport)
+    assert report.cause == CancelCause.NOT_CANCELLED
+    assert report.from_token is token
+
+
+@pytest.mark.parametrize(
+    'token_fabric_1',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'token_fabric_2',
+    ALL_TOKENS_FABRICS,
+)
+def test_get_report_cancelled(token_fabric_1, token_fabric_2):
+    nested_token = token_fabric_1()
+    token = token_fabric_2(nested_token)
+    nested_token.cancel()
+    report = token.get_report()
+
+    assert isinstance(report, CancellationReport)
+    assert report.cause == CancelCause.CANCELLED
+    assert report.from_token is nested_token

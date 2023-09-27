@@ -3,13 +3,13 @@ from abc import ABC, abstractmethod
 from threading import RLock
 from dataclasses import dataclass
 
-from cantok.errors import AbstractCancellationError, CancellationError
+from cantok.errors import CancellationError
 
 
 class CancelCause(Enum):
     CANCELLED = 1
     SUPERPOWER = 2
-    NOT_CANCELLED = 4
+    NOT_CANCELLED = 3
 
 @dataclass
 class CancellationReport:
@@ -18,7 +18,7 @@ class CancellationReport:
 
 
 class AbstractToken(ABC):
-    exception = AbstractCancellationError
+    exception = CancellationError
 
     def __init__(self, *tokens: 'AbstractToken', cancelled=False):
         self.tokens = tokens
@@ -106,20 +106,23 @@ class AbstractToken(ABC):
     def text_representation_of_extra_kwargs(self) -> str:
         return ''
 
-    def check(self):
+    def check(self) -> None:
         with self.lock:
             if self.is_cancelled_reflect():
                 report = self.get_report()
 
                 if report.cause == CancelCause.CANCELLED:
-                    report.token.raise_cancelled_exception()
+                    report.from_token.raise_cancelled_exception()
 
                 elif report.cause == CancelCause.SUPERPOWER:
-                    report.token.raise_superpower_exception()
+                    report.from_token.raise_superpower_exception()
 
-    def raise_cancelled_exception(self):
-        raise CancellationError()
+    def raise_cancelled_exception(self) -> None:
+        raise CancellationError('The token has been cancelled.', self)
+
+    def raise_superpower_exception(self) -> None:
+        raise self.exception(self.get_superpower_exception_message(), self)
 
     @abstractmethod
-    def raise_superpower_exception(self):
-        raise self.exception('You have done the impossible to see this error.')
+    def get_superpower_exception_message(self) -> str:  # pragma: no cover
+        return 'You have done the impossible to see this error.'

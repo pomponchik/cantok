@@ -45,5 +45,5 @@ class ConditionToken(AbstractToken):
         }
         return  ', '.join([f'{key}={value}' for key, value in extra_kwargs.items()])
 
-    def raise_superpower_exception(self):
-        raise self.exception()
+    def get_superpower_exception_message(self) -> str:
+        return 'The condition is not met.'

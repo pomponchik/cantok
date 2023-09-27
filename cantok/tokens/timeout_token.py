@@ -36,5 +36,5 @@ class TimeoutToken(ConditionToken):
     def text_representation_of_extra_kwargs(self) -> str:
         return f'monotonic={self.monotonic}'
 
-    def raise_superpower_exception(self):
-        raise self.exception()
+    def get_superpower_exception_message(self) -> str:
+        return f'The timeout of {self.timeout} seconds has expired.'

@@ -2,7 +2,8 @@ from functools import partial
 
 import pytest
 
-from cantok import SimpleToken, ConditionToken
+from cantok.tokens.abstract_token import CancelCause, CancellationReport
+from cantok import SimpleToken, ConditionToken, ConditionCancellationError
 
 
 def test_condition_counter():
@@ -136,3 +137,63 @@ def test_default_if_not_bool(default):
     token = ConditionToken(condition, suppress_exceptions=True, default=default)
 
     assert token.cancelled == default
+
+
+def test_check_superpower_raised():
+    token = ConditionToken(lambda: True)
+
+    with pytest.raises(ConditionCancellationError):
+        token.check()
+
+    try:
+        token.check()
+    except ConditionCancellationError as e:
+        assert str(e) == 'The condition is not met.'
+        assert e.token is token
+
+
+def test_check_superpower_raised_nested():
+    nested_token = ConditionToken(lambda: True)
+    token = SimpleToken(nested_token)
+
+    with pytest.raises(ConditionCancellationError):
+        token.check()
+
+    try:
+        token.check()
+    except ConditionCancellationError as e:
+        assert str(e) == 'The condition is not met.'
+        assert e.token is nested_token
+        assert e.token.exception is type(e)
+
+
+def test_get_report_cancelled():
+    token = ConditionToken(lambda: True)
+
+    report = token.get_report()
+
+    assert isinstance(report, CancellationReport)
+    assert report.cause == CancelCause.SUPERPOWER
+    assert report.from_token is token
+
+
+@pytest.mark.parametrize(
+    'cancelled,cancelled_nested,from_token_is_nested',
+    [
+        (True, False, False),
+        (False, True, True),
+        (True, True, False),
+    ],
+)
+def test_get_report_cancelled_nested(cancelled, cancelled_nested, from_token_is_nested):
+    nested_token = ConditionToken(lambda: cancelled_nested)
+    token = ConditionToken(lambda: cancelled, nested_token)
+
+    report = token.get_report()
+
+    assert isinstance(report, CancellationReport)
+    assert report.cause == CancelCause.SUPERPOWER
+    if from_token_is_nested:
+        assert report.from_token is nested_token
+    else:
+        assert report.from_token is token

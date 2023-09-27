@@ -2,7 +2,8 @@ from threading import Thread
 
 import pytest
 
-from cantok import CounterToken, SimpleToken
+from cantok.tokens.abstract_token import CancelCause, CancellationReport
+from cantok import CounterToken, SimpleToken, CounterCancellationError
 
 
 @pytest.mark.parametrize(
@@ -84,3 +85,72 @@ def test_direct_default_counter(kwargs, expected_result):
 
     assert not first_token.cancelled
     assert first_token.counter == expected_result - 1
+
+
+def test_check_superpower_raised():
+    token = CounterToken(5)
+
+    while not token.cancelled:
+        pass
+
+    with pytest.raises(CounterCancellationError):
+        token.check()
+
+    try:
+        token.check()
+    except CounterCancellationError as e:
+        assert str(e) == 'After 5 attempts, the counter was reset to zero.'
+        assert e.token is token
+
+
+def test_check_superpower_raised_nested():
+    nested_token = CounterToken(5, direct=False)
+    token = SimpleToken(nested_token)
+
+    while not token.cancelled:
+        pass
+
+    with pytest.raises(CounterCancellationError):
+        token.check()
+
+    try:
+        token.check()
+    except CounterCancellationError as e:
+        assert str(e) == 'After 5 attempts, the counter was reset to zero.'
+        assert e.token is nested_token
+        assert e.token.exception is type(e)
+
+
+def test_get_report_cancelled():
+    token = CounterToken(5)
+
+    while not token.cancelled:
+        pass
+
+    report = token.get_report()
+
+    assert isinstance(report, CancellationReport)
+    assert report.cause == CancelCause.SUPERPOWER
+    assert report.from_token is token
+
+
+@pytest.mark.parametrize(
+    'counter,counter_nested,from_token_is_nested',
+    [
+        (1, 0, True),
+        (0, 1, False),
+        (0, 0, False),
+    ],
+)
+def test_get_report_cancelled_nested(counter, counter_nested, from_token_is_nested):
+    nested_token = CounterToken(counter_nested)
+    token = CounterToken(counter, nested_token)
+
+    report = token.get_report()
+
+    assert isinstance(report, CancellationReport)
+    assert report.cause == CancelCause.SUPERPOWER
+    if from_token_is_nested:
+        assert report.from_token is nested_token
+    else:
+        assert report.from_token is token
