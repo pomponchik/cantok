@@ -1,17 +1,18 @@
-from threading import RLock
-
 from cantok import AbstractToken
 from cantok import ConditionToken
+from cantok.errors import CounterCancellationError
 
 
 class CounterToken(ConditionToken):
+    exception = CounterCancellationError
+
     def __init__(self, counter: int, *tokens: AbstractToken, cancelled: bool = False, direct: bool = True):
         if counter < 0:
             raise ValueError('The counter must be greater than or equal to zero.')
 
         self.counter = counter
+        self.initial_counter = counter
         self.direct = direct
-        self.lock = RLock()
 
         def function() -> bool:
             with self.lock:
@@ -51,3 +52,6 @@ class CounterToken(ConditionToken):
 
     def text_representation_of_extra_kwargs(self) -> str:
         return f'direct={self.direct}'
+
+    def get_superpower_exception_message(self) -> str:
+        return f'After {self.initial_counter} attempts, the counter was reset to zero.'

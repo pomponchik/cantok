@@ -4,9 +4,12 @@ from typing import Union, Callable
 
 from cantok import AbstractToken
 from cantok import ConditionToken
+from cantok.errors import TimeoutCancellationError
 
 
 class TimeoutToken(ConditionToken):
+    exception = TimeoutCancellationError
+
     def __init__(self, timeout: Union[int, float], *tokens: AbstractToken, cancelled: bool = False, monotonic: bool = False):
         if timeout < 0:
             raise ValueError('You cannot specify a timeout less than zero.')
@@ -32,3 +35,6 @@ class TimeoutToken(ConditionToken):
 
     def text_representation_of_extra_kwargs(self) -> str:
         return f'monotonic={self.monotonic}'
+
+    def get_superpower_exception_message(self) -> str:
+        return f'The timeout of {self.timeout} seconds has expired.'

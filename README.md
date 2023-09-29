@@ -1,4 +1,4 @@
-![logo](https://raw.githubusercontent.com/pomponchik/cantok/develop/docs/assets/logo_2.png)
+![logo](https://raw.githubusercontent.com/pomponchik/cantok/main/docs/assets/logo_2.png)
 
 [![Downloads](https://static.pepy.tech/badge/cantok/month)](https://pepy.tech/project/cantok)
 [![Downloads](https://static.pepy.tech/badge/cantok)](https://pepy.tech/project/cantok)
@@ -134,6 +134,39 @@ print(token.cancelled)  # True
 print(token.keep_on())  # False
 ```
 
+There is another method that is close in meaning to `is_cancelled()` - `check()`. It does nothing if the token is not canceled, or raises an exception if canceled. If the token was canceled by calling the `cancel()` method, a `CancellationError` exception will be raised:
+
+```python
+from cantok import SimpleToken
+
+token = SimpleToken()
+token.check()  # Nothing happens.
+token.cancel()
+token.check()  # cantok.errors.CancellationError: The token has been cancelled.
+```
+
+Otherwise, a special exception inherited from `CancellationError` will be raised:
+
+```python
+from cantok import TimeoutToken
+
+token = TimeoutToken(0)
+token.check()  # cantok.errors.TimeoutCancellationError: The timeout of 0 seconds has expired.
+```
+
+Each token class has its own exception and it can be found in the `exception` attribute of the class:
+
+```python
+from cantok import TimeoutToken, CancellationError
+
+token = TimeoutToken(0)
+
+try:
+    token.check()
+except CancellationError as e:
+    print(type(e) is TimeoutToken.exception)  # True
+```
+
 An unlimited number of other tokens can be embedded in one token as arguments during initialization. Each time checking whether it has been canceled, the token first checks its cancellation rules, and if it has not been canceled itself, then it checks the tokens nested in it. Thus, one cancelled token nested in another non-cancelled token cancels it:
 
 ```python
@@ -148,6 +181,20 @@ first_token.cancel()
 print(first_token.cancelled)  # True
 print(second_token.cancelled)  # False
 print(third_token.cancelled)  # True
+```
+
+Each exception object has a `token` attribute indicating the specific token that was canceled. This can be useful in situations where several tokens are nested in one another and you want to find out which one has been canceled:
+
+```python
+from cantok import SimpleToken, TimeoutToken, CancellationError
+
+nested_token = TimeoutToken(0)
+token = SimpleToken(nested_token)
+
+try:
+    token.check()
+except CancellationError as e:
+    print(e.token is nested_token)  # True
 ```
 
 In addition, any tokens can be summed up among themselves. The summation operation generates another [`SimpleToken`](#simple-token) that includes the previous 2:
