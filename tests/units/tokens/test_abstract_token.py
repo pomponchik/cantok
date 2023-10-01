@@ -28,6 +28,8 @@ def test_cant_instantiate_abstract_token():
 def test_cancelled_true_as_parameter(token_fabric, cancelled_flag):
     token = token_fabric(cancelled=cancelled_flag)
     assert token.cancelled == cancelled_flag
+    assert token.is_cancelled() == cancelled_flag
+    assert token.keep_on() == (not cancelled_flag)
 
 
 @pytest.mark.parametrize(
@@ -46,7 +48,6 @@ def test_cancelled_true_as_parameter(token_fabric, cancelled_flag):
 def test_change_attribute_cancelled(token_fabric, first_cancelled_flag, second_cancelled_flag, expected_value):
     token = token_fabric(cancelled=first_cancelled_flag)
 
-
     if expected_value is None:
         with pytest.raises(ValueError):
             token.cancelled = second_cancelled_flag
@@ -54,6 +55,8 @@ def test_change_attribute_cancelled(token_fabric, first_cancelled_flag, second_c
     else:
         token.cancelled = second_cancelled_flag
         assert token.cancelled == expected_value
+        assert token.is_cancelled() == expected_value
+        assert token.keep_on() == (not expected_value)
 
 
 @pytest.mark.parametrize(
@@ -245,3 +248,25 @@ def test_get_report_cancelled(token_fabric_1, token_fabric_2):
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.CANCELLED
     assert report.from_token is nested_token
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_type_conversion_not_cancelled(token_fabric):
+    token = token_fabric()
+
+    assert token
+    assert bool(token)
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_type_conversion_cancelled(token_fabric):
+    token = token_fabric(cancelled=True)
+
+    assert not token
+    assert not bool(token)

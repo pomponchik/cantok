@@ -49,6 +49,9 @@ class AbstractToken(ABC):
 
         return SimpleToken(self, item)
 
+    def __bool__(self) -> bool:
+        return self.keep_on()
+
     @property
     def cancelled(self) -> bool:
         return self.is_cancelled()
