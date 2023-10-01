@@ -45,7 +45,7 @@ counter = 0
 
 def function(token):
     global counter
-    while not token.cancelled:
+    while token:
         counter += 1
 
 token = ConditionToken(lambda: randint(1, 100_000) == 1984) + CounterToken(400_000, direct=False) + TimeoutToken(1)
