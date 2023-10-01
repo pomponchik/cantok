@@ -134,6 +134,19 @@ print(token.cancelled)  # True
 print(token.keep_on())  # False
 ```
 
+You don't have to call the `keep_on()` method directly. Use the token itself as a boolean value, and the method call will occur "under the hood" automatically:
+
+```python
+from cantok import SimpleToken
+
+token = SimpleToken()
+print(bool(token))  # True
+print(token.keep_on())  # True
+token.cancel()
+print(bool(token))  # False
+print(token.keep_on())  # False
+```
+
 There is another method that is close in meaning to `is_cancelled()` - `check()`. It does nothing if the token is not canceled, or raises an exception if canceled. If the token was canceled by calling the `cancel()` method, a `CancellationError` exception will be raised:
 
 ```python
