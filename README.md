@@ -216,7 +216,7 @@ In addition, any tokens can be summed up among themselves. The summation operati
 from cantok import SimpleToken, TimeoutToken
 
 print(repr(SimpleToken() + TimeoutToken(5)))
-# SimpleToken(SimpleToken(cancelled=False), TimeoutToken(5, cancelled=False, monotonic=False), cancelled=False)
+# SimpleToken(SimpleToken(), TimeoutToken(5, monotonic=False))
 ```
 
 This feature is convenient to use if your function has received a token with certain restrictions and wants to throw it into other called functions, imposing additional restrictions:
@@ -252,7 +252,7 @@ print(token.cancelled)  # True
 from cantok import CounterToken, TimeoutToken
 
 print(repr(CounterToken(5) + TimeoutToken(5)))
-# SimpleToken(CounterToken(5, cancelled=False, direct=True), TimeoutToken(5, cancelled=False, monotonic=False), cancelled=False)
+# SimpleToken(CounterToken(5, direct=True), TimeoutToken(5, monotonic=False))
 ```
 
 There is not much more to tell about it if you have read [the story](#tokens) about tokens in general.
