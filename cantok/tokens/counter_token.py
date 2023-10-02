@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 from cantok import AbstractToken
 from cantok import ConditionToken
 from cantok.errors import CounterCancellationError
@@ -13,6 +15,7 @@ class CounterToken(ConditionToken):
         self.counter = counter
         self.initial_counter = counter
         self.direct = direct
+        self.rollback_if_nondirect_polling = self.direct
 
         def function() -> bool:
             with self.lock:
@@ -23,35 +26,19 @@ class CounterToken(ConditionToken):
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
-    def __repr__(self):
-        other_tokens = ', '.join([repr(x) for x in self.tokens])
-        if other_tokens:
-            other_tokens += ', '
-        superpower = self.text_representation_of_superpower() + ', '
-        cancelled = self.get_cancelled_status_without_decrementing_counter()
-        return f'{type(self).__name__}({superpower}{other_tokens}cancelled={cancelled}, direct={self.direct})'
-
-    def __str__(self):
-        cancelled_flag = 'cancelled' if self.get_cancelled_status_without_decrementing_counter() else 'not cancelled'
-        return f'<{type(self).__name__} ({cancelled_flag})>'
-
-    def get_cancelled_status_without_decrementing_counter(self) -> bool:
-        with self.lock:
-            result = self.cancelled
-            if not result:
-                self.counter += 1
-            return result
-
-    def is_cancelled_reflect(self) -> bool:
-        if self.direct:
-            return self.get_cancelled_status_without_decrementing_counter()
-        return self.cancelled
+    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:
+        self.counter = superpower_data['counter']
 
     def text_representation_of_superpower(self) -> str:
         return str(self.counter)
 
-    def text_representation_of_extra_kwargs(self) -> str:
-        return f'direct={self.direct}'
+    def get_extra_kwargs(self) -> Dict[str, Any]:
+        return {
+            'direct': self.direct,
+        }
+
+    def get_superpower_data(self) -> Dict[str, Any]:
+        return {'counter': self.counter}
 
     def get_superpower_exception_message(self) -> str:
         return f'After {self.initial_counter} attempts, the counter was reset to zero.'

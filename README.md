@@ -45,7 +45,7 @@ counter = 0
 
 def function(token):
     global counter
-    while not token.cancelled:
+    while token:
         counter += 1
 
 token = ConditionToken(lambda: randint(1, 100_000) == 1984) + CounterToken(400_000, direct=False) + TimeoutToken(1)
@@ -134,6 +134,19 @@ print(token.cancelled)  # True
 print(token.keep_on())  # False
 ```
 
+You don't have to call the `keep_on()` method directly. Use the token itself as a boolean value, and the method call will occur "under the hood" automatically:
+
+```python
+from cantok import SimpleToken
+
+token = SimpleToken()
+print(bool(token))  # True
+print(token.keep_on())  # True
+token.cancel()
+print(bool(token))  # False
+print(token.keep_on())  # False
+```
+
 There is another method that is close in meaning to `is_cancelled()` - `check()`. It does nothing if the token is not canceled, or raises an exception if canceled. If the token was canceled by calling the `cancel()` method, a `CancellationError` exception will be raised:
 
 ```python
@@ -203,7 +216,7 @@ In addition, any tokens can be summed up among themselves. The summation operati
 from cantok import SimpleToken, TimeoutToken
 
 print(repr(SimpleToken() + TimeoutToken(5)))
-# SimpleToken(SimpleToken(cancelled=False), TimeoutToken(5, cancelled=False, monotonic=False), cancelled=False)
+# SimpleToken(SimpleToken(), TimeoutToken(5, monotonic=False))
 ```
 
 This feature is convenient to use if your function has received a token with certain restrictions and wants to throw it into other called functions, imposing additional restrictions:
@@ -239,7 +252,7 @@ print(token.cancelled)  # True
 from cantok import CounterToken, TimeoutToken
 
 print(repr(CounterToken(5) + TimeoutToken(5)))
-# SimpleToken(CounterToken(5, cancelled=False, direct=True), TimeoutToken(5, cancelled=False, monotonic=False), cancelled=False)
+# SimpleToken(CounterToken(5, direct=True), TimeoutToken(5, monotonic=False))
 ```
 
 There is not much more to tell about it if you have read [the story](#tokens) about tokens in general.
@@ -257,7 +270,7 @@ from cantok import ConditionToken
 counter = 0
 token = ConditionToken(lambda: counter >= 5)
 
-while not token.cancelled:
+while token:
   counter += 1
 
 print(counter)  # 5
@@ -327,7 +340,7 @@ from cantok import CounterToken
 token = CounterToken(5)
 counter = 0
 
-while not token.cancelled:
+while token:
     counter += 1
 
 print(counter)  # 5

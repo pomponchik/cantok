@@ -25,6 +25,12 @@ def test_counter(iterations):
     assert counter == iterations
 
 
+def test_double_str():
+    token = CounterToken(1)
+
+    assert str(token) == str(token)
+
+
 def test_counter_less_than_zero():
     with pytest.raises(ValueError):
         CounterToken(-1)
@@ -77,14 +83,14 @@ def test_race_condition_for_counter(iterations, number_of_threads):
     ],
 )
 def test_direct_default_counter(kwargs, expected_result):
-    first_token = CounterToken(5, **kwargs)
-    second_token = SimpleToken(first_token)
+    nested_token = CounterToken(5, **kwargs)
+    token = SimpleToken(nested_token)
 
-    assert not second_token.cancelled
-    assert first_token.counter == expected_result
+    assert not token.cancelled
+    assert nested_token.counter == expected_result
 
-    assert not first_token.cancelled
-    assert first_token.counter == expected_result - 1
+    assert not nested_token.cancelled
+    assert nested_token.counter == expected_result - 1
 
 
 def test_check_superpower_raised():
@@ -154,3 +160,70 @@ def test_get_report_cancelled_nested(counter, counter_nested, from_token_is_nest
         assert report.from_token is nested_token
     else:
         assert report.from_token is token
+
+
+@pytest.mark.parametrize(
+    'function',
+    [
+        lambda token: token.check(),
+        lambda token: token.is_cancelled(),
+        lambda token: token.cancelled,
+        lambda token: token.keep_on(),
+    ],
+)
+@pytest.mark.parametrize(
+    'initial_counter, final_counter',
+    [
+        (50, 49),
+        (5, 4),
+        (1, 0),
+        (0, 0),
+    ],
+)
+def test_check_is_decrementing_counter(function, initial_counter, final_counter):
+    token = CounterToken(initial_counter)
+
+    try:
+        function(token)
+    except:
+        pass
+
+    assert token.counter == final_counter
+
+
+def test_check_is_decrementing_counter_when_nested_token_is_cancelled():
+    nested_token = SimpleToken(cancelled=True)
+    token = CounterToken(2, nested_token)
+
+    try:
+        token.check()
+    except Exception as e:
+        assert e.token is nested_token
+        assert type(e) is nested_token.exception
+        assert type(e) is not token.exception
+
+    assert token.counter == 1
+
+    try:
+        token.check()
+    except Exception as e:
+        assert e.token is nested_token
+        assert type(e) is nested_token.exception
+        assert type(e) is not token.exception
+
+    assert token.counter == 0
+
+    try:
+        token.check()
+    except Exception as e:
+        assert e.token is token
+        assert type(e) is token.exception
+        assert type(e) is not nested_token.exception
+
+
+def test_decrement_counter_after_zero():
+    token = CounterToken(0)
+
+    token.is_cancelled()
+
+    assert token.counter == 0

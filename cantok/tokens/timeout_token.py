@@ -1,6 +1,6 @@
 from time import monotonic_ns, perf_counter
 
-from typing import Union, Callable
+from typing import Union, Callable, Dict, Any
 
 from cantok import AbstractToken
 from cantok import ConditionToken
@@ -33,8 +33,10 @@ class TimeoutToken(ConditionToken):
     def text_representation_of_superpower(self) -> str:
         return str(self.timeout)
 
-    def text_representation_of_extra_kwargs(self) -> str:
-        return f'monotonic={self.monotonic}'
+    def get_extra_kwargs(self) -> Dict[str, Any]:
+        return {
+            'monotonic': self.monotonic,
+        }
 
     def get_superpower_exception_message(self) -> str:
         return f'The timeout of {self.timeout} seconds has expired.'

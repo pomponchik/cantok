@@ -18,7 +18,7 @@ setup(
     long_description=readme,
     long_description_content_type='text/markdown',
     url='https://github.com/pomponchik/cantok',
-    packages=find_packages(exclude=['tests']),
+    packages=find_packages(exclude=['tests', 'docs']),
     install_requires=requirements,
     classifiers=[
         'Operating System :: MacOS :: MacOS X',
