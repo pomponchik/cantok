@@ -31,6 +31,12 @@ def test_cancelled_true_as_parameter(token_fabric, cancelled_flag):
     assert token.is_cancelled() == cancelled_flag
     assert token.keep_on() == (not cancelled_flag)
 
+    if cancelled_flag:
+        with pytest.raises(CancellationError):
+            token.check()
+    else:
+        token.check()
+
 
 @pytest.mark.parametrize(
     'first_cancelled_flag,second_cancelled_flag,expected_value',
@@ -58,6 +64,12 @@ def test_change_attribute_cancelled(token_fabric, first_cancelled_flag, second_c
         assert token.is_cancelled() == expected_value
         assert token.keep_on() == (not expected_value)
 
+        if second_cancelled_flag:
+            with pytest.raises(CancellationError):
+                token.check()
+        else:
+            token.check()
+
 
 @pytest.mark.parametrize(
     'token_fabric',
@@ -65,10 +77,13 @@ def test_change_attribute_cancelled(token_fabric, first_cancelled_flag, second_c
 )
 def test_repr(token_fabric):
     token = token_fabric()
+
     superpower_text = token.text_representation_of_superpower()
     extra_kwargs_text = token.text_representation_of_extra_kwargs()
 
-    assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + 'cancelled=False' + (', ' + extra_kwargs_text if extra_kwargs_text else '') + ')'
+    elements = ', '.join([x for x in (superpower_text, extra_kwargs_text) if x])
+
+    assert repr(token) == type(token).__name__ + f'({elements})'
 
 
 @pytest.mark.parametrize(
@@ -82,7 +97,15 @@ def test_repr_with_another_token(token_fabric):
     superpower_text = token.text_representation_of_superpower()
     extra_kwargs_text = token.text_representation_of_extra_kwargs()
 
-    assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + repr(another_token) + ', ' + 'cancelled=False' + (', ' + extra_kwargs_text if extra_kwargs_text else '') + ')'
+    print(superpower_text)
+    print(repr(token))
+    print(repr(token))
+    print(repr(token))
+    print(repr(token))
+    print(repr(token))
+    print(repr(token))
+
+    assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + repr(another_token) + (', ' + extra_kwargs_text if extra_kwargs_text else '') + ')'
 
 
 @pytest.mark.parametrize(
