@@ -97,14 +97,6 @@ def test_repr_with_another_token(token_fabric):
     superpower_text = token.text_representation_of_superpower()
     extra_kwargs_text = token.text_representation_of_extra_kwargs()
 
-    print(superpower_text)
-    print(repr(token))
-    print(repr(token))
-    print(repr(token))
-    print(repr(token))
-    print(repr(token))
-    print(repr(token))
-
     assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + repr(another_token) + (', ' + extra_kwargs_text if extra_kwargs_text else '') + ')'
 
 
