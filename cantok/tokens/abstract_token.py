@@ -2,7 +2,7 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from threading import RLock
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import List, Dict, Any
 
 from cantok.errors import CancellationError
 
@@ -143,9 +143,9 @@ class AbstractToken(ABC):
     def text_representation_of_extra_kwargs(self) -> str:
         return self.text_representation_of_kwargs(**(self.get_extra_kwargs()))
 
-    def text_representation_of_kwargs(self, **kwargs) -> str:
-        kwargs = [f'{key}={repr(value)}' for key, value in kwargs.items()]
-        return ', '.join(kwargs)
+    def text_representation_of_kwargs(self, **kwargs: Any) -> str:
+        pairs: List[str] = [f'{key}={repr(value)}' for key, value in kwargs.items()]
+        return ', '.join(pairs)
 
     def check(self) -> None:
         with self.lock:
