@@ -270,7 +270,7 @@ from cantok import ConditionToken
 counter = 0
 token = ConditionToken(lambda: counter >= 5)
 
-while not token.cancelled:
+while token:
   counter += 1
 
 print(counter)  # 5
@@ -340,7 +340,7 @@ from cantok import CounterToken
 token = CounterToken(5)
 counter = 0
 
-while not token.cancelled:
+while token:
     counter += 1
 
 print(counter)  # 5
