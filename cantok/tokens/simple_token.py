@@ -12,4 +12,4 @@ class SimpleToken(AbstractToken):
         return ''
 
     def get_superpower_exception_message(self) -> str:
-        return 'The token has been cancelled.'  # noqa: F401
+        return 'The token has been cancelled.'  # pragma: no cover

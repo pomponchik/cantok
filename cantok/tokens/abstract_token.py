@@ -116,7 +116,7 @@ class AbstractToken(ABC):
         pass
 
     def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:
-        pass  # noqa: F401
+        pass  # pragma: no cover
 
     def check_superpower(self, direct: bool) -> bool:
         if self.rollback_if_nondirect_polling and not direct:
