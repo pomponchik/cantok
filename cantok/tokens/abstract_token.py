@@ -44,9 +44,9 @@ class AbstractToken(ABC):
             else:
                 extra_kwargs = {}
         extra_kwargs.update(**(self.get_extra_kwargs()))
-        extra_kwargs = self.text_representation_of_kwargs(**extra_kwargs)
-        if extra_kwargs:
-            chunks.append(extra_kwargs)
+        text_representation_of_extra_kwargs = self.text_representation_of_kwargs(**extra_kwargs)
+        if text_representation_of_extra_kwargs:
+            chunks.append(text_representation_of_extra_kwargs)
 
         glued_chunks = ', '.join(chunks)
         return f'{type(self).__name__}({glued_chunks})'
@@ -71,7 +71,7 @@ class AbstractToken(ABC):
         return self.is_cancelled()
 
     @cancelled.setter
-    def cancelled(self, new_value) -> None:
+    def cancelled(self, new_value: bool) -> None:
         if new_value == True:
             self._cancelled = True
         else:
@@ -81,10 +81,10 @@ class AbstractToken(ABC):
     def keep_on(self) -> bool:
         return not self.is_cancelled()
 
-    def is_cancelled(self, direct=True) -> bool:
+    def is_cancelled(self, direct: bool = True) -> bool:
         return self.get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
 
-    def get_report(self, direct=True) -> CancellationReport:
+    def get_report(self, direct: bool = True) -> CancellationReport:
         if self._cancelled:
             return CancellationReport(
                 cause=CancelCause.CANCELLED,
