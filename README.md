@@ -36,22 +36,14 @@ And use:
 
 ```python
 from random import randint
-from threading import Thread
-
 from cantok import ConditionToken, CounterToken, TimeoutToken
 
 
+token = ConditionToken(lambda: randint(1, 100_000) == 1984) + CounterToken(400_000, direct=False) + TimeoutToken(1)
 counter = 0
 
-def function(token):
-    global counter
-    while token:
-        counter += 1
-
-token = ConditionToken(lambda: randint(1, 100_000) == 1984) + CounterToken(400_000, direct=False) + TimeoutToken(1)
-thread = Thread(target=function, args=(token, ))
-thread.start()
-thread.join()
+while token:
+  counter += 1
 
 print(counter)
 ```
