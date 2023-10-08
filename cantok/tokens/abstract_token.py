@@ -22,12 +22,12 @@ class AbstractToken(ABC):
     exception = CancellationError
     rollback_if_nondirect_polling = False
 
-    def __init__(self, *tokens: 'AbstractToken', cancelled=False):
+    def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
         self.tokens = tokens
         self._cancelled = cancelled
         self.lock = RLock()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         chunks = []
         superpower = self.text_representation_of_superpower()
         if superpower:
@@ -48,10 +48,10 @@ class AbstractToken(ABC):
         if extra_kwargs:
             chunks.append(extra_kwargs)
 
-        chunks = ', '.join(chunks)
-        return f'{type(self).__name__}({chunks})'
+        glued_chunks = ', '.join(chunks)
+        return f'{type(self).__name__}({glued_chunks})'
 
-    def __str__(self):
+    def __str__(self) -> str:
         cancelled_flag = 'cancelled' if self.is_cancelled(direct=False) else 'not cancelled'
         return f'<{type(self).__name__} ({cancelled_flag})>'
 
