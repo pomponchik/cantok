@@ -22,12 +22,12 @@ class AbstractToken(ABC):
     exception = CancellationError
     rollback_if_nondirect_polling = False
 
-    def __init__(self, *tokens: 'AbstractToken', cancelled=False):
+    def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
         self.tokens = tokens
         self._cancelled = cancelled
         self.lock = RLock()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         chunks = []
         superpower = self.text_representation_of_superpower()
         if superpower:
@@ -44,14 +44,14 @@ class AbstractToken(ABC):
             else:
                 extra_kwargs = {}
         extra_kwargs.update(**(self.get_extra_kwargs()))
-        extra_kwargs = self.text_representation_of_kwargs(**extra_kwargs)
-        if extra_kwargs:
-            chunks.append(extra_kwargs)
+        text_representation_of_extra_kwargs = self.text_representation_of_kwargs(**extra_kwargs)
+        if text_representation_of_extra_kwargs:
+            chunks.append(text_representation_of_extra_kwargs)
 
-        chunks = ', '.join(chunks)
-        return f'{type(self).__name__}({chunks})'
+        glued_chunks = ', '.join(chunks)
+        return f'{type(self).__name__}({glued_chunks})'
 
-    def __str__(self):
+    def __str__(self) -> str:
         cancelled_flag = 'cancelled' if self.is_cancelled(direct=False) else 'not cancelled'
         return f'<{type(self).__name__} ({cancelled_flag})>'
 
@@ -71,7 +71,7 @@ class AbstractToken(ABC):
         return self.is_cancelled()
 
     @cancelled.setter
-    def cancelled(self, new_value) -> None:
+    def cancelled(self, new_value: bool) -> None:
         if new_value == True:
             self._cancelled = True
         else:
@@ -81,10 +81,10 @@ class AbstractToken(ABC):
     def keep_on(self) -> bool:
         return not self.is_cancelled()
 
-    def is_cancelled(self, direct=True) -> bool:
+    def is_cancelled(self, direct: bool = True) -> bool:
         return self.get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
 
-    def get_report(self, direct=True) -> CancellationReport:
+    def get_report(self, direct: bool = True) -> CancellationReport:
         if self._cancelled:
             return CancellationReport(
                 cause=CancelCause.CANCELLED,
@@ -115,7 +115,7 @@ class AbstractToken(ABC):
     def superpower(self) -> bool:  # pragma: no cover
         pass
 
-    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:
+    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover
         pass
 
     def check_superpower(self, direct: bool) -> bool:
@@ -130,7 +130,7 @@ class AbstractToken(ABC):
             self.superpower_rollback(superpower_data)
             return result
 
-    def get_superpower_data(self) -> Dict[str, Any]:
+    def get_superpower_data(self) -> Dict[str, Any]:  # pragma: no cover
         return {}
 
     @abstractmethod
