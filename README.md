@@ -1,4 +1,4 @@
-![logo](https://raw.githubusercontent.com/pomponchik/cantok/develop/docs/assets/logo_5.png)
+![logo](https://raw.githubusercontent.com/pomponchik/cantok/main/docs/assets/logo_5.png)
 
 [![Downloads](https://static.pepy.tech/badge/cantok/month)](https://pepy.tech/project/cantok)
 [![Downloads](https://static.pepy.tech/badge/cantok)](https://pepy.tech/project/cantok)
