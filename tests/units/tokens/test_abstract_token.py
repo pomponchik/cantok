@@ -91,13 +91,13 @@ def test_repr(token_fabric):
     ALL_TOKENS_FABRICS,
 )
 def test_repr_with_another_token(token_fabric):
-    another_token = token_fabric()
-    token = token_fabric(another_token)
+    nested_token = token_fabric()
+    token = token_fabric(nested_token)
 
     superpower_text = token.text_representation_of_superpower()
     extra_kwargs_text = token.text_representation_of_extra_kwargs()
 
-    assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + repr(another_token) + (', ' + extra_kwargs_text if extra_kwargs_text else '') + ')'
+    assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + repr(nested_token) + (', ' + extra_kwargs_text if extra_kwargs_text else '') + ')'
 
 
 @pytest.mark.parametrize(
@@ -285,3 +285,28 @@ def test_type_conversion_cancelled(token_fabric):
 
     assert not token
     assert not bool(token)
+
+
+@pytest.mark.parametrize(
+    'cancelled_flag_nested_token, cancelled_flag_token',
+    [
+        (True, True),
+        (True, False),
+        (False, True),
+        (False, False),
+    ],
+)
+@pytest.mark.parametrize(
+    'token_fabric_1',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'token_fabric_2',
+    ALL_TOKENS_FABRICS,
+)
+def test_repr_if_nested_token_is_cancelled(token_fabric_1, token_fabric_2, cancelled_flag_nested_token, cancelled_flag_token):
+    nested_token = token_fabric_1(cancelled=cancelled_flag_nested_token)
+    token = token_fabric_2(nested_token, cancelled=cancelled_flag_token)
+
+    assert ('cancelled' in repr(token).replace(repr(nested_token), '')) == cancelled_flag_token
+    assert ('cancelled' in repr(nested_token)) == cancelled_flag_nested_token
