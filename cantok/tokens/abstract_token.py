@@ -131,7 +131,7 @@ class AbstractToken(ABC):
             return result
 
     def get_superpower_data(self) -> Dict[str, Any]:
-        return {}
+        return {}  # pragma: no cover
 
     @abstractmethod
     def text_representation_of_superpower(self) -> str:  # pragma: no cover
