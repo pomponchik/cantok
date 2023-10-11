@@ -1,6 +1,6 @@
-site_name: 'CANTOK: Implementation of the "Cancellation Token" pattern'
+site_name: 'CANTOK'
 theme:
   name: material
+  logo: logo_6.png
 repo_url: https://github.com/pomponchik/cantok
 docs_dir: docs
-lang: en
