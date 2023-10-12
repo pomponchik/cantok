@@ -2,6 +2,6 @@ site_name: 'CANTOK'
 theme:
   name: material
   logo: assets/favicon.iso
-  favicon: assets/favicon.iso
+  favicon: assets/logo_6.png
 repo_url: https://github.com/pomponchik/cantok
 docs_dir: docs
