@@ -10,6 +10,8 @@ theme:
    - navigation.sections
    - navigation.expand
    - navigation.indexes
+   - search.highlight
+   - search.share
   palette:
     primary: black
     accent: pink
