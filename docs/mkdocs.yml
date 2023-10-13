@@ -3,5 +3,38 @@ theme:
   name: material
   logo: assets/logo_6.png
   favicon: assets/favicon.ico
+  features:
+   - content.code.copy
+   - navigation.instant
+   - navigation.tabs
+   - navigation.sections
+   - navigation.expand
+   - navigation.indexes
+  palette:
+    primary: black
+    accent: pink
 repo_url: https://github.com/pomponchik/cantok
 docs_dir: docs
+nav:
+  - Installation: installation.md
+  - Quick start: quick_start.md
+  - The pattern: the_pattern.md
+  - What are tokens:
+    - In general: what_are_tokens/in_general.md
+    - Embedding one into another: what_are_tokens/embedding.md
+    - Cancel and read the status: what_are_tokens/cancel_and_read_the_status.md
+    - Exceptions: what_are_tokens/exceptions.md
+    - Summation: what_are_tokens/summation.md
+  - Types of tokens:
+    - SimpleToken: types_of_tokens/SimpleToken.md
+    - ConditionToken: types_of_tokens/ConditionToken.md
+    - TimeoutToken: types_of_tokens/TimeoutToken.md
+    - CounterToken: types_of_tokens/CounterToken.md
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
