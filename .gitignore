@@ -9,3 +9,4 @@ test.py
 .mypy_cache
 .ruff_cache
 venv2
+.DS_Store

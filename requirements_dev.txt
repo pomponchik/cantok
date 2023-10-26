@@ -1,7 +1,7 @@
 pytest==7.4.2
 coverage==7.2.7
+build==0.9.0
 twine==4.0.2
-wheel==0.40.0
 mypy==1.4.1
 ruff==0.0.290
 mkdocs-material==9.2.7
