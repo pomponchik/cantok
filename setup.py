@@ -17,7 +17,11 @@ setup(
     description='Implementation of the "Cancellation Token" pattern',
     long_description=readme,
     long_description_content_type='text/markdown',
-    url='https://github.com/pomponchik/cantok',
+    project_urls={
+        'Source': 'https://github.com/pomponchik/cantok',
+        'Documentation': 'http://cantok.readthedocs.io/',
+        'Tracker': 'https://github.com/pomponchik/cantok/issues',
+    },
     packages=find_packages(exclude=['tests', 'docs']),
     install_requires=requirements,
     classifiers=[
