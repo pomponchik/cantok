@@ -1,3 +1,4 @@
+import asyncio
 from functools import partial
 
 import pytest
@@ -310,3 +311,26 @@ def test_repr_if_nested_token_is_cancelled(token_fabric_1, token_fabric_2, cance
 
     assert ('cancelled' in repr(token).replace(repr(nested_token), '')) == cancelled_flag_token
     assert ('cancelled' in repr(nested_token)) == cancelled_flag_nested_token
+
+
+@pytest.mark.parametrize(
+    'parameters',
+    [
+        {'step': -1},
+        {'step': -1, 'timeout': -1},
+        {'step': -1, 'timeout': 0},
+        {'timeout': -1},
+        {'step': 1, 'timeout': -1},
+        {'step': -1, 'timeout': 1},
+        {'step': 2, 'timeout': 1},
+    ],
+)
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_wait_wrong_parameters(token_fabric, parameters):
+    token = token_fabric()
+
+    with pytest.raises(ValueError):
+        asyncio.run(token.wait(**parameters))
