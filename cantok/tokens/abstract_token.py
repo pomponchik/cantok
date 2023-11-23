@@ -87,11 +87,11 @@ class AbstractToken(ABC):
 
     async def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None) -> None:
         if step < 0:
-            raise ValueError
+            raise ValueError('The token polling iteration time cannot be less than zero.')
         if timeout is not None and timeout < 0:
-            raise ValueError
+            raise ValueError('The total timeout of waiting cannot be less than zero.')
         if timeout is not None and step > timeout:
-            raise ValueError
+            raise ValueError('The total timeout of waiting cannot be less than the time of one iteration of the token polling.')
 
         if timeout is None:
             from cantok import SimpleToken
