@@ -85,7 +85,7 @@ class AbstractToken(ABC):
     def is_cancelled(self, direct: bool = True) -> bool:
         return self.get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
 
-    async def wait(self, step: Union[int, float] = 0.001, timeout: Optional[Union[int, float]] = None) -> None:
+    async def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None) -> None:
         if step < 0:
             raise ValueError
         if timeout is not None and timeout < 0:
