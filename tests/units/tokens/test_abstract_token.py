@@ -1,5 +1,6 @@
 import asyncio
 from functools import partial
+from time import perf_counter
 
 import pytest
 
@@ -346,3 +347,25 @@ def test_wait_timeout(token_fabric):
 
     with pytest.raises(TimeoutToken.exception):
         asyncio.run(token.wait(timeout=timeout))
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_wait_with_cancel(token_fabric):
+    timeout = 0.001
+    token = token_fabric()
+
+    async def cancel_with_timeout(token):
+        await asyncio.sleep(timeout)
+        token.cancel()
+
+    async def runner():
+        return await asyncio.gather(token.wait(), cancel_with_timeout(token))
+
+    start_time = perf_counter()
+    asyncio.run(runner())
+    finish_time = perf_counter()
+
+    assert finish_time - start_time >= timeout
