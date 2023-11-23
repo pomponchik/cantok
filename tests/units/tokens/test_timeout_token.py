@@ -1,4 +1,5 @@
-from time import sleep
+import asyncio
+from time import sleep, perf_counter
 
 import pytest
 
@@ -166,3 +167,16 @@ def test_get_report_cancelled_nested(timeout, timeout_nested, from_token_is_nest
         assert report.from_token is nested_token
     else:
         assert report.from_token is token
+
+
+def test_async_wait_timeout():
+    sleep_duration = 0.0001
+    token = TimeoutToken(sleep_duration)
+
+    start_time = perf_counter()
+
+    asyncio.run(token.wait())
+
+    finish_time = perf_counter()
+
+    assert sleep_duration <= finish_time - start_time
