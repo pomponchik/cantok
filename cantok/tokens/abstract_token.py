@@ -1,4 +1,6 @@
+from math import inf
 from enum import Enum
+from asyncio import sleep as async_sleep
 from abc import ABC, abstractmethod
 from threading import RLock
 from dataclasses import dataclass
@@ -83,6 +85,28 @@ class AbstractToken(ABC):
 
     def is_cancelled(self, direct: bool = True) -> bool:
         return self.get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
+
+    async def wait(self, step: Union[int, float] = 0.001, timeout: Optional[Union[int, float]] = None) -> None:
+        if step < 0:
+            raise ValueError
+        if timeout is not None and timeout < 0:
+            raise ValueError
+        if step > timeout:
+            raise ValueError
+
+        if timeout is None:
+            from cantok import SimpleToken
+            local_token = SimpleToken()
+        else:
+            from cantok import TimeoutToken
+            local_token = TimeoutToken(timeout)
+
+        token = self + local_token
+
+        while token:
+            await async_sleep(step)
+
+        local_token.check()
 
     def get_report(self, direct: bool = True) -> CancellationReport:
         if self._cancelled:
