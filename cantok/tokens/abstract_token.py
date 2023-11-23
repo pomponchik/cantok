@@ -90,7 +90,7 @@ class AbstractToken(ABC):
             raise ValueError
         if timeout is not None and timeout < 0:
             raise ValueError
-        if step > timeout:
+        if timeout is not None and step > timeout:
             raise ValueError
 
         if timeout is None:
