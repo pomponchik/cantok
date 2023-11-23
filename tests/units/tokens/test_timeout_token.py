@@ -174,9 +174,7 @@ def test_async_wait_timeout():
     token = TimeoutToken(sleep_duration)
 
     start_time = perf_counter()
-
     asyncio.run(token.wait())
-
     finish_time = perf_counter()
 
     assert sleep_duration <= finish_time - start_time
