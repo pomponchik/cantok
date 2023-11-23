@@ -98,7 +98,7 @@ class AbstractToken(ABC):
             local_token: AbstractToken = SimpleToken()
         else:
             from cantok import TimeoutToken
-            local_token: AbstractToken = TimeoutToken(timeout)
+            local_token = TimeoutToken(timeout)
 
         token = self + local_token
 
