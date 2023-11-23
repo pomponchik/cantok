@@ -1,10 +1,9 @@
-from math import inf
 from enum import Enum
 from asyncio import sleep as async_sleep
 from abc import ABC, abstractmethod
 from threading import RLock
 from dataclasses import dataclass
-from typing import List, Dict, Any
+from typing import List, Dict, Optional, Union, Any
 
 from cantok.errors import CancellationError
 
