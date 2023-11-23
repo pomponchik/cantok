@@ -334,3 +334,15 @@ def test_wait_wrong_parameters(token_fabric, parameters):
 
     with pytest.raises(ValueError):
         asyncio.run(token.wait(**parameters))
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_wait_timeout(token_fabric):
+    timeout = 0.0001
+    token = token_fabric()
+
+    with pytest.raises(TimeoutToken.exception):
+        asyncio.run(token.wait(timeout=timeout))
