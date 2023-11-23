@@ -1,3 +1,5 @@
+import asyncio
+from time import perf_counter
 from functools import partial
 
 import pytest
@@ -197,3 +199,23 @@ def test_get_report_cancelled_nested(cancelled, cancelled_nested, from_token_is_
         assert report.from_token is nested_token
     else:
         assert report.from_token is token
+
+
+def test_async_wait_condition():
+    flag = False
+    timeout = 0.001
+    token = ConditionToken(lambda: flag)
+
+    async def cancel_with_timeout(token):
+        nonlocal flag
+        await asyncio.sleep(timeout)
+        flag = True
+
+    async def runner():
+        return await asyncio.gather(token.wait(), cancel_with_timeout(token))
+
+    start_time = perf_counter()
+    asyncio.run(runner())
+    finish_time = perf_counter()
+
+    assert finish_time - start_time >= timeout
