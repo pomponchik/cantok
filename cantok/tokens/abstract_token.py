@@ -28,7 +28,7 @@ class AngryAwaitable(Coroutine):
     def send(self, value: Any) -> None:
         raise SynchronousWaitingError()
 
-    def throw(self, value: Any) -> None:
+    def throw(self, value: Any) -> Any:
         pass
 
 
