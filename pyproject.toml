@@ -29,9 +29,6 @@ classifiers = [
     'Topic :: Software Development :: Libraries',
 ]
 
-[tool.setuptools.packages.find]
-where = ["cantok"]
-
 [project.urls]
 'Source' = 'https://github.com/pomponchik/cantok'
 'Documentation' = 'http://cantok.readthedocs.io/'
