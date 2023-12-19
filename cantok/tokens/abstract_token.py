@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from threading import RLock
 from dataclasses import dataclass
 from typing import List, Dict, Awaitable, Optional, Union, Any
-from collections.abc import Coroutine, Awaitable
+from collections.abc import Coroutine
 
 
 from cantok.errors import CancellationError, SynchronousWaitingError
