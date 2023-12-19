@@ -109,6 +109,11 @@ class AbstractToken(ABC):
 
         token = self + local_token
 
+        class AngryAwaitable:
+            def __await__(self):
+                raise SynchronousWaitingError()
+                yield
+
         async def async_wait() -> Awaitable[None]:
             while token:
                 await async_sleep(step)
@@ -126,7 +131,7 @@ class AbstractToken(ABC):
 
         else:
             sync_wait()
-            return PseudoAsyncWaiter()
+            return AngryAwaitable()
 
 
     def get_report(self, direct: bool = True) -> CancellationReport:
