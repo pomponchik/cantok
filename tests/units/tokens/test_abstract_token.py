@@ -6,7 +6,7 @@ from queue import Queue
 
 import pytest
 
-from cantok.tokens.abstract_token import AbstractToken, CancelCause, CancellationReport, PseudoAsyncWaiter
+from cantok.tokens.abstract_token import AbstractToken, CancelCause, CancellationReport, AngryAwaitable
 from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, CancellationError
 from cantok.errors import SynchronousWaitingError
 
@@ -433,4 +433,4 @@ def test_sync_wait_with_cancel(token_fabric):
 
 def test_pseudo_awaitable():
     with pytest.raises(SynchronousWaitingError):
-        asyncio.run(PseudoAsyncWaiter())
+        asyncio.run(AngryAwaitable())

@@ -5,7 +5,8 @@ from abc import ABC, abstractmethod
 from threading import RLock
 from dataclasses import dataclass
 from typing import List, Dict, Awaitable, Optional, Union, Any
-from collections.abc import Awaitable as AwaitableBaseClass
+from collections.abc import Coroutine, Awaitable
+
 
 from cantok.errors import CancellationError, SynchronousWaitingError
 
@@ -21,9 +22,15 @@ class CancellationReport:
     from_token: 'AbstractToken'
 
 
-class PseudoAsyncWaiter(AwaitableBaseClass):
+class AngryAwaitable(Coroutine):
     def __await__(self):
-        raise SynchronousWaitingError('')
+        yield self
+
+    def send(self, value):
+        raise SynchronousWaitingError()
+
+    def throw(self, value):
+        pass
 
 
 class AbstractToken(ABC):
@@ -108,11 +115,6 @@ class AbstractToken(ABC):
             local_token = TimeoutToken(timeout)
 
         token = self + local_token
-
-        class AngryAwaitable:
-            def __await__(self):
-                raise SynchronousWaitingError()
-                yield
 
         async def async_wait() -> Awaitable[None]:
             while token:
