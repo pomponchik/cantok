@@ -21,15 +21,14 @@ class CancellationReport:
     cause: CancelCause
     from_token: 'AbstractToken'
 
-
 class AngryAwaitable(Coroutine):
     def __await__(self):
         yield self
 
-    def send(self, value):
+    def send(self, value: Any) -> None:
         raise SynchronousWaitingError()
 
-    def throw(self, value):
+    def throw(self, value: Any) -> None:
         pass
 
 
