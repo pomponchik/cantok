@@ -26,7 +26,7 @@ class AngryAwaitable(Coroutine):  # type: ignore[type-arg]
         yield self
 
     def send(self, value: Any) -> None:
-        raise SynchronousWaitingError()
+        raise SynchronousWaitingError('You cannot use the "await" keyword in the synchronous mode of the method. Add the "is_async" (bool) argument.')
 
     def throw(self, value: Any) -> Any:  # type: ignore[override]
         pass
