@@ -434,3 +434,13 @@ def test_sync_wait_with_cancel(token_fabric):
 def test_pseudo_awaitable():
     with pytest.raises(SynchronousWaitingError):
         asyncio.run(AngryAwaitable())
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_sync_run_returns_angry_awaitable(token_fabric):
+    token = token_fabric(cancelled=True)
+
+    assert isinstance(token.wait(timeout=0.001), AngryAwaitable)
