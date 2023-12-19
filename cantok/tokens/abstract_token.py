@@ -1,11 +1,13 @@
 from enum import Enum
+from time import sleep as sync_sleep
 from asyncio import sleep as async_sleep
 from abc import ABC, abstractmethod
 from threading import RLock
 from dataclasses import dataclass
-from typing import List, Dict, Optional, Union, Any
+from typing import List, Dict, Awaitable, Optional, Union, Any
+from collections.abc import Awaitable as AwaitableBaseClass
 
-from cantok.errors import CancellationError
+from cantok.errors import CancellationError, SynchronousWaitingError
 
 
 class CancelCause(Enum):
@@ -17,6 +19,11 @@ class CancelCause(Enum):
 class CancellationReport:
     cause: CancelCause
     from_token: 'AbstractToken'
+
+
+class PseudoAsyncWaiter(AwaitableBaseClass):
+    def __await__(self):
+        raise SynchronousWaitingError('')
 
 
 class AbstractToken(ABC):
@@ -85,7 +92,7 @@ class AbstractToken(ABC):
     def is_cancelled(self, direct: bool = True) -> bool:
         return self.get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
 
-    async def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None) -> None:
+    def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None, is_async: bool = False) -> Awaitable[None]:
         if step < 0:
             raise ValueError('The token polling iteration time cannot be less than zero.')
         if timeout is not None and timeout < 0:
@@ -102,10 +109,25 @@ class AbstractToken(ABC):
 
         token = self + local_token
 
-        while token:
-            await async_sleep(step)
+        async def async_wait() -> Awaitable[None]:
+            while token:
+                await async_sleep(step)
 
-        local_token.check()
+            local_token.check()
+
+        def sync_wait() -> None:
+            while token:
+                sync_sleep(step)
+
+            local_token.check()
+
+        if is_async:
+            return async_wait()
+
+        else:
+            sync_wait()
+            return PseudoAsyncWaiter()
+
 
     def get_report(self, direct: bool = True) -> CancellationReport:
         if self._cancelled:

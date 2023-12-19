@@ -13,3 +13,6 @@ class CounterCancellationError(CancellationError):
 
 class TimeoutCancellationError(CancellationError):
     pass
+
+class SynchronousWaitingError(Exception):
+    pass
