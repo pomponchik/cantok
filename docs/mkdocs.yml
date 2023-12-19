@@ -27,7 +27,7 @@ nav:
     - Cancel and read the status: what_are_tokens/cancel_and_read_the_status.md
     - Exceptions: what_are_tokens/exceptions.md
     - Summation: what_are_tokens/summation.md
-    - Asynchronous waiting for cancellation: what_are_tokens/waiting.md
+    - Waiting for cancellation: what_are_tokens/waiting.md
   - Types of tokens:
     - SimpleToken: types_of_tokens/SimpleToken.md
     - ConditionToken: types_of_tokens/ConditionToken.md
