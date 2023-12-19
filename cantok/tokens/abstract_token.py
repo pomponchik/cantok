@@ -31,6 +31,9 @@ class AngryAwaitable(Coroutine):
     def throw(self, value: Any) -> Any:
         pass
 
+    def close(self) -> Any:
+        pass
+
 
 class AbstractToken(ABC):
     exception = CancellationError
