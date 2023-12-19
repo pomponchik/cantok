@@ -21,8 +21,8 @@ class CancellationReport:
     cause: CancelCause
     from_token: 'AbstractToken'
 
-class AngryAwaitable(Coroutine):
-    def __await__(self):
+class AngryAwaitable(Coroutine):  # type: ignore[type-arg]
+    def __await__(self):  # type: ignore[no-untyped-def]
         yield self
 
     def send(self, value: Any) -> None:
@@ -101,7 +101,7 @@ class AbstractToken(ABC):
     def is_cancelled(self, direct: bool = True) -> bool:
         return self.get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
 
-    def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None, is_async: bool = False) -> Awaitable:
+    def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None, is_async: bool = False) -> Awaitable:  # type: ignore[type-arg]
         if step < 0:
             raise ValueError('The token polling iteration time cannot be less than zero.')
         if timeout is not None and timeout < 0:
@@ -118,7 +118,7 @@ class AbstractToken(ABC):
 
         token = self + local_token
 
-        async def async_wait() -> Awaitable:
+        async def async_wait() -> Awaitable:  # type: ignore[return, type-arg]
             while token:
                 await async_sleep(step)
 
