@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cantok"
-version = "0.0.11"
+version = "0.0.12"
 authors = [
   { name="Evgeniy Blinov", email="zheni-b@yandex.ru" },
 ]
@@ -28,6 +28,9 @@ classifiers = [
     'Intended Audience :: Developers',
     'Topic :: Software Development :: Libraries',
 ]
+
+[tool.setuptools.package-data]
+"cantok" = ["py.typed"]
 
 [project.urls]
 'Source' = 'https://github.com/pomponchik/cantok'
