@@ -25,7 +25,7 @@ jobs:
 
     - name: Run mypy
       shell: bash
-      run: mypy cantok --strict --implicit-reexport
+      run: mypy cantok --strict
 
     - name: Run ruff
       shell: bash
