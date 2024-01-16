@@ -8,19 +8,28 @@ from cantok.errors import ConditionCancellationError
 class ConditionToken(AbstractToken):
     exception = ConditionCancellationError
 
-    def __init__(self, function: Callable[[], bool], *tokens: AbstractToken, cancelled: bool = False, suppress_exceptions: bool = True, default: bool = False):
+    def __init__(self, function: Callable[[], bool], *tokens: AbstractToken, cancelled: bool = False, suppress_exceptions: bool = True, default: bool = False, before: Callable[[], Any] = lambda: None, after: Callable[[], Any] = lambda: None):
         super().__init__(*tokens, cancelled=cancelled)
         self.function = function
+        self.before = before
+        self.after = after
         self.suppress_exceptions = suppress_exceptions
         self.default = default
 
     def superpower(self) -> bool:
         if not self.suppress_exceptions:
-            return self.run_function()
+            self.before()
+            result = self.run_function()
+            self.after()
+            return result
 
         else:
             with suppress(Exception):
+                self.before()
+            with suppress(Exception):
                 return self.run_function()
+            with suppress(Exception):
+                self.after()
 
         return self.default
 
