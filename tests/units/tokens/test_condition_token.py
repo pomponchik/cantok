@@ -270,3 +270,25 @@ def test_raise_suppressed_exception_in_after_callback(options):
     token.check()
 
     assert lst == [1, 2, 3]
+
+
+def test_raise_not_suppressed_exception_in_before_callback():
+    lst = []
+
+    token = ConditionToken(lambda: lst.append(2) is not None, before=lambda: 1 / 0, suppress_exceptions=False)
+
+    with pytest.raises(ZeroDivisionError):
+        token.check()
+
+    assert not lst
+
+
+def test_raise_not_suppressed_exception_in_after_callback():
+    lst = []
+
+    token = ConditionToken(lambda: lst.append(2) is not None, before=lambda: lst.append(1), after=lambda: 1 / 0, suppress_exceptions=False)
+
+    with pytest.raises(ZeroDivisionError):
+        token.check()
+
+    assert lst == [1, 2]
