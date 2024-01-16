@@ -44,3 +44,16 @@ token.check()
 # 1
 # 2
 ```
+
+By analogy with `before`, you can pass a function that will be executed after checking the condition as the `after` argument:
+
+```python
+from cantok import ConditionToken
+
+token = ConditionToken(lambda: print(1), after=lambda: print(2))
+
+token.check()
+# Will be printed:
+# 1
+# 2
+```
