@@ -24,14 +24,16 @@ class ConditionToken(AbstractToken):
             return result
 
         else:
+            result = self.default
+
             with suppress(Exception):
                 self.before()
             with suppress(Exception):
-                return self.run_function()
+                result = self.run_function()
             with suppress(Exception):
                 self.after()
 
-        return self.default
+            return result
 
     def run_function(self) -> bool:
         result = self.function()
