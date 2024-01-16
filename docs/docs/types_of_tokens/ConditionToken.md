@@ -1,6 +1,4 @@
-A slightly more complex type of token than [`SimpleToken`](/types_of_tokens/SimpleToken/) is `ConditionToken`. In addition to everything that `SimpleToken` does, it also checks the condition passed to it as a first argument, answering the question whether it has been canceled.
-
-To initialize `ConditionToken`, pass a function to it that does not accept arguments and returns a boolean value. If it returns `True`, it means that the operation has been canceled:
+ConditionToken has superpower, it can check arbitrary conditions. In addition to this, it can do all the same things as [`SimpleToken`](/types_of_tokens/SimpleToken/). The condition must be passed to the token constructor as the first argument. The condition is a function that should return an answer (`True`/`False`) to the question "has the token been canceled?", it must be passed to the token constructor with the first argument:
 
 ```python
 from cantok import ConditionToken
@@ -34,8 +32,28 @@ print(ConditionToken(function, default=False).cancelled)  # False
 print(ConditionToken(function, default=True).cancelled)  # True
 ```
 
-`ConditionToken` may include other tokens during initialization:
+If the condition is complex enough and requires additional preparation before it can be checked, you can pass a function that runs before the condition is checked. To do this, pass any function without arguments as the `before` argument:
 
 ```python
-token = ConditionToken(lambda: False, SimpleToken(), TimeoutToken(5), CounterToken(20))  # Includes all additional restrictions of the passed tokens.
+from cantok import ConditionToken
+
+token = ConditionToken(lambda: print(2), before=lambda: print(1))
+
+token.check()
+# Will be printed:
+# 1
+# 2
+```
+
+By analogy with `before`, you can pass a function that will be executed after checking the condition as the `after` argument:
+
+```python
+from cantok import ConditionToken
+
+token = ConditionToken(lambda: print(1), after=lambda: print(2))
+
+token.check()
+# Will be printed:
+# 1
+# 2
 ```
