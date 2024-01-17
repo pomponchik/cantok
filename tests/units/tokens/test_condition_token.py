@@ -221,9 +221,18 @@ def test_async_wait_condition():
     assert finish_time - start_time >= timeout
 
 
-def test_order_of_callbacks():
+
+@pytest.mark.parametrize(
+    'options',
+    [
+        {},
+        {'suppress_exceptions': True},
+        {'suppress_exceptions': False},
+    ],
+)
+def test_order_of_callbacks(options):
     lst = []
-    token = ConditionToken(lambda: lst.append(2) is not None, before=lambda: lst.append(1), after=lambda: lst.append(3))
+    token = ConditionToken(lambda: lst.append(2) is not None, before=lambda: lst.append(1), after=lambda: lst.append(3), **options)
 
     token.check()
 
@@ -234,7 +243,7 @@ def test_order_of_callbacks():
     'options',
     [
         {},
-        {'suppress_exceptions': True}
+        {'suppress_exceptions': True},
     ],
 )
 def test_raise_suppressed_exception_in_before_callback(options):
@@ -255,7 +264,7 @@ def test_raise_suppressed_exception_in_before_callback(options):
     'options',
     [
         {},
-        {'suppress_exceptions': True}
+        {'suppress_exceptions': True},
     ],
 )
 def test_raise_suppressed_exception_in_after_callback(options):
