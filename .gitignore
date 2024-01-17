@@ -10,3 +10,5 @@ test.py
 .ruff_cache
 venv2
 .DS_Store
+.ipynb_checkpoints
+.coverage
