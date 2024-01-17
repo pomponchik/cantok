@@ -11,3 +11,4 @@ test.py
 venv2
 .DS_Store
 .ipynb_checkpoints
+.coverage
