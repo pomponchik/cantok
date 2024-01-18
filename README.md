@@ -2,8 +2,8 @@
 
 [![Downloads](https://static.pepy.tech/badge/cantok/month)](https://pepy.tech/project/cantok)
 [![Downloads](https://static.pepy.tech/badge/cantok)](https://pepy.tech/project/cantok)
-[![Lines of code](https://sloc.xyz/github/pomponchik/cantok)](https://github.com/boyter/scc/)
 [![codecov](https://codecov.io/gh/pomponchik/cantok/graph/badge.svg?token=eZ4eK6fkmx)](https://codecov.io/gh/pomponchik/cantok)
+[![Lines of code](https://sloc.xyz/github/pomponchik/cantok)](https://github.com/boyter/scc/)
 [![Hits-of-Code](https://hitsofcode.com/github/pomponchik/cantok?branch=main)](https://hitsofcode.com/github/pomponchik/cantok/view?branch=main)
 [![Test-Package](https://github.com/pomponchik/cantok/actions/workflows/tests_and_coverage.yml/badge.svg)](https://github.com/pomponchik/cantok/actions/workflows/tests_and_coverage.yml)
 [![Python versions](https://img.shields.io/pypi/pyversions/cantok.svg)](https://pypi.python.org/pypi/cantok)
