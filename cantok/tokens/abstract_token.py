@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from typing import List, Dict, Awaitable, Optional, Union, Any
 from collections.abc import Coroutine
 
-
 from cantok.errors import CancellationError, SynchronousWaitingError
 
 
