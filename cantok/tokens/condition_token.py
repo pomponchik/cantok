@@ -1,15 +1,24 @@
 from typing import Callable, Dict, Any
 from contextlib import suppress
 
+from sigmatch import SignatureMatcher
+
 from cantok import AbstractToken
 from cantok.errors import ConditionCancellationError
 
 
 class ConditionToken(AbstractToken):
+    callbacks_matcher = SignatureMatcher()
     exception = ConditionCancellationError
 
     def __init__(self, function: Callable[[], bool], *tokens: AbstractToken, cancelled: bool = False, suppress_exceptions: bool = True, default: bool = False, before: Callable[[], Any] = lambda: None, after: Callable[[], Any] = lambda: None):
+        if not self.callbacks_matcher.match(function):
+            raise ValueError('The condition must be a callable object with no required parameters.')
+        elif not self.callbacks_matcher.match(before) or not not self.callbacks_matcher.match(after):
+            raise ValueError('The callbacks called before and after checking the condition must be callable objects without required parameters.')
+
         super().__init__(*tokens, cancelled=cancelled)
+
         self.function = function
         self.before = before
         self.after = after
