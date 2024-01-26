@@ -23,6 +23,10 @@ jobs:
       shell: bash
       run: pip install -r requirements_dev.txt
 
+    - name: Install the library
+      shell: bash
+      run: pip install .
+
     - name: Run mypy
       shell: bash
       run: mypy cantok --strict
