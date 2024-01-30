@@ -1,4 +1,5 @@
 from enum import Enum
+import weakref
 from time import sleep as sync_sleep
 from asyncio import sleep as async_sleep
 from abc import ABC, abstractmethod
@@ -113,15 +114,17 @@ class AbstractToken(ABC):
 
             local_token.check()
 
+        result = async_wait()
+
         def sync_wait() -> None:
             if not async_used_flag:
+                result.close()
+
                 while token:
                     sync_sleep(step)
 
                 local_token.check()
 
-        import weakref
-        result = async_wait()
         weakref.finalize(result, sync_wait)
 
         return result
