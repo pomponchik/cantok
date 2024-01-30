@@ -178,3 +178,19 @@ def test_async_wait_timeout():
     finish_time = perf_counter()
 
     assert sleep_duration <= finish_time - start_time
+
+
+def test_run_async_two_timeouts():
+    sleep_duration = 0.0001
+    number_of_tokens = 10
+
+    tokens = [TimeoutToken(sleep_duration) for x in range(number_of_tokens)]
+
+    async def runner():
+        return await asyncio.gather(*(x.wait() for x in tokens))
+
+    start_time = perf_counter()
+    asyncio.run(runner())
+    finish_time = perf_counter()
+
+    assert (finish_time - start_time) < (sleep_duration * number_of_tokens)
