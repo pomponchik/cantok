@@ -20,21 +20,6 @@ class CancellationReport:
     cause: CancelCause
     from_token: 'AbstractToken'
 
-class AngryAwaitable(Coroutine):  # type: ignore[type-arg]
-    def __await__(self):  # type: ignore[no-untyped-def]
-        raise SynchronousWaitingError('You cannot use the "await" keyword in the synchronous mode of the method. Add the "is_async" (bool) argument.')  # pragma: no cover
-        yield self  # pragma: no cover
-
-    def send(self, value: Any) -> None:
-        raise SynchronousWaitingError('You cannot use the "await" keyword in the synchronous mode of the method. Add the "is_async" (bool) argument.')
-
-    def throw(self, value: Any) -> Any:  # type: ignore[override]
-        pass  # pragma: no cover
-
-    def close(self) -> Any:
-        pass  # pragma: no cover
-
-
 class AbstractToken(ABC):
     exception = CancellationError
     rollback_if_nondirect_polling = False
@@ -101,7 +86,7 @@ class AbstractToken(ABC):
     def is_cancelled(self, direct: bool = True) -> bool:
         return self.get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
 
-    def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None, is_async: bool = False) -> Awaitable:  # type: ignore[type-arg]
+    def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None) -> Awaitable:  # type: ignore[type-arg]
         if step < 0:
             raise ValueError('The token polling iteration time cannot be less than zero.')
         if timeout is not None and timeout < 0:
@@ -117,25 +102,29 @@ class AbstractToken(ABC):
             local_token = TimeoutToken(timeout)
 
         token = self + local_token
+        async_used_flag = False
 
         async def async_wait() -> Awaitable:  # type: ignore[return, type-arg]
+            nonlocal async_used_flag
+            async_used_flag = True
+
             while token:
                 await async_sleep(step)
 
             local_token.check()
 
         def sync_wait() -> None:
-            while token:
-                sync_sleep(step)
+            if not async_used_flag:
+                while token:
+                    sync_sleep(step)
 
-            local_token.check()
+                local_token.check()
 
-        if is_async:
-            return async_wait()
+        import weakref
+        result = async_wait()
+        weakref.finalize(result, sync_wait)
 
-        else:
-            sync_wait()
-            return AngryAwaitable()
+        return result
 
 
     def get_report(self, direct: bool = True) -> CancellationReport:
