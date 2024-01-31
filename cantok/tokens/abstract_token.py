@@ -1,5 +1,6 @@
 from enum import Enum
 import weakref
+import warnings
 from time import sleep as sync_sleep
 from asyncio import sleep as async_sleep
 from abc import ABC, abstractmethod
@@ -15,6 +16,51 @@ class CancelCause(Enum):
     CANCELLED = 1
     SUPERPOWER = 2
     NOT_CANCELLED = 3
+
+class WaitCoroutineWrapper(Coroutine):
+    def __init__(self, step: Union[int, float], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken') -> None:
+        self.step = step
+        self.token_for_wait = token_for_wait
+        self.token_for_check = token_for_check
+
+        self.flags = {}
+        self.coroutine = self.async_wait(step, self.flags, token_for_wait, token_for_check)
+
+        weakref.finalize(self, self.sync_wait, step, self.flags, token_for_wait, token_for_check, self.coroutine)
+
+    def __await__(self):
+        return self.coroutine.__await__()
+
+    def send(self, value):
+        return self.coroutine.send(value)
+
+    def throw(self, __typ, __val=None, __tb=None):
+        return self.coroutine.throw(__typ, __val, __tb)
+
+    def close(self):
+        self.coroutine.close()
+
+    @staticmethod
+    def sync_wait(step: Union[int, float], flags, token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine) -> None:
+        if not flags.get('used', False):
+            wrapped_coroutine.close()
+
+            while token_for_wait:
+                sync_sleep(step)
+
+            token_for_check.check()
+
+    @staticmethod
+    async def async_wait(step: Union[int, float], flags, token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken'):
+        flags['used'] = True
+
+        while token_for_wait:
+            await async_sleep(step)
+
+        await async_sleep(0)
+
+        token_for_check.check()
+
 
 @dataclass
 class CancellationReport:
@@ -97,38 +143,12 @@ class AbstractToken(ABC):
 
         if timeout is None:
             from cantok import SimpleToken
-            local_token: AbstractToken = SimpleToken()
+            token: AbstractToken = SimpleToken()
         else:
             from cantok import TimeoutToken
-            local_token = TimeoutToken(timeout)
+            token = TimeoutToken(timeout)
 
-        token = self + local_token
-        async_used_flag = False
-
-        async def async_wait() -> Awaitable:  # type: ignore[return, type-arg]
-            nonlocal async_used_flag
-            async_used_flag = True
-
-            while token:
-                await async_sleep(step)
-
-            local_token.check()
-
-        result = async_wait()
-
-        def sync_wait() -> None:
-            if not async_used_flag:
-                result.close()
-
-                while token:
-                    sync_sleep(step)
-
-                local_token.check()
-
-        weakref.finalize(result, sync_wait)
-
-        return result
-
+        return WaitCoroutineWrapper(step, self + token, token)
 
     def get_report(self, direct: bool = True) -> CancellationReport:
         if self._cancelled:

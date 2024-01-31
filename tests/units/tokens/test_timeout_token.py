@@ -194,3 +194,14 @@ def test_run_async_two_timeouts():
     finish_time = perf_counter()
 
     assert (finish_time - start_time) < (sleep_duration * number_of_tokens)
+
+
+def test_timeout_wait():
+    sleep_duration = 1
+    token = TimeoutToken(sleep_duration)
+
+    start_time = perf_counter()
+    token.wait()
+    finish_time = perf_counter()
+
+    assert sleep_duration <= finish_time - start_time

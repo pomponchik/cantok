@@ -374,13 +374,15 @@ def test_async_wait_with_cancel(token_fabric):
         await asyncio.sleep(timeout)
         token.cancel()
 
-    async def runner():
-        return await asyncio.gather(token.wait(), cancel_with_timeout(token))
+    async def runner(token):
+        coroutines = [cancel_with_timeout(token), token.wait(), ]
+        return await asyncio.gather(*coroutines)
 
     start_time = perf_counter()
-    asyncio.run(runner())
+    asyncio.run(runner(token))
     finish_time = perf_counter()
 
+    assert not token
     assert finish_time - start_time >= timeout
 
 
