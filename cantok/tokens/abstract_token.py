@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from threading import RLock
 from dataclasses import dataclass
 from typing import List, Dict, Awaitable, Optional, Union, Any
+from types import TracebackType
 from collections.abc import Coroutine
 
 from cantok.errors import CancellationError, SynchronousWaitingError
@@ -31,17 +32,17 @@ class WaitCoroutineWrapper(Coroutine):
     def __await__(self):
         return self.coroutine.__await__()
 
-    def send(self, value):
+    def send(self, value: Any):
         return self.coroutine.send(value)
 
-    def throw(self, __typ, __val=None, __tb=None):
-        return self.coroutine.throw(__typ, __val, __tb)
+    def throw(self, exception_type: Any, value: Optional[Any] = None, traceback: Optional[TracebackType] = None):
+        return self.coroutine.throw(exception_type, value, traceback)
 
     def close(self):
         self.coroutine.close()
 
     @staticmethod
-    def sync_wait(step: Union[int, float], flags, token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine) -> None:
+    def sync_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine: Coroutine) -> None:
         if not flags.get('used', False):
             wrapped_coroutine.close()
 
@@ -51,7 +52,7 @@ class WaitCoroutineWrapper(Coroutine):
             token_for_check.check()
 
     @staticmethod
-    async def async_wait(step: Union[int, float], flags, token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken'):
+    async def async_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken'):
         flags['used'] = True
 
         while token_for_wait:
