@@ -42,7 +42,7 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
         self.coroutine.close()
 
     @staticmethod
-    def sync_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine: Coroutine) -> None:
+    def sync_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine: Coroutine) -> None:  # type: ignore[type-arg]
         if not flags.get('used', False):
             wrapped_coroutine.close()
 
