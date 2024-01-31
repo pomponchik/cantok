@@ -62,7 +62,6 @@ class WaitCoroutineWrapper(Coroutine):
 
         token_for_check.check()
 
-
 @dataclass
 class CancellationReport:
     cause: CancelCause
