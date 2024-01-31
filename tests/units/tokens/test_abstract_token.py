@@ -8,7 +8,6 @@ import pytest
 
 from cantok.tokens.abstract_token import AbstractToken, CancelCause, CancellationReport
 from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, CancellationError
-from cantok.errors import SynchronousWaitingError
 
 
 ALL_TOKEN_CLASSES = [SimpleToken, ConditionToken, TimeoutToken, CounterToken]
