@@ -1,6 +1,5 @@
-from enum import Enum
 import weakref
-import warnings
+from enum import Enum
 from time import sleep as sync_sleep
 from asyncio import sleep as async_sleep
 from abc import ABC, abstractmethod
@@ -10,7 +9,7 @@ from typing import List, Dict, Awaitable, Optional, Union, Any
 from types import TracebackType
 from collections.abc import Coroutine
 
-from cantok.errors import CancellationError, SynchronousWaitingError
+from cantok.errors import CancellationError
 
 
 class CancelCause(Enum):
