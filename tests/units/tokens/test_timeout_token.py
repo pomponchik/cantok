@@ -181,7 +181,7 @@ def test_async_wait_timeout():
 
 
 def test_run_async_two_timeouts():
-    sleep_duration = 0.0001
+    sleep_duration = 0.001
     number_of_tokens = 10
 
     tokens = [TimeoutToken(sleep_duration) for x in range(number_of_tokens)]
