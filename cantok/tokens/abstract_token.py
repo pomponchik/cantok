@@ -29,16 +29,13 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
         weakref.finalize(self, self.sync_wait, step, self.flags, token_for_wait, token_for_check, self.coroutine)
 
     def __await__(self) -> Any:
-        return self.coroutine.__await__()
+        pass
 
     def send(self, value: Any) -> Any:
         return self.coroutine.send(value)
 
     def throw(self, exception_type: Any, value: Optional[Any] = None, traceback: Optional[TracebackType] = None) -> Any:
-        return self.coroutine.throw(exception_type, value, traceback)
-
-    def close(self) -> None:
-        self.coroutine.close()
+        pass
 
     @staticmethod
     def sync_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine: Coroutine) -> None:  # type: ignore[type-arg]
