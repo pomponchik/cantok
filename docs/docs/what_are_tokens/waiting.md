@@ -9,7 +9,7 @@ token.check()  # Since the timeout has expired, an exception will be raised.
 # cantok.errors.TimeoutCancellationError: The timeout of 5 seconds has expired.
 ```
 
-This method also has an async version. To make the wait asynchronous, simply add the `is_async=True` parameter. After that, you can use this method in expressions using the `await` statement:
+If you add the `await` keyword before calling `wait()`, the method will be automatically used in non-blocking mode:
 
 ```python
 import asyncio
@@ -22,18 +22,13 @@ async def do_something(token):
 async def main():
   token = SimpleToken()
   await do_something(token)
-  await token.wait(is_async=True)
+  await token.wait()
   print('Something has been done!')
 
 asyncio.run(main())
 ```
 
-If you mistakenly use the `await` statement in the synchronous mode of the method, you will receive a `cantok.errors.SynchronousWaitingError`:
-
-```python
-await token.wait()
-#  cantok.errors.SynchronousWaitingError: You cannot use the "await" keyword in the synchronous mode of the method. Add the "is_async" (bool) argument.
-```
+Yes, it looks like magic, it is magic. The method itself finds out how it was used: inside an expression with or without the `await` keyword. In the first case, it runs in CPU-saving mode, in the second - in non-blocking event-loop mode.
 
 In addition to the above, the `wait()` method has two optional arguments:
 
