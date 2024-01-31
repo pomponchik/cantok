@@ -10,6 +10,7 @@ class ConditionToken(AbstractToken):
 
     def __init__(self, function: Callable[[], bool], *tokens: AbstractToken, cancelled: bool = False, suppress_exceptions: bool = True, default: bool = False, before: Callable[[], Any] = lambda: None, after: Callable[[], Any] = lambda: None):
         super().__init__(*tokens, cancelled=cancelled)
+
         self.function = function
         self.before = before
         self.after = after

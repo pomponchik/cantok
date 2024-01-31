@@ -6,9 +6,8 @@ from queue import Queue
 
 import pytest
 
-from cantok.tokens.abstract_token import AbstractToken, CancelCause, CancellationReport, AngryAwaitable
+from cantok.tokens.abstract_token import AbstractToken, CancelCause, CancellationReport
 from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, CancellationError
-from cantok.errors import SynchronousWaitingError
 
 
 ALL_TOKEN_CLASSES = [SimpleToken, ConditionToken, TimeoutToken, CounterToken]
@@ -327,20 +326,6 @@ def test_repr_if_nested_token_is_cancelled(token_fabric_1, token_fabric_2, cance
         {'step': 1, 'timeout': -1},
         {'step': -1, 'timeout': 1},
         {'step': 2, 'timeout': 1},
-        {'step': -1, 'is_async': True},
-        {'step': -1, 'timeout': -1, 'is_async': True},
-        {'step': -1, 'timeout': 0, 'is_async': True},
-        {'timeout': -1, 'is_async': True},
-        {'step': 1, 'timeout': -1, 'is_async': True},
-        {'step': -1, 'timeout': 1, 'is_async': True},
-        {'step': 2, 'timeout': 1, 'is_async': True},
-        {'step': -1, 'is_async': False},
-        {'step': -1, 'timeout': -1, 'is_async': False},
-        {'step': -1, 'timeout': 0, 'is_async': False},
-        {'timeout': -1, 'is_async': False},
-        {'step': 1, 'timeout': -1, 'is_async': False},
-        {'step': -1, 'timeout': 1, 'is_async': False},
-        {'step': 2, 'timeout': 1, 'is_async': False},
     ],
 )
 @pytest.mark.parametrize(
@@ -373,19 +358,7 @@ def test_async_wait_timeout(token_fabric):
     token = token_fabric()
 
     with pytest.raises(TimeoutToken.exception):
-        asyncio.run(token.wait(timeout=timeout, is_async=True))
-
-
-@pytest.mark.parametrize(
-    'token_fabric',
-    ALL_TOKENS_FABRICS,
-)
-def test_sync_wait_timeout(token_fabric):
-    timeout = 0.0001
-    token = token_fabric()
-
-    with pytest.raises(TimeoutToken.exception):
-        token.wait(timeout=timeout)
+        asyncio.run(token.wait(timeout=timeout))
 
 
 @pytest.mark.parametrize(
@@ -400,13 +373,15 @@ def test_async_wait_with_cancel(token_fabric):
         await asyncio.sleep(timeout)
         token.cancel()
 
-    async def runner():
-        return await asyncio.gather(token.wait(is_async=True), cancel_with_timeout(token))
+    async def runner(token):
+        coroutines = [cancel_with_timeout(token), token.wait(), ]
+        return await asyncio.gather(*coroutines)
 
     start_time = perf_counter()
-    asyncio.run(runner())
+    asyncio.run(runner(token))
     finish_time = perf_counter()
 
+    assert not token
     assert finish_time - start_time >= timeout
 
 
@@ -426,21 +401,7 @@ def test_sync_wait_with_cancel(token_fabric):
     thread = Thread(target=cancel_with_timeout, args=(token,))
     thread.start()
     token.wait()
+    thread.join()
     finish_time = perf_counter()
 
     assert finish_time - start_time >= timeout
-
-
-def test_pseudo_awaitable():
-    with pytest.raises(SynchronousWaitingError):
-        asyncio.run(AngryAwaitable())
-
-
-@pytest.mark.parametrize(
-    'token_fabric',
-    ALL_TOKENS_FABRICS,
-)
-def test_sync_run_returns_angry_awaitable(token_fabric):
-    token = token_fabric(cancelled=True)
-
-    assert isinstance(token.wait(timeout=0.001), AngryAwaitable)

@@ -212,7 +212,7 @@ def test_async_wait_condition():
         flag = True
 
     async def runner():
-        return await asyncio.gather(token.wait(is_async=True), cancel_with_timeout(token))
+        return await asyncio.gather(token.wait(), cancel_with_timeout(token))
 
     start_time = perf_counter()
     asyncio.run(runner())

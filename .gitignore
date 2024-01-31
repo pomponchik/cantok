@@ -8,7 +8,6 @@ __pycache__
 test.py
 .mypy_cache
 .ruff_cache
-venv2
 .DS_Store
 .ipynb_checkpoints
 .coverage
