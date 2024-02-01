@@ -49,7 +49,7 @@ def test_zero_timeout(zero_timeout, options):
     ],
 )
 def test_less_than_zero_timeout(options, timeout):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='You cannot specify a timeout less than zero.'):
         TimeoutToken(timeout, **options)
 
 
