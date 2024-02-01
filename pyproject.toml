@@ -32,6 +32,10 @@ classifiers = [
 [tool.setuptools.package-data]
 "cantok" = ["py.typed"]
 
+[tool.mutmut]
+paths_to_mutate="cantok"
+runner="pytest"
+
 [project.urls]
 'Source' = 'https://github.com/pomponchik/cantok'
 'Documentation' = 'http://cantok.readthedocs.io/'
