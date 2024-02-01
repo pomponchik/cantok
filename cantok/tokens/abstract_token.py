@@ -19,10 +19,6 @@ class CancelCause(Enum):
 
 class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
     def __init__(self, step: Union[int, float], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken') -> None:
-        self.step = step
-        self.token_for_wait = token_for_wait
-        self.token_for_check = token_for_check
-
         self.flags: Dict[str, bool] = {}
         self.coroutine = self.async_wait(step, self.flags, token_for_wait, token_for_check)
 
