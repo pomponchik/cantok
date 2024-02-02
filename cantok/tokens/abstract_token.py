@@ -1,4 +1,5 @@
 import weakref
+from sys import getrefcount
 from enum import Enum
 from time import sleep as sync_sleep
 from asyncio import sleep as async_sleep
@@ -35,20 +36,21 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
         return self.coroutine.send(value)
 
     def throw(self, exception_type: Any, value: Optional[Any] = None, traceback: Optional[TracebackType] = None) -> Any:
-        return self.coroutine.throw(exception_type, value, traceback)
+        pass  # pragma: no cover
 
     def close(self) -> None:
-        self.coroutine.close()
+        pass  # pragma: no cover
 
     @staticmethod
     def sync_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine: Coroutine) -> None:  # type: ignore[type-arg]
         if not flags.get('used', False):
-            wrapped_coroutine.close()
+            if getrefcount(wrapped_coroutine) < 5:
+                wrapped_coroutine.close()
 
-            while token_for_wait:
-                sync_sleep(step)
+                while token_for_wait:
+                    sync_sleep(step)
 
-            token_for_check.check()
+                token_for_check.check()
 
     @staticmethod
     async def async_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken') -> None:

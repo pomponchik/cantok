@@ -59,7 +59,7 @@ def test_change_attribute_cancelled(token_fabric, first_cancelled_flag, second_c
     token = token_fabric(cancelled=first_cancelled_flag)
 
     if expected_value is None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match='You cannot restore a cancelled token.'):
             token.cancelled = second_cancelled_flag
 
     else:
@@ -152,7 +152,7 @@ def test_add_tokens(first_token_fabric, second_token_fabric):
     ],
 )
 def test_add_token_and_not_token(token_fabric, another_object):
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match='Cancellation Token can only be combined with another Cancellation Token.'):
         token_fabric() + another_object
 
     with pytest.raises(TypeError):

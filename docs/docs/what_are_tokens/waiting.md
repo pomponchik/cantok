@@ -21,8 +21,7 @@ async def do_something(token):
 
 async def main():
   token = SimpleToken()
-  await do_something(token)
-  await token.wait()
+  await asyncio.gather(do_something(token), token.wait())
   print('Something has been done!')
 
 asyncio.run(main())
