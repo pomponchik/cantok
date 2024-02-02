@@ -1,7 +1,10 @@
-from threading import Thread
+import asyncio
+from io import StringIO
 from random import randint
+from threading import Thread
+from contextlib import redirect_stdout
 
-from cantok import ConditionToken, CounterToken, TimeoutToken
+from cantok import SimpleToken, ConditionToken, CounterToken, TimeoutToken
 
 
 counter = 0
@@ -20,7 +23,7 @@ def test_cancel_simple_token_with_function_and_thread():
     assert counter
 
 
-def test_cancel_simple_token_with_function_and_thread():
+def test_cancel_simple_token_with_function_and_thread_2():
     token = ConditionToken(lambda: randint(1, 100_000) == 1984) + CounterToken(400_000, direct=False) + TimeoutToken(1)
     counter = 0
 
@@ -28,3 +31,21 @@ def test_cancel_simple_token_with_function_and_thread():
       counter += 1
 
     assert counter
+
+
+def test_waiting_of_cancelled_token():
+    async def do_something(token):
+        await asyncio.sleep(0.1)  # Imitation of some real async activity.
+        token.cancel()
+
+    async def main():
+        token = SimpleToken()
+        await do_something(token)
+        await token.wait()
+        print('Something has been done!')
+
+    buffer = StringIO()
+    with redirect_stdout(buffer):
+        asyncio.run(main())
+
+    assert buffer.getvalue() == 'Something has been done!\n'
