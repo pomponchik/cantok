@@ -36,10 +36,10 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
         return self.coroutine.send(value)
 
     def throw(self, exception_type: Any, value: Optional[Any] = None, traceback: Optional[TracebackType] = None) -> Any:
-        pass
+        pass  # pragma: no cover
 
     def close(self) -> None:
-        pass
+        pass  # pragma: no cover
 
     @staticmethod
     def sync_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine: Coroutine) -> None:  # type: ignore[type-arg]
