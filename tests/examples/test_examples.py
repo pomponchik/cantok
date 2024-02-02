@@ -49,3 +49,20 @@ def test_waiting_of_cancelled_token():
         asyncio.run(main())
 
     assert buffer.getvalue() == 'Something has been done!\n'
+
+
+def test_waiting_of_cancelled_token_with_gather():
+    async def do_something(token):
+        await asyncio.sleep(0.1)  # Imitation of some real async activity.
+        token.cancel()
+
+    async def main():
+        token = SimpleToken()
+        asyncio.gather(*[do_something(token), token.wait()])
+        print('Something has been done!')
+
+    buffer = StringIO()
+    with redirect_stdout(buffer):
+        asyncio.run(main())
+
+    assert buffer.getvalue() == 'Something has been done!\n'
