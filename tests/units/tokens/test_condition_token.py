@@ -324,11 +324,19 @@ def test_cached_condition_cancelling(options):
     token.wait()
 
     if options.get('caching', True):
+        assert counter == 3
         assert token.cancelled == True
+        assert counter == 3
         with pytest.raises(ConditionCancellationError):
             token.check()
+        assert counter == 3
         assert token.cancelled == True
+        assert counter == 3
     else:
+        assert counter == 3
         assert token.cancelled == False
+        assert counter == 4
         token.check()
+        assert counter == 5
         assert token.cancelled == False
+        assert counter == 6
