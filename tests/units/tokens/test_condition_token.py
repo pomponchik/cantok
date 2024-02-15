@@ -301,3 +301,42 @@ def test_raise_not_suppressed_exception_in_after_callback():
         token.check()
 
     assert lst == [1, 2]
+
+
+@pytest.mark.parametrize(
+    'options',
+    [
+        {},
+        {'caching': True},
+        {'caching': False},
+    ],
+)
+def test_cached_condition_cancelling(options):
+    counter = 0
+
+    def condition():
+        nonlocal counter
+        counter +=1
+        return counter == 3
+
+    token = ConditionToken(condition, **options)
+
+    token.wait()
+
+    if options.get('caching', True):
+        assert counter == 3
+        assert token.cancelled == True
+        assert counter == 3
+        with pytest.raises(ConditionCancellationError):
+            token.check()
+        assert counter == 3
+        assert token.cancelled == True
+        assert counter == 3
+    else:
+        assert counter == 3
+        assert token.cancelled == False
+        assert counter == 4
+        token.check()
+        assert counter == 5
+        assert token.cancelled == False
+        assert counter == 6
