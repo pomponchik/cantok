@@ -150,7 +150,7 @@ def test_check_superpower_raised():
     try:
         token.check()
     except ConditionCancellationError as e:
-        assert str(e) == 'The condition is not met.'
+        assert str(e) == 'The cancellation condition was satisfied.'
         assert e.token is token
 
 
@@ -164,7 +164,7 @@ def test_check_superpower_raised_nested():
     try:
         token.check()
     except ConditionCancellationError as e:
-        assert str(e) == 'The condition is not met.'
+        assert str(e) == 'The cancellation condition was satisfied.'
         assert e.token is nested_token
         assert e.token.exception is type(e)
 
