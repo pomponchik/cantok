@@ -1,4 +1,4 @@
-Any tokens can be summed up among themselves. The summation operation generates another [`SimpleToken`](/docs/types_of_tokens/SimpleToken/) that includes the previous 2:
+Any tokens can be summed up among themselves. The summation operation generates another [`SimpleToken`](/types_of_tokens/SimpleToken/) that includes the previous 2:
 
 ```python
 from cantok import SimpleToken, TimeoutToken
