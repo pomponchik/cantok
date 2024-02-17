@@ -11,22 +11,20 @@ token.check()
 
 Each type of token has a corresponding type of exception that can be raised in this case:
 
-```
-SimpleToken -> CancellationError
-ConditionToken -> ConditionCancellationError
-TimeoutToken -> TimeoutCancellationError
-CounterToken -> CounterCancellationError
-```
+- [`SimpleToken`](/docs/types_of_tokens/SimpleToken/) -> `CancellationError`
+- [`ConditionToken`](/docs/types_of_tokens/ConditionToken/) -> `ConditionCancellationError`
+- [`TimeoutToken`](/docs/types_of_tokens/TimeoutToken/) -> `TimeoutCancellationError`
+- [`CounterToken`](/docs/types_of_tokens/CounterToken/) -> `CounterCancellationError`
 
 When you call the `check()` method on any token, one of two things will happen. If it (or any of the tokens nested in it) was canceled by calling the `cancel()` method, `CancellationError` will always be raised. But if the cancellation occurred as a result of the unique ability of the token, such as for `TimeoutToken` - timeout expiration, then an exception specific to this type of token will be raised.
 
-You can import each of these exceptions from the library directly:
+`ConditionCancellationError`, `TimeoutCancellationError` and `CounterCancellationError` are inherited from `CancellationError`, so if you're not sure which exception specifically you're catching, catch `CancellationError`. But also all the listed exceptions can always be imported separately:
 
 ```python
 from cantok import CancellationError, ConditionCancellationError, TimeoutCancellationError, CounterCancellationError
 ```
 
-Also each token class has its own exception and it can be found in the `exception` attribute of the class:
+You can also choose not to import these exceptions at all. For each token class, the corresponding exception class is located in the `exception` attribute:
 
 ```python
 from cantok import TimeoutToken, CancellationError
@@ -39,7 +37,7 @@ except CancellationError as e:
     print(type(e) is TimeoutToken.exception)  # True
 ```
 
-Each exception object has a `token` attribute indicating the specific token that was canceled. This can be useful in situations where several tokens are nested in one another and you want to find out which one has been canceled:
+And each exception object has a `token` attribute indicating the specific token that was canceled. This can be useful in situations where several tokens are nested in one another and you want to find out which one has been canceled:
 
 ```python
 from cantok import SimpleToken, TimeoutToken, CancellationError
