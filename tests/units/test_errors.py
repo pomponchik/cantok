@@ -14,3 +14,8 @@ def test_exception_inheritance_hierarchy_from_view_of_tokens_classes():
     assert issubclass(ConditionToken.exception, SimpleToken.exception)
     assert issubclass(TimeoutToken.exception, SimpleToken.exception)
     assert issubclass(CounterToken.exception, SimpleToken.exception)
+
+    assert SimpleToken.exception is CancellationError
+    assert ConditionToken.exception is ConditionCancellationError
+    assert TimeoutToken.exception is TimeoutCancellationError
+    assert CounterToken.exception is CounterCancellationError
