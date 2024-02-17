@@ -11,7 +11,7 @@ token.check()
 
 Each type of token has a corresponding type of exception that can be raised in this case:
 
-- [`SimpleToken`](/types_of_tokens/SimpleToken/) -> `CancellationError`
+- [`SimpleToken`](types_of_tokens/SimpleToken/) -> `CancellationError`
 - [`ConditionToken`](/types_of_tokens/ConditionToken/) -> `ConditionCancellationError`
 - [`TimeoutToken`](/types_of_tokens/TimeoutToken/) -> `TimeoutCancellationError`
 - [`CounterToken`](/types_of_tokens/CounterToken/) -> `CounterCancellationError`
