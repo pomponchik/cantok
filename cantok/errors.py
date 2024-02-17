@@ -8,8 +8,8 @@ class CancellationError(Exception):
 class ConditionCancellationError(CancellationError):
     pass
 
-class CounterCancellationError(ConditionCancellationError):
+class CounterCancellationError(CancellationError):
     pass
 
-class TimeoutCancellationError(ConditionCancellationError):
+class TimeoutCancellationError(CancellationError):
     pass
