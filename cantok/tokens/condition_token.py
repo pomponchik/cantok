@@ -66,4 +66,4 @@ class ConditionToken(AbstractToken):
         }
 
     def get_superpower_exception_message(self) -> str:
-        return 'The condition is not met.'
+        return 'The cancellation condition was satisfied.'
