@@ -18,21 +18,21 @@ theme:
 repo_url: https://github.com/pomponchik/cantok
 docs_dir: docs
 nav:
-  - Installation: docs/installation.md
-  - Quick start: docs/quick_start.md
-  - The pattern: docs/the_pattern.md
+  - Installation: installation.md
+  - Quick start: quick_start.md
+  - The pattern: the_pattern.md
   - What are tokens:
-    - In general: docs/what_are_tokens/in_general.md
-    - Embedding one into another: docs/what_are_tokens/embedding.md
-    - Cancel and read the status: docs/what_are_tokens/cancel_and_read_the_status.md
-    - Exceptions: docs/what_are_tokens/exceptions.md
-    - Summation: docs/what_are_tokens/summation.md
-    - Waiting for cancellation: docs/what_are_tokens/waiting.md
+    - In general: what_are_tokens/in_general.md
+    - Embedding one into another: what_are_tokens/embedding.md
+    - Cancel and read the status: what_are_tokens/cancel_and_read_the_status.md
+    - Exceptions: what_are_tokens/exceptions.md
+    - Summation: what_are_tokens/summation.md
+    - Waiting for cancellation: what_are_tokens/waiting.md
   - Types of tokens:
-    - SimpleToken: docs/types_of_tokens/SimpleToken.md
-    - ConditionToken: docs/types_of_tokens/ConditionToken.md
-    - TimeoutToken: docs/types_of_tokens/TimeoutToken.md
-    - CounterToken: docs/types_of_tokens/CounterToken.md
+    - SimpleToken: types_of_tokens/SimpleToken.md
+    - ConditionToken: types_of_tokens/ConditionToken.md
+    - TimeoutToken: types_of_tokens/TimeoutToken.md
+    - CounterToken: types_of_tokens/CounterToken.md
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true

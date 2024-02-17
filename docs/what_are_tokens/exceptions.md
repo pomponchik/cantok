@@ -11,10 +11,10 @@ token.check()
 
 Each type of token has a corresponding type of exception that can be raised in this case:
 
-- [`SimpleToken`](/docs/types_of_tokens/SimpleToken/) -> `CancellationError`
-- [`ConditionToken`](/docs/types_of_tokens/ConditionToken/) -> `ConditionCancellationError`
-- [`TimeoutToken`](/docs/types_of_tokens/TimeoutToken/) -> `TimeoutCancellationError`
-- [`CounterToken`](/docs/types_of_tokens/CounterToken/) -> `CounterCancellationError`
+- [`SimpleToken`](/types_of_tokens/SimpleToken/) -> `CancellationError`
+- [`ConditionToken`](/types_of_tokens/ConditionToken/) -> `ConditionCancellationError`
+- [`TimeoutToken`](/types_of_tokens/TimeoutToken/) -> `TimeoutCancellationError`
+- [`CounterToken`](/types_of_tokens/CounterToken/) -> `CounterCancellationError`
 
 When you call the `check()` method on any token, one of two things will happen. If it (or any of the tokens nested in it) was canceled by calling the `cancel()` method, `CancellationError` will always be raised. But if the cancellation occurred as a result of the unique ability of the token, such as for `TimeoutToken` - timeout expiration, then an exception specific to this type of token will be raised.
 
