@@ -33,6 +33,8 @@ nav:
     - ConditionToken: types_of_tokens/ConditionToken.md
     - TimeoutToken: types_of_tokens/TimeoutToken.md
     - CounterToken: types_of_tokens/CounterToken.md
+  - Ecosystem:
+    - Subprocess Management: ecosystem/subprocess_management.md
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
