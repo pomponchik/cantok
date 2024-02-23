@@ -2,10 +2,10 @@ A token is an object that can tell you whether to continue the action you starte
 
 There are 4 types of tokens in this library:
 
-- [`SimpleToken`](/types_of_tokens/SimpleToken/)
-- [`ConditionToken`](/types_of_tokens/ConditionToken/)
-- [`TimeoutToken`](/types_of_tokens/TimeoutToken/)
-- [`CounterToken`](/types_of_tokens/CounterToken/)
+- [`SimpleToken`](../types_of_tokens/SimpleToken.md)
+- [`ConditionToken`](../types_of_tokens/ConditionToken.md)
+- [`TimeoutToken`](../types_of_tokens/TimeoutToken.md)
+- [`CounterToken`](../types_of_tokens/CounterToken.md)
 
 Each of them has its own characteristics, but they also have something in common:
 

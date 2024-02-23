@@ -9,7 +9,7 @@ token.cancel()
 print(token.cancelled)  # True
 ```
 
-The cancelled attribute is dynamically calculated and takes into account, among other things, specific conditions that are checked by a specific token. Here is an example with a [token that measures time](/types_of_tokens/TimeoutToken/):
+The cancelled attribute is dynamically calculated and takes into account, among other things, specific conditions that are checked by a specific token. Here is an example with a [token that measures time](../types_of_tokens/TimeoutToken.md):
 
 ```python
 from time import sleep
