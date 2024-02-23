@@ -1,4 +1,4 @@
-`ConditionToken` has superpower: it can check arbitrary conditions. In addition to this, it can do all the same things as [`SimpleToken`](/types_of_tokens/SimpleToken/). The condition is a function that returns an answer to the question "has the token been canceled" (`True`/`False`), it is passed to the token as the first required argument during initialization:
+`ConditionToken` has superpower: it can check arbitrary conditions. In addition to this, it can do all the same things as [`SimpleToken`](types_of_tokens/SimpleToken.md). The condition is a function that returns an answer to the question "has the token been canceled" (`True`/`False`), it is passed to the token as the first required argument during initialization:
 
 ```python
 from cantok import ConditionToken
