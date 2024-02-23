@@ -1,0 +1,1 @@
+We recommend adding token support to all your libraries where possible. If you have written such a project or added token support to an existing project, please let us know by writing an [issue](https://github.com/pomponchik/cantok/issues/new). If possible, information about the project will be added here.

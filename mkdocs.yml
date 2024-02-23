@@ -34,7 +34,9 @@ nav:
     - TimeoutToken: types_of_tokens/TimeoutToken.md
     - CounterToken: types_of_tokens/CounterToken.md
   - Ecosystem:
-    - Subprocess Management: ecosystem/subprocess_management.md
+    - About the ecosystem: ecosystem/about_ecosystem.md
+    - Projects:
+      - Subprocess Management: ecosystem/projects/subprocess_management.md
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
