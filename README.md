@@ -29,7 +29,6 @@ And use:
 from random import randint
 from cantok import ConditionToken, CounterToken, TimeoutToken
 
-
 token = ConditionToken(lambda: randint(1, 100_000) == 1984) + CounterToken(400_000, direct=False) + TimeoutToken(1)
 counter = 0
 
