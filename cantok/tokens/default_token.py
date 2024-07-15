@@ -32,5 +32,5 @@ class DefaultToken(AbstractToken):
     def is_cancelled(self, direct: bool = True) -> bool:
         return False
 
-    def cancel(self) -> 'AbstractToken':
+    def cancel(self) -> 'AbstractToken':  # type: ignore[return]
         self.raise_superpower_exception()
