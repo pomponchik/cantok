@@ -1,9 +1,9 @@
 from cantok import AbstractToken
-from cantok.errors import impossibleException
+from cantok.errors import ImpossibleError
 
 
 class DefaultToken(AbstractToken):
-    exception = impossibleException
+    exception = ImpossibleError
 
     def __init__(self):
         super().__init__()
