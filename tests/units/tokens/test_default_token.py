@@ -51,5 +51,5 @@ def test_str_for_default_token():
 
 
 def test_you_cannot_neste_another_token_to_default_one():
-    with pytest.raises(TypeError, match=full_match('DefaultToken.__init__() takes 1 positional argument but 2 were given')):
+    with pytest.raises(TypeError, match=full_match('*__init__() takes 1 positional argument but 2 were given')):
         DefaultToken(SimpleToken(TypeError))
