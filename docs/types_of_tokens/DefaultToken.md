@@ -6,6 +6,8 @@ DefaultToken().cancel()
 #> cantok.errors.ImpossibleCancelError: You cannot cancel a default token.
 ```
 
+In addition, you cannot embed other tokens in `DefaultToken`.
+
 It is best to use `DefaultToken` as the default argument for functions:
 
 ```python
