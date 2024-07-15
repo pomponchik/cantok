@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 import full_match
 
@@ -50,6 +52,13 @@ def test_str_for_default_token():
     assert str(DefaultToken()) == '<DefaultToken (not cancelled)>'
 
 
-def test_you_cannot_neste_another_token_to_default_one():
-    with pytest.raises(TypeError, match=full_match('*__init__() takes 1 positional argument but 2 were given')):
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason='Format of this exception messages was changed.')
+def test_you_cannot_neste_another_token_to_default_one_old_pythons():
+    with pytest.raises(TypeError, match=full_match('__init__() takes 1 positional argument but 2 were given')):
+        DefaultToken(SimpleToken(TypeError))
+
+
+@pytest.mark.skipif(sys.version_info < (3, 10), reason='Format of this exception messages was changed.')
+def test_you_cannot_neste_another_token_to_default_one_new_pythons():
+    with pytest.raises(TypeError, match=full_match('DefaultToken.__init__() takes 1 positional argument but 2 were given')):
         DefaultToken(SimpleToken(TypeError))
