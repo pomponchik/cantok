@@ -7,7 +7,7 @@ from queue import Queue
 import pytest
 
 from cantok.tokens.abstract_token import AbstractToken, CancelCause, CancellationReport
-from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, CancellationError
+from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, DefaultToken, CancellationError
 
 
 ALL_TOKEN_CLASSES = [SimpleToken, ConditionToken, TimeoutToken, CounterToken]
@@ -31,7 +31,7 @@ def test_cant_instantiate_abstract_token():
 )
 def test_cancelled_true_as_parameter(token_fabric, cancelled_flag):
     token = token_fabric(cancelled=cancelled_flag)
-    
+
     assert token.cancelled == cancelled_flag
     assert token.is_cancelled() == cancelled_flag
     assert token.keep_on() == (not cancelled_flag)
@@ -78,7 +78,7 @@ def test_change_attribute_cancelled(token_fabric, first_cancelled_flag, second_c
 
 @pytest.mark.parametrize(
     'token_fabric',
-    ALL_TOKENS_FABRICS,
+    ALL_TOKENS_FABRICS + [DefaultToken],
 )
 def test_repr(token_fabric):
     token = token_fabric()
@@ -121,11 +121,11 @@ def test_str(token_fabric):
 
 @pytest.mark.parametrize(
     'first_token_fabric',
-    ALL_TOKENS_FABRICS,
+    ALL_TOKENS_FABRICS + [DefaultToken],
 )
 @pytest.mark.parametrize(
     'second_token_fabric',
-    ALL_TOKENS_FABRICS,
+    ALL_TOKENS_FABRICS + [DefaultToken],
 )
 def test_add_tokens(first_token_fabric, second_token_fabric):
     first_token = first_token_fabric()
@@ -141,7 +141,7 @@ def test_add_tokens(first_token_fabric, second_token_fabric):
 
 @pytest.mark.parametrize(
     'token_fabric',
-    ALL_TOKENS_FABRICS,
+    ALL_TOKENS_FABRICS + [DefaultToken],
 )
 @pytest.mark.parametrize(
     'another_object',
@@ -180,7 +180,7 @@ def test_check_cancelled_token(token_fabric):
 
 @pytest.mark.parametrize(
     'token_fabric',
-    ALL_TOKENS_FABRICS,
+    ALL_TOKENS_FABRICS + [DefaultToken],
 )
 def test_check_superpower_not_raised(token_fabric):
     token = token_fabric()
@@ -227,7 +227,7 @@ def test_check_cancelled_token_nested(token_fabric_1, token_fabric_2):
 
 @pytest.mark.parametrize(
     'token_fabric',
-    ALL_TOKENS_FABRICS,
+    ALL_TOKENS_FABRICS + [DefaultToken],
 )
 def test_get_report_not_cancelled(token_fabric):
     token = token_fabric()
@@ -272,7 +272,7 @@ def test_get_report_cancelled(token_fabric_1, token_fabric_2):
 
 @pytest.mark.parametrize(
     'token_fabric',
-    ALL_TOKENS_FABRICS,
+    ALL_TOKENS_FABRICS + [DefaultToken],
 )
 def test_type_conversion_not_cancelled(token_fabric):
     token = token_fabric()
@@ -331,7 +331,7 @@ def test_repr_if_nested_token_is_cancelled(token_fabric_1, token_fabric_2, cance
 )
 @pytest.mark.parametrize(
     'token_fabric',
-    ALL_TOKENS_FABRICS,
+    ALL_TOKENS_FABRICS + [DefaultToken],
 )
 @pytest.mark.parametrize(
     'do_await',
@@ -352,7 +352,7 @@ def test_wait_wrong_parameters(token_fabric, parameters, do_await):
 
 @pytest.mark.parametrize(
     'token_fabric',
-    ALL_TOKENS_FABRICS,
+    ALL_TOKENS_FABRICS + [DefaultToken],
 )
 def test_async_wait_timeout(token_fabric):
     timeout = 0.0001

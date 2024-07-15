@@ -1,7 +1,7 @@
 import pytest
 import full_match
 
-from cantok import DefaultToken, ImpossibleCancelError
+from cantok import DefaultToken, SimpleToken, ImpossibleCancelError
 
 
 def test_dafault_token_is_not_cancelled_by_default():
@@ -44,3 +44,12 @@ def test_you_cannot_cancel_default_token_by_standard_way():
         token.cancel()
 
     assert token.cancelled == False
+
+
+def test_str_for_default_token():
+    assert str(DefaultToken()) == '<DefaultToken (not cancelled)>'
+
+
+def test_you_cannot_neste_another_token_to_default_one():
+    with pytest.raises(TypeError, match=full_match('DefaultToken.__init__() takes 1 positional argument but 2 were given')):
+        DefaultToken(SimpleToken(TypeError))
