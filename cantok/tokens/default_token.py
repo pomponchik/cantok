@@ -5,7 +5,7 @@ from cantok.errors import ImpossibleCancelError
 class DefaultToken(AbstractToken):
     exception = ImpossibleCancelError
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
     def superpower(self) -> bool:
