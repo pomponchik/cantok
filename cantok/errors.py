@@ -15,5 +15,5 @@ class CounterCancellationError(CancellationError):
 class TimeoutCancellationError(CancellationError):
     pass
 
-class ImpossibleError(CancellationError):
+class ImpossibleCancelError(CancellationError):
     pass

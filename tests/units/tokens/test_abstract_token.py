@@ -31,6 +31,7 @@ def test_cant_instantiate_abstract_token():
 )
 def test_cancelled_true_as_parameter(token_fabric, cancelled_flag):
     token = token_fabric(cancelled=cancelled_flag)
+    
     assert token.cancelled == cancelled_flag
     assert token.is_cancelled() == cancelled_flag
     assert token.keep_on() == (not cancelled_flag)
