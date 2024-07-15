@@ -33,6 +33,7 @@ nav:
     - ConditionToken: types_of_tokens/ConditionToken.md
     - TimeoutToken: types_of_tokens/TimeoutToken.md
     - CounterToken: types_of_tokens/CounterToken.md
+    - DefaultToken: types_of_tokens/DefaultToken.md
   - Ecosystem:
     - About the ecosystem: ecosystem/about_ecosystem.md
     - Projects:
