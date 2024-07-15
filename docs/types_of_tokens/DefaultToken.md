@@ -13,6 +13,6 @@ In addition, you cannot embed other tokens in `DefaultToken`.
 It is best to use `DefaultToken` as the default argument for functions:
 
 ```python
-def function(token: AbstractToken = DefaultToken):
+def function(token: AbstractToken = DefaultToken()):
     ...
 ```
