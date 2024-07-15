@@ -1,5 +1,6 @@
 from typing import Any
 
+
 class CancellationError(Exception):
     def __init__(self, message: str, token: Any):
         self.token = token
@@ -12,4 +13,7 @@ class CounterCancellationError(CancellationError):
     pass
 
 class TimeoutCancellationError(CancellationError):
+    pass
+
+class ImpossibleCancelError(CancellationError):
     pass

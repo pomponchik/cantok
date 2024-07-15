@@ -6,3 +6,4 @@ mypy==1.4.1
 ruff==0.0.290
 mkdocs-material==9.2.7
 mutmut==2.4.4
+full_match==0.0.1
