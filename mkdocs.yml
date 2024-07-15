@@ -38,6 +38,7 @@ nav:
     - About the ecosystem: ecosystem/about_ecosystem.md
     - Projects:
       - Subprocess Management: ecosystem/projects/subprocess_management.md
+      - Regular functions calling: ecosystem/projects/regular_functions_calling.md
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
