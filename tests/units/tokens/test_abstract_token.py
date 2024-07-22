@@ -2,7 +2,6 @@ import asyncio
 from functools import partial
 from time import perf_counter, sleep
 from threading import Thread
-from queue import Queue
 
 import pytest
 
