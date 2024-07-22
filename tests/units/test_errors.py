@@ -1,6 +1,4 @@
-import pytest
-
-from cantok import AbstractToken, SimpleToken, ConditionToken, TimeoutToken, CounterToken, DefaultToken
+from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, DefaultToken
 from cantok import CancellationError, ConditionCancellationError, TimeoutCancellationError, CounterCancellationError, ImpossibleCancelError
 
 

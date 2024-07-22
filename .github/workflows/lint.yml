@@ -31,6 +31,14 @@ jobs:
       shell: bash
       run: mypy cantok --strict
 
+    - name: Run mypy for tests
+      shell: bash
+      run: mypy tests
+
     - name: Run ruff
       shell: bash
       run: ruff cantok
+
+    - name: Run ruff for tests
+      shell: bash
+      run: ruff tests
