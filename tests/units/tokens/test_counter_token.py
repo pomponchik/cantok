@@ -185,7 +185,7 @@ def test_check_is_decrementing_counter(function, initial_counter, final_counter)
 
     try:
         function(token)
-    except:
+    except CounterCancellationError:
         pass
 
     assert token.counter == final_counter
