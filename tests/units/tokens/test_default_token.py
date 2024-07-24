@@ -55,10 +55,17 @@ def test_str_for_default_token():
 @pytest.mark.skipif(sys.version_info >= (3, 10), reason='Format of this exception messages was changed.')
 def test_you_cannot_neste_another_token_to_default_one_old_pythons():
     with pytest.raises(TypeError, match=full_match('__init__() takes 1 positional argument but 2 were given')):
-        DefaultToken(SimpleToken(TypeError))
+        DefaultToken(SimpleToken())
 
 
 @pytest.mark.skipif(sys.version_info < (3, 10), reason='Format of this exception messages was changed.')
 def test_you_cannot_neste_another_token_to_default_one_new_pythons():
     with pytest.raises(TypeError, match=full_match('DefaultToken.__init__() takes 1 positional argument but 2 were given')):
-        DefaultToken(SimpleToken(TypeError))
+        DefaultToken(SimpleToken())
+
+
+def test_default_plus_default():
+    empty_sum = DefaultToken() + DefaultToken()
+
+    assert isinstance(empty_sum, SimpleToken)
+    assert len(empty_sum.tokens) == 0
