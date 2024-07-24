@@ -120,11 +120,11 @@ def test_str(token_fabric):
 
 @pytest.mark.parametrize(
     'first_token_fabric',
-    ALL_TOKENS_FABRICS + [DefaultToken],
+    ALL_TOKENS_FABRICS,
 )
 @pytest.mark.parametrize(
     'second_token_fabric',
-    ALL_TOKENS_FABRICS + [DefaultToken],
+    ALL_TOKENS_FABRICS,
 )
 def test_add_tokens(first_token_fabric, second_token_fabric):
     first_token = first_token_fabric()
@@ -136,6 +136,36 @@ def test_add_tokens(first_token_fabric, second_token_fabric):
     assert len(tokens_sum.tokens) == 2
     assert tokens_sum.tokens[0] is first_token
     assert tokens_sum.tokens[1] is second_token
+
+
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_add_tokens_and_first_is_default_token(second_token_fabric):
+    first_token = DefaultToken()
+    second_token = second_token_fabric()
+
+    tokens_sum = first_token + second_token
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 1
+    assert tokens_sum.tokens[0] is second_token
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_add_tokens_and_second_one_is_default_token(first_token_fabric):
+    first_token = first_token_fabric()
+    second_token = DefaultToken()
+
+    tokens_sum = first_token + second_token
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 1
+    assert tokens_sum.tokens[0] is first_token
 
 
 @pytest.mark.parametrize(
@@ -405,3 +435,14 @@ def test_sync_wait_with_cancel(token_fabric):
     finish_time = perf_counter()
 
     assert finish_time - start_time >= timeout
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_insert_default_token_to_another_tokens(token_fabric):
+    token = token_fabric(DefaultToken())
+
+    assert not isinstance(token, DefaultToken)
+    assert len(token.tokens) == 0
