@@ -76,3 +76,20 @@ def test_default_plus_default_plus_default():
 
     assert isinstance(empty_sum, SimpleToken)
     assert len(empty_sum.tokens) == 0
+
+
+def test_default_token_plus_temp_simple_token():
+    empty_sum = DefaultToken() + SimpleToken()
+
+    assert isinstance(empty_sum, SimpleToken)
+    assert len(empty_sum.tokens) == 0
+
+
+def test_default_token_plus_not_temp_simple_token():
+    simple_token = SimpleToken()
+    sum = DefaultToken() + simple_token
+
+    assert isinstance(sum, SimpleToken)
+    assert len(sum.tokens) == 1
+    assert sum is not simple_token
+    assert sum.tokens[0] is simple_token
