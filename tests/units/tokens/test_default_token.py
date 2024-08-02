@@ -69,3 +69,10 @@ def test_default_plus_default():
 
     assert isinstance(empty_sum, SimpleToken)
     assert len(empty_sum.tokens) == 0
+
+
+def test_default_plus_default_plus_default():
+    empty_sum = DefaultToken() + DefaultToken() + DefaultToken()
+
+    assert isinstance(empty_sum, SimpleToken)
+    assert len(empty_sum.tokens) == 0

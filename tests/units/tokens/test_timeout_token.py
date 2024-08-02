@@ -207,3 +207,87 @@ def test_timeout_wait():
     finish_time = perf_counter()
 
     assert sleep_duration <= finish_time - start_time
+
+
+def test_quasitemp_timeout_token_plus_temp_simple_token():
+    token = TimeoutToken(1) + SimpleToken()
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], TimeoutToken)
+
+
+def test_not_quasitemp_timeout_token_plus_temp_simple_token():
+    timeout_token = TimeoutToken(1)
+    token = timeout_token + SimpleToken()
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert token.tokens[0] is timeout_token
+
+
+def test_quasitemp_timeout_token_plus_not_temp_simple_token():
+    simple_token = SimpleToken()
+    token = TimeoutToken(1) + simple_token
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert token.tokens[1] is simple_token
+
+
+def test_not_quasitemp_timeout_token_plus_not_temp_simple_token():
+    simple_token = SimpleToken()
+    timeout_token = TimeoutToken(1)
+    token = timeout_token + simple_token
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert token.tokens[0] is timeout_token
+    assert token.tokens[1] is simple_token
+
+
+def test_quasitemp_timeout_token_plus_temp_simple_token_reverse():
+    token = SimpleToken() + TimeoutToken(1)
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], TimeoutToken)
+
+
+def test_not_quasitemp_timeout_token_plus_temp_simple_token_reverse():
+    timeout_token = TimeoutToken(1)
+    token = SimpleToken() + timeout_token
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert token.tokens[0] is timeout_token
+
+
+def test_quasitemp_timeout_token_plus_not_temp_simple_token_reverse():
+    simple_token = SimpleToken()
+    token = simple_token + TimeoutToken(1)
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[0] is simple_token
+
+
+def test_not_quasitemp_timeout_token_plus_not_temp_simple_token_reverse():
+    simple_token = SimpleToken()
+    timeout_token = TimeoutToken(1)
+    token = simple_token + timeout_token
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1] is timeout_token
+    assert token.tokens[0] is simple_token

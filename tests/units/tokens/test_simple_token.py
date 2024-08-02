@@ -119,6 +119,13 @@ def test_sum_of_2_temp_simple_tokens():
     assert len(token.tokens) == 0
 
 
+def test_sum_of_5_temp_simple_tokens():
+    token = SimpleToken() + SimpleToken() + SimpleToken() + SimpleToken() + SimpleToken()
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 0
+
+
 def test_sum_of_1_temp_and_1_not_temp_simple_tokens():
     second_token = SimpleToken()
     result = SimpleToken() + second_token
