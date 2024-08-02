@@ -110,3 +110,52 @@ def test_get_report_cancelled_nested(cancelled_flag, cancelled_flag_nested, from
         assert report.from_token is nested_token
     else:
         assert report.from_token is token
+
+
+def test_sum_of_2_temp_simple_tokens():
+    token = SimpleToken() + SimpleToken()
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 0
+
+
+def test_sum_of_1_temp_and_1_not_temp_simple_tokens():
+    second_token = SimpleToken()
+    result = SimpleToken() + second_token
+
+    assert isinstance(result, SimpleToken)
+    assert len(result.tokens) == 1
+    assert result.tokens[0] is second_token
+
+
+def test_sum_of_1_not_temp_and_1_temp_simple_tokens():
+    first_token = SimpleToken()
+    result = first_token + SimpleToken()
+
+    assert isinstance(result, SimpleToken)
+    assert len(result.tokens) == 1
+    assert result.tokens[0] is first_token
+
+
+def test_sum_of_2_not_temp_simple_tokens():
+    first_token = SimpleToken()
+    second_token = SimpleToken()
+    result = first_token + second_token
+
+    assert isinstance(result, SimpleToken)
+    assert len(result.tokens) == 2
+    assert result.tokens[0] is first_token
+    assert result.tokens[1] is second_token
+
+
+def test_sum_of_3_not_temp_simple_tokens():
+    first_token = SimpleToken()
+    second_token = SimpleToken()
+    third_token = SimpleToken()
+    result = first_token + second_token + third_token
+
+    assert isinstance(result, SimpleToken)
+    assert len(result.tokens) == 3
+    assert result.tokens[0] is first_token
+    assert result.tokens[1] is second_token
+    assert result.tokens[2] is third_token
