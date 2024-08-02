@@ -165,6 +165,66 @@ def test_add_three_tokens_except_simple_token(first_token_fabric, second_token_f
 
 
 @pytest.mark.parametrize(
+    'first_token_fabric',
+    [x for x in ALL_TOKENS_FABRICS if x is not SimpleToken],
+)
+def test_add_another_token_and_temp_simple_token(first_token_fabric):
+    first_token = first_token_fabric()
+
+    tokens_sum = first_token + SimpleToken()
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 1
+    assert tokens_sum.tokens[0] is first_token
+
+
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    [x for x in ALL_TOKENS_FABRICS if x is not SimpleToken],
+)
+def test_add_temp_simple_token_and_another_token(second_token_fabric):
+    second_token = second_token_fabric()
+
+    tokens_sum = SimpleToken() + second_token
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 1
+    assert tokens_sum.tokens[0] is second_token
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    [x for x in ALL_TOKENS_FABRICS if x is not SimpleToken],
+)
+def test_add_another_token_and_not_temp_simple_token(first_token_fabric):
+    simple_token = SimpleToken()
+    first_token = first_token_fabric()
+
+    tokens_sum = first_token + simple_token
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 2
+    assert tokens_sum.tokens[0] is first_token
+    assert tokens_sum.tokens[1] is simple_token
+
+
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    [x for x in ALL_TOKENS_FABRICS if x is not SimpleToken],
+)
+def test_add_not_temp_simple_token_and_another_token(second_token_fabric):
+    simple_token = SimpleToken()
+    second_token = second_token_fabric()
+
+    tokens_sum = simple_token + second_token
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 2
+    assert tokens_sum.tokens[0] is simple_token
+    assert tokens_sum.tokens[1] is second_token
+
+
+@pytest.mark.parametrize(
     'second_token_fabric',
     ALL_TOKENS_FABRICS,
 )
