@@ -17,7 +17,6 @@ ALL_ARGUMENTS_FOR_TOKEN_CLASSES = [tuple(), (lambda: False, ), (15, ), (15, )]
 ALL_TOKENS_FABRICS = [partial(token_class, *arguments) for token_class, arguments in zip(ALL_TOKEN_CLASSES, ALL_ARGUMENTS_FOR_TOKEN_CLASSES)]
 
 
-
 def test_cant_instantiate_abstract_token():
     with pytest.raises(TypeError):
         AbstractToken()
@@ -565,3 +564,41 @@ def test_insert_default_token_to_another_tokens(token_fabric):
 
     assert not isinstance(token, DefaultToken)
     assert len(token.tokens) == 0
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'action',
+    [
+        lambda x: x.cancelled,
+        lambda x: x.keep_on(),
+        lambda x: bool(x),
+        lambda x: bool(x),
+        lambda x: x.is_cancelled(),
+        lambda x: x.get_report(True),
+        lambda x: x.get_report(False),
+    ],
+)
+def test_report_cache_is_working_in_simple_case(first_token_fabric, second_token_fabric, action):
+    token = first_token_fabric(second_token_fabric(cancelled=True))
+
+    assert token.cached_report is None
+
+    action(token)
+
+    cached_report = token.cached_report
+
+    assert cached_report is not None
+    assert isinstance(cached_report, CancellationReport)
+    assert cached_report.from_token.is_cancelled()
+    assert cached_report.cause == CancelCause.CANCELLED
+
+    assert token.get_report(True) is cached_report
+    assert token.get_report(False) is cached_report
