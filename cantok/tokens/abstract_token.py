@@ -63,7 +63,7 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
 
         token_for_check.check()
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True)  # type: ignore[call-overload, unused-ignore]
 class CancellationReport:
     cause: CancelCause
     from_token: 'AbstractToken'
