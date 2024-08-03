@@ -37,7 +37,7 @@ def test_size_of_report_is_not_so_big():
         cause=CancelCause.NOT_CANCELLED,
         from_token=SimpleToken(),
     )
-
+    print(getsizeof(report))
     assert getsizeof(report) <= 48
 
 
