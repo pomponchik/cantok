@@ -32,12 +32,13 @@ def test_cant_change_cancellation_report():
         report.from_token = TimeoutToken(1)
 
 
+@pytest.mark.skipif(sys.version_info < (3, 8), reason='Format of this exception messages was changed.')
 def test_size_of_report_is_not_so_big():
     report = CancellationReport(
         cause=CancelCause.NOT_CANCELLED,
         from_token=SimpleToken(),
     )
-    print(getsizeof(report))
+
     assert getsizeof(report) <= 48
 
 
