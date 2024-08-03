@@ -3,7 +3,7 @@ from functools import partial
 from time import perf_counter, sleep
 from threading import Thread
 from dataclasses import FrozenInstanceError
-from sys import getsizeof
+from sys import getsizeof, version_info
 
 import pytest
 import full_match
@@ -32,7 +32,7 @@ def test_cant_change_cancellation_report():
         report.from_token = TimeoutToken(1)
 
 
-@pytest.mark.skipif(sys.version_info < (3, 8), reason='Format of this exception messages was changed.')
+@pytest.mark.skipif(version_info < (3, 8), reason='There is no support of __slots__ for dataclasses in old pythons.')
 def test_size_of_report_is_not_so_big():
     report = CancellationReport(
         cause=CancelCause.NOT_CANCELLED,
