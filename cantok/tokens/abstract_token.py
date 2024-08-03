@@ -63,7 +63,7 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
 
         token_for_check.check()
 
-@dataclass
+@dataclass(frozen=True, slots=True)
 class CancellationReport:
     cause: CancelCause
     from_token: 'AbstractToken'
@@ -75,6 +75,7 @@ class AbstractToken(ABC):
     def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
         from cantok import DefaultToken
 
+        self.cached_report: Optional[CancellationReport] = None
         self.tokens: List[AbstractToken] = [token for token in tokens if not isinstance(token, DefaultToken)]
         self._cancelled: bool = cancelled
         self.lock: RLock = RLock()
@@ -173,10 +174,13 @@ class AbstractToken(ABC):
                 cause=CancelCause.SUPERPOWER,
                 from_token=self,
             )
+        elif self.cached_report is not None:
+            return self.cached_report
 
         for token in self.tokens:
             report = token.get_report(direct=False)
             if report.cause != CancelCause.NOT_CANCELLED:
+                self.cached_report = report
                 return report
 
         return CancellationReport(
