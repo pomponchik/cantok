@@ -1,77 +1,16 @@
 import weakref
-from sys import getrefcount, version_info
-from enum import Enum
-from time import sleep as sync_sleep
-from asyncio import sleep as async_sleep
+from sys import getrefcount
 from abc import ABC, abstractmethod
 from threading import RLock
 from dataclasses import dataclass
 from typing import List, Dict, Awaitable, Optional, Union, Any
-from types import TracebackType
-from collections.abc import Coroutine
+
 
 from cantok.errors import CancellationError
+from cantok.tokens.abstract.cancel_cause import CancelCause
+from cantok.tokens.abstract.report import CancellationReport
+from cantok.tokens.abstract.coroutine_wrapper import WaitCoroutineWrapper
 
-
-class CancelCause(Enum):
-    CANCELLED = 1
-    SUPERPOWER = 2
-    NOT_CANCELLED = 3
-
-class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
-    def __init__(self, step: Union[int, float], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken') -> None:
-        self.step = step
-        self.token_for_wait = token_for_wait
-        self.token_for_check = token_for_check
-
-        self.flags: Dict[str, bool] = {}
-        self.coroutine = self.async_wait(step, self.flags, token_for_wait, token_for_check)
-
-        weakref.finalize(self, self.sync_wait, step, self.flags, token_for_wait, token_for_check, self.coroutine)
-
-    def __await__(self) -> Any:
-        return self.coroutine.__await__()
-
-    def send(self, value: Any) -> Any:
-        return self.coroutine.send(value)
-
-    def throw(self, exception_type: Any, value: Optional[Any] = None, traceback: Optional[TracebackType] = None) -> Any:
-        pass  # pragma: no cover
-
-    def close(self) -> None:
-        pass  # pragma: no cover
-
-    @staticmethod
-    def sync_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine: Coroutine) -> None:  # type: ignore[type-arg]
-        if not flags.get('used', False):
-            if getrefcount(wrapped_coroutine) < 5:
-                wrapped_coroutine.close()
-
-                while token_for_wait:
-                    sync_sleep(step)
-
-                token_for_check.check()
-
-    @staticmethod
-    async def async_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken') -> None:
-        flags['used'] = True
-
-        while token_for_wait:
-            await async_sleep(step)
-
-        await async_sleep(0)
-
-        token_for_check.check()
-
-if version_info >= (3, 10):
-    addictional_fields: Dict[str, bool] = {'slots': True}
-else:
-    addictional_fields = {}
-
-@dataclass(frozen=True, **addictional_fields)  # type: ignore[call-overload, unused-ignore]
-class CancellationReport:
-    cause: CancelCause
-    from_token: 'AbstractToken'
 
 class AbstractToken(ABC):
     exception = CancellationError

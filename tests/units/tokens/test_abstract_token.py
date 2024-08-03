@@ -8,7 +8,7 @@ from sys import getsizeof
 import pytest
 import full_match
 
-from cantok.tokens.abstract_token import AbstractToken, CancelCause, CancellationReport
+from cantok.tokens.abstract.abstract_token import AbstractToken, CancelCause, CancellationReport
 from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, DefaultToken, CancellationError
 
 

@@ -4,7 +4,7 @@ from functools import partial
 
 import pytest
 
-from cantok.tokens.abstract_token import CancelCause, CancellationReport
+from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
 from cantok import SimpleToken, ConditionToken, ConditionCancellationError
 
 

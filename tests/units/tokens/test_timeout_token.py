@@ -3,7 +3,7 @@ from time import sleep, perf_counter
 
 import pytest
 
-from cantok.tokens.abstract_token import CancelCause, CancellationReport
+from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
 from cantok import SimpleToken, TimeoutToken, TimeoutCancellationError
 
 

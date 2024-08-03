@@ -2,7 +2,7 @@ from threading import Thread
 
 import pytest
 
-from cantok.tokens.abstract_token import CancelCause, CancellationReport
+from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
 from cantok import CounterToken, SimpleToken, CounterCancellationError
 
 
