@@ -88,9 +88,21 @@ def test_timeout_expired(options):
 
 
 def test_text_representaion_of_extra_kwargs():
-    assert TimeoutToken(5, monotonic=False).text_representation_of_extra_kwargs() == 'monotonic=False'
+    assert TimeoutToken(5, monotonic=False).text_representation_of_extra_kwargs() == ''
     assert TimeoutToken(5, monotonic=True).text_representation_of_extra_kwargs() == 'monotonic=True'
-    assert TimeoutToken(5).text_representation_of_extra_kwargs() == 'monotonic=False'
+    assert TimeoutToken(5).text_representation_of_extra_kwargs() == ''
+
+
+@pytest.mark.parametrize(
+    ['options', 'repr_string'],
+    [
+        ({}, 'TimeoutToken(1)'),
+        ({'monotonic': True}, 'TimeoutToken(1, monotonic=True)'),
+        ({'monotonic': False}, 'TimeoutToken(1)'),
+    ],
+)
+def test_repr_of_timeout_token(options, repr_string):
+    assert repr(TimeoutToken(1, **options)) == repr_string
 
 
 def test_check_superpower_raised():

@@ -34,9 +34,11 @@ class TimeoutToken(ConditionToken):
         return str(self.timeout)
 
     def get_extra_kwargs(self) -> Dict[str, Any]:
-        return {
-            'monotonic': self.monotonic,
-        }
+        if self.monotonic:
+            return {
+                'monotonic': self.monotonic,
+            }
+        return {}
 
     def get_superpower_exception_message(self) -> str:
         return f'The timeout of {self.timeout} seconds has expired.'
