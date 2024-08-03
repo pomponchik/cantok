@@ -168,12 +168,11 @@ class AbstractToken(ABC):
                 cause=CancelCause.CANCELLED,
                 from_token=self,
             )
-        else:
-            if self.check_superpower(direct):
-                return CancellationReport(
-                    cause=CancelCause.SUPERPOWER,
-                    from_token=self,
-                )
+        elif self.check_superpower(direct):
+            return CancellationReport(
+                cause=CancelCause.SUPERPOWER,
+                from_token=self,
+            )
 
         for token in self.tokens:
             report = token.get_report(direct=False)
