@@ -6,9 +6,9 @@ from cantok.tokens.abstract.cancel_cause import CancelCause
 
 
 if version_info >= (3, 10):
-    addictional_fields: Dict[str, bool] = {'slots': True}
+    addictional_fields: Dict[str, bool] = {'slots': True}  # pragma: no cover
 else:
-    addictional_fields = {}
+    addictional_fields = {}  # pragma: no cover
 
 @dataclass(frozen=True, **addictional_fields)  # type: ignore[call-overload, unused-ignore]
 class CancellationReport:
