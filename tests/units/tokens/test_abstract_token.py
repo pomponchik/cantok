@@ -4,6 +4,7 @@ from time import perf_counter, sleep
 from threading import Thread
 
 import pytest
+import full_match
 
 from cantok.tokens.abstract_token import AbstractToken, CancelCause, CancellationReport
 from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, DefaultToken, CancellationError
@@ -73,6 +74,17 @@ def test_change_attribute_cancelled(token_fabric, first_cancelled_flag, second_c
                 token.check()
         else:
             token.check()
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_set_cancelled_false_if_this_token_is_not_cancelled_but_nested_token_is(token_fabric):
+    token = token_fabric(SimpleToken(cancelled=True))
+
+    with pytest.raises(ValueError, match=full_match('You cannot restore a cancelled token.')):
+        token.cancelled = False
 
 
 @pytest.mark.parametrize(
