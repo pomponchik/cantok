@@ -581,3 +581,40 @@ def test_report_cache_is_working_in_simple_case(first_token_fabric, second_token
 
     assert token.get_report(True) is cached_report
     assert token.get_report(False) is cached_report
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'action',
+    [
+        lambda x: x.cancelled,
+        lambda x: x.keep_on(),
+        lambda x: bool(x),
+        lambda x: bool(x),
+        lambda x: x.is_cancelled(),
+        lambda x: x.get_report(True),
+        lambda x: x.get_report(False),
+    ],
+)
+def test_cache_is_using_after_self_flag(first_token_fabric, second_token_fabric, action):
+    token = first_token_fabric(second_token_fabric(cancelled=True))
+
+    action(token)
+
+    cached_report = token.cached_report
+
+    token.cancel()
+
+    for new_report in token.get_report(True), token.get_report(False):
+        assert new_report is not cached_report
+        assert new_report is not None
+        assert isinstance(new_report, CancellationReport)
+        assert new_report.from_token.is_cancelled()
+        assert new_report.cause == CancelCause.CANCELLED
