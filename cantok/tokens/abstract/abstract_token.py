@@ -1,8 +1,6 @@
-import weakref
 from sys import getrefcount
 from abc import ABC, abstractmethod
 from threading import RLock
-from dataclasses import dataclass
 from typing import List, Dict, Awaitable, Optional, Union, Any
 
 
