@@ -1,5 +1,5 @@
 import weakref
-from sys import getrefcount
+from sys import getrefcount, version_info
 from enum import Enum
 from time import sleep as sync_sleep
 from asyncio import sleep as async_sleep
@@ -63,7 +63,12 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
 
         token_for_check.check()
 
-@dataclass(frozen=True, slots=True)  # type: ignore[call-overload, unused-ignore]
+if version_info >= (3, 10):
+    addictional_fields: Dict[str, bool] = {'slots': True}
+else:
+    addictional_fields = {}
+
+@dataclass(frozen=True, **addictional_fields)  # type: ignore[call-overload, unused-ignore]
 class CancellationReport:
     cause: CancelCause
     from_token: 'AbstractToken'
