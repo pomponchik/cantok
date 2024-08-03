@@ -75,9 +75,9 @@ class AbstractToken(ABC):
     def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
         from cantok import DefaultToken
 
-        self.tokens = [token for token in tokens if not isinstance(token, DefaultToken)]
-        self._cancelled = cancelled
-        self.lock = RLock()
+        self.tokens: List[AbstractToken] = [token for token in tokens if not isinstance(token, DefaultToken)]
+        self._cancelled: bool = cancelled
+        self.lock: RLock = RLock()
 
     def __repr__(self) -> str:
         chunks = []
