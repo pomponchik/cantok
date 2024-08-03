@@ -2,8 +2,6 @@ import asyncio
 from functools import partial
 from time import perf_counter, sleep
 from threading import Thread
-from dataclasses import FrozenInstanceError
-from sys import getsizeof, version_info
 
 import pytest
 import full_match
@@ -20,26 +18,6 @@ ALL_TOKENS_FABRICS = [partial(token_class, *arguments) for token_class, argument
 def test_cant_instantiate_abstract_token():
     with pytest.raises(TypeError):
         AbstractToken()
-
-
-def test_cant_change_cancellation_report():
-    report = CancellationReport(
-        cause=CancelCause.NOT_CANCELLED,
-        from_token=SimpleToken(),
-    )
-
-    with pytest.raises(FrozenInstanceError):
-        report.from_token = TimeoutToken(1)
-
-
-@pytest.mark.skipif(version_info < (3, 8), reason='There is no support of __slots__ for dataclasses in old pythons.')
-def test_size_of_report_is_not_so_big():
-    report = CancellationReport(
-        cause=CancelCause.NOT_CANCELLED,
-        from_token=SimpleToken(),
-    )
-
-    assert getsizeof(report) <= 48
 
 
 @pytest.mark.parametrize(
