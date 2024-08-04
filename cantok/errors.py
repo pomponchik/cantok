@@ -1,6 +1,3 @@
-from typing import Any
-
-
 class CancellationError(Exception):
     token: 'AbstractToken'  # type: ignore[name-defined]
 
