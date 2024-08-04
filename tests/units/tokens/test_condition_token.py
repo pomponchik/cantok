@@ -424,3 +424,23 @@ def test_not_quasitemp_condition_token_plus_not_temp_simple_token_reverse():
     assert isinstance(token.tokens[1], ConditionToken)
     assert token.tokens[1] is condition_token
     assert token.tokens[0] is simple_token
+
+
+def test_condition_function_is_more_important_than_cache():
+    flag = False
+    inner_token = SimpleToken(cancelled=True)
+    token = ConditionToken(lambda: flag, inner_token)
+
+    for report in token.get_report(True), token.get_report(False):
+        assert report is not None
+        assert isinstance(report, CancellationReport)
+        assert report.from_token is inner_token
+        assert report.cause == CancelCause.CANCELLED
+
+    flag = True
+
+    for report in token.get_report(True), token.get_report(False):
+        assert report is not None
+        assert isinstance(report, CancellationReport)
+        assert report.from_token is token
+        assert report.cause == CancelCause.SUPERPOWER

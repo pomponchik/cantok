@@ -303,3 +303,23 @@ def test_not_quasitemp_timeout_token_plus_not_temp_simple_token_reverse():
     assert isinstance(token.tokens[1], TimeoutToken)
     assert token.tokens[1] is timeout_token
     assert token.tokens[0] is simple_token
+
+
+def test_timeout_is_more_important_than_cache():
+    sleep_time = 0.0001
+    inner_token = SimpleToken(cancelled=True)
+    token = TimeoutToken(sleep_time, inner_token)
+
+    for report in token.get_report(True), token.get_report(False):
+        assert report is not None
+        assert isinstance(report, CancellationReport)
+        assert report.from_token is inner_token
+        assert report.cause == CancelCause.CANCELLED
+
+    sleep(sleep_time * 2)
+
+    for report in token.get_report(True), token.get_report(False):
+        assert report is not None
+        assert isinstance(report, CancellationReport)
+        assert report.from_token is token
+        assert report.cause == CancelCause.SUPERPOWER
