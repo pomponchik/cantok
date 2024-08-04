@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cantok"
-version = "0.0.25"
+version = "0.0.26"
 authors = [
   { name="Evgeniy Blinov", email="zheni-b@yandex.ru" },
 ]
@@ -27,6 +27,11 @@ classifiers = [
     'License :: OSI Approved :: MIT License',
     'Intended Audience :: Developers',
     'Topic :: Software Development :: Libraries',
+]
+keywords = [
+    'cancellation tokens',
+    'parallel programming',
+    'concurrency',
 ]
 
 [tool.setuptools.package-data]

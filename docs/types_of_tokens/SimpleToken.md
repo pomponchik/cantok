@@ -15,7 +15,7 @@ print(token.cancelled)  # True
 from cantok import CounterToken, TimeoutToken
 
 print(repr(CounterToken(5) + TimeoutToken(5)))
-# SimpleToken(CounterToken(5, direct=True), TimeoutToken(5, monotonic=False))
+# SimpleToken(CounterToken(5, direct=True), TimeoutToken(5))
 ```
 
 There is not much more to tell about it if you have read [the story](../what_are_tokens/in_general.md) about tokens in general.

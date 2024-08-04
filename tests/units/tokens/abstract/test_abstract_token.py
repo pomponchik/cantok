@@ -4,15 +4,20 @@ from time import perf_counter, sleep
 from threading import Thread
 
 import pytest
+import full_match
 
-from cantok.tokens.abstract_token import AbstractToken, CancelCause, CancellationReport
+from cantok.tokens.abstract.abstract_token import AbstractToken, CancelCause, CancellationReport
 from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, DefaultToken, CancellationError
 
 
 ALL_TOKEN_CLASSES = [SimpleToken, ConditionToken, TimeoutToken, CounterToken]
+ALL_SUPERPOWER_TOKEN_CLASSES = [ConditionToken, TimeoutToken, CounterToken]
 ALL_ARGUMENTS_FOR_TOKEN_CLASSES = [tuple(), (lambda: False, ), (15, ), (15, )]
+ALL_CANCELLING_ARGUMENTS_FOR_TOKEN_CLASSES_WITH_SUPERPOWERS = [(lambda: True, ), (0, ), (0, )]
+ALL_NOT_CANCELLING_ARGUMENTS_FOR_TOKEN_CLASSES_WITH_SUPERPOWERS = [(lambda: False, ), (15, ), (15, )]
 ALL_TOKENS_FABRICS = [partial(token_class, *arguments) for token_class, arguments in zip(ALL_TOKEN_CLASSES, ALL_ARGUMENTS_FOR_TOKEN_CLASSES)]
-
+ALL_TOKENS_FABRICS_WITH_CANCELLING_SUPERPOWER = [partial(token_class, *arguments) for token_class, arguments in zip(ALL_SUPERPOWER_TOKEN_CLASSES, ALL_CANCELLING_ARGUMENTS_FOR_TOKEN_CLASSES_WITH_SUPERPOWERS)]
+ALL_TOKENS_FABRICS_WITH_NOT_CANCELLING_SUPERPOWER = [partial(token_class, *arguments) for token_class, arguments in zip(ALL_SUPERPOWER_TOKEN_CLASSES, ALL_NOT_CANCELLING_ARGUMENTS_FOR_TOKEN_CLASSES_WITH_SUPERPOWERS)]
 
 
 def test_cant_instantiate_abstract_token():
@@ -77,6 +82,17 @@ def test_change_attribute_cancelled(token_fabric, first_cancelled_flag, second_c
 
 @pytest.mark.parametrize(
     'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_set_cancelled_false_if_this_token_is_not_cancelled_but_nested_token_is(token_fabric):
+    token = token_fabric(SimpleToken(cancelled=True))
+
+    with pytest.raises(ValueError, match=full_match('You cannot restore a cancelled token.')):
+        token.cancelled = False
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
     ALL_TOKENS_FABRICS + [DefaultToken],
 )
 def test_repr(token_fabric):
@@ -135,6 +151,92 @@ def test_add_tokens(first_token_fabric, second_token_fabric):
     assert isinstance(tokens_sum, SimpleToken)
     assert len(tokens_sum.tokens) == 2
     assert tokens_sum.tokens[0] is first_token
+    assert tokens_sum.tokens[1] is second_token
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    ALL_TOKENS_FABRICS_WITH_NOT_CANCELLING_SUPERPOWER,
+)
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    ALL_TOKENS_FABRICS_WITH_NOT_CANCELLING_SUPERPOWER,
+)
+@pytest.mark.parametrize(
+    'third_token_fabric',
+    ALL_TOKENS_FABRICS_WITH_NOT_CANCELLING_SUPERPOWER,
+)
+def test_add_three_tokens_except_simple_token(first_token_fabric, second_token_fabric, third_token_fabric):
+    first_token = first_token_fabric()
+    second_token = second_token_fabric()
+    third_token = third_token_fabric()
+
+    tokens_sum = first_token + second_token + third_token
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 3
+    assert tokens_sum.tokens[0] is first_token
+    assert tokens_sum.tokens[1] is second_token
+    assert tokens_sum.tokens[2] is third_token
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    ALL_TOKENS_FABRICS_WITH_NOT_CANCELLING_SUPERPOWER,
+)
+def test_add_another_token_and_temp_simple_token(first_token_fabric):
+    first_token = first_token_fabric()
+
+    tokens_sum = first_token + SimpleToken()
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 1
+    assert tokens_sum.tokens[0] is first_token
+
+
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    ALL_TOKENS_FABRICS_WITH_NOT_CANCELLING_SUPERPOWER,
+)
+def test_add_temp_simple_token_and_another_token(second_token_fabric):
+    second_token = second_token_fabric()
+
+    tokens_sum = SimpleToken() + second_token
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 1
+    assert tokens_sum.tokens[0] is second_token
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    ALL_TOKENS_FABRICS_WITH_NOT_CANCELLING_SUPERPOWER,
+)
+def test_add_another_token_and_not_temp_simple_token(first_token_fabric):
+    simple_token = SimpleToken()
+    first_token = first_token_fabric()
+
+    tokens_sum = first_token + simple_token
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 2
+    assert tokens_sum.tokens[0] is first_token
+    assert tokens_sum.tokens[1] is simple_token
+
+
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    [x for x in ALL_TOKENS_FABRICS if x is not SimpleToken],
+)
+def test_add_not_temp_simple_token_and_another_token(second_token_fabric):
+    simple_token = SimpleToken()
+    second_token = second_token_fabric()
+
+    tokens_sum = simple_token + second_token
+
+    assert isinstance(tokens_sum, SimpleToken)
+    assert len(tokens_sum.tokens) == 2
+    assert tokens_sum.tokens[0] is simple_token
     assert tokens_sum.tokens[1] is second_token
 
 
@@ -446,3 +548,124 @@ def test_insert_default_token_to_another_tokens(token_fabric):
 
     assert not isinstance(token, DefaultToken)
     assert len(token.tokens) == 0
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'action',
+    [
+        lambda x: x.cancelled,
+        lambda x: x.keep_on(),
+        lambda x: bool(x),
+        lambda x: bool(x),
+        lambda x: x.is_cancelled(),
+        lambda x: x.get_report(True),
+        lambda x: x.get_report(False),
+    ],
+)
+def test_report_cache_is_working_in_simple_case(first_token_fabric, second_token_fabric, action):
+    token = first_token_fabric(second_token_fabric(cancelled=True))
+
+    assert token.cached_report is None
+
+    action(token)
+
+    cached_report = token.cached_report
+
+    assert cached_report is not None
+    assert isinstance(cached_report, CancellationReport)
+    assert cached_report.from_token.is_cancelled()
+    assert cached_report.cause == CancelCause.CANCELLED
+
+    assert token.get_report(True) is cached_report
+    assert token.get_report(False) is cached_report
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+@pytest.mark.parametrize(
+    'action',
+    [
+        lambda x: x.cancelled,
+        lambda x: x.keep_on(),
+        lambda x: bool(x),
+        lambda x: bool(x),
+        lambda x: x.is_cancelled(),
+        lambda x: x.get_report(True),
+        lambda x: x.get_report(False),
+    ],
+)
+def test_cache_is_using_after_self_flag(first_token_fabric, second_token_fabric, action):
+    token = first_token_fabric(second_token_fabric(cancelled=True))
+
+    action(token)
+
+    cached_report = token.cached_report
+
+    token.cancel()
+
+    for new_report in token.get_report(True), token.get_report(False):
+        assert new_report is not cached_report
+        assert new_report is not None
+        assert isinstance(new_report, CancellationReport)
+        assert new_report.from_token.is_cancelled()
+        assert new_report.cause == CancelCause.CANCELLED
+
+
+@pytest.mark.parametrize(
+    'first_token_fabric',
+    ALL_TOKENS_FABRICS_WITH_CANCELLING_SUPERPOWER,
+)
+@pytest.mark.parametrize(
+    'second_token_fabric',
+    ALL_TOKENS_FABRICS_WITH_CANCELLING_SUPERPOWER,
+)
+@pytest.mark.parametrize(
+    'action',
+    [
+        lambda x: x.cancelled,
+        lambda x: x.keep_on(),
+        lambda x: bool(x),
+        lambda x: bool(x),
+        lambda x: x.is_cancelled(),
+        lambda x: x.get_report(True),
+        lambda x: x.get_report(False),
+    ],
+)
+def test_superpower_is_more_important_than_cache(first_token_fabric, second_token_fabric, action):
+    token = first_token_fabric(second_token_fabric(cancelled=True))
+
+    for report in token.get_report(True), token.get_report(False):
+        assert report is not None
+        assert isinstance(report, CancellationReport)
+        assert report.from_token is token
+        assert report.cause == CancelCause.SUPERPOWER
+
+    action(token)
+
+    for report in token.get_report(True), token.get_report(False):
+        assert report is not None
+        assert isinstance(report, CancellationReport)
+        assert report.from_token is token
+        assert report.cause == CancelCause.SUPERPOWER
+
+    token.cancel()
+
+    for report in token.get_report(True), token.get_report(False):
+        assert report is not None
+        assert isinstance(report, CancellationReport)
+        assert report.from_token is token
+        assert report.cause == CancelCause.CANCELLED

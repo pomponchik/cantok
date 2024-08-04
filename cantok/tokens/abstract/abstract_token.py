@@ -1,72 +1,14 @@
-import weakref
 from sys import getrefcount
-from enum import Enum
-from time import sleep as sync_sleep
-from asyncio import sleep as async_sleep
 from abc import ABC, abstractmethod
 from threading import RLock
-from dataclasses import dataclass
 from typing import List, Dict, Awaitable, Optional, Union, Any
-from types import TracebackType
-from collections.abc import Coroutine
+
 
 from cantok.errors import CancellationError
+from cantok.tokens.abstract.cancel_cause import CancelCause
+from cantok.tokens.abstract.report import CancellationReport
+from cantok.tokens.abstract.coroutine_wrapper import WaitCoroutineWrapper
 
-
-class CancelCause(Enum):
-    CANCELLED = 1
-    SUPERPOWER = 2
-    NOT_CANCELLED = 3
-
-class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
-    def __init__(self, step: Union[int, float], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken') -> None:
-        self.step = step
-        self.token_for_wait = token_for_wait
-        self.token_for_check = token_for_check
-
-        self.flags: Dict[str, bool] = {}
-        self.coroutine = self.async_wait(step, self.flags, token_for_wait, token_for_check)
-
-        weakref.finalize(self, self.sync_wait, step, self.flags, token_for_wait, token_for_check, self.coroutine)
-
-    def __await__(self) -> Any:
-        return self.coroutine.__await__()
-
-    def send(self, value: Any) -> Any:
-        return self.coroutine.send(value)
-
-    def throw(self, exception_type: Any, value: Optional[Any] = None, traceback: Optional[TracebackType] = None) -> Any:
-        pass  # pragma: no cover
-
-    def close(self) -> None:
-        pass  # pragma: no cover
-
-    @staticmethod
-    def sync_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine: Coroutine) -> None:  # type: ignore[type-arg]
-        if not flags.get('used', False):
-            if getrefcount(wrapped_coroutine) < 5:
-                wrapped_coroutine.close()
-
-                while token_for_wait:
-                    sync_sleep(step)
-
-                token_for_check.check()
-
-    @staticmethod
-    async def async_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken') -> None:
-        flags['used'] = True
-
-        while token_for_wait:
-            await async_sleep(step)
-
-        await async_sleep(0)
-
-        token_for_check.check()
-
-@dataclass
-class CancellationReport:
-    cause: CancelCause
-    from_token: 'AbstractToken'
 
 class AbstractToken(ABC):
     exception = CancellationError
@@ -75,9 +17,10 @@ class AbstractToken(ABC):
     def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
         from cantok import DefaultToken
 
-        self.tokens = [token for token in tokens if not isinstance(token, DefaultToken)]
-        self._cancelled = cancelled
-        self.lock = RLock()
+        self.cached_report: Optional[CancellationReport] = None
+        self.tokens: List[AbstractToken] = [token for token in tokens if not isinstance(token, DefaultToken)]
+        self._cancelled: bool = cancelled
+        self.lock: RLock = RLock()
 
     def __repr__(self) -> str:
         chunks = []
@@ -113,7 +56,15 @@ class AbstractToken(ABC):
 
         from cantok import SimpleToken
 
-        return SimpleToken(self, item)
+        nested_tokens = []
+
+        for token in self, item:
+            if isinstance(token, SimpleToken) and getrefcount(token) < 6:
+                nested_tokens.extend(token.tokens)
+            else:
+                nested_tokens.append(token)
+
+        return SimpleToken(*nested_tokens)
 
     def __bool__(self) -> bool:
         return self.keep_on()
@@ -124,11 +75,12 @@ class AbstractToken(ABC):
 
     @cancelled.setter
     def cancelled(self, new_value: bool) -> None:
-        if new_value == True:
-            self._cancelled = True
-        else:
-            if self._cancelled == True:
-                raise ValueError('You cannot restore a cancelled token.')
+        with self.lock:
+            if new_value == True:
+                self._cancelled = True
+            else:
+                if self.is_cancelled():
+                    raise ValueError('You cannot restore a cancelled token.')
 
     def keep_on(self) -> bool:
         return not self.is_cancelled()
@@ -159,16 +111,18 @@ class AbstractToken(ABC):
                 cause=CancelCause.CANCELLED,
                 from_token=self,
             )
-        else:
-            if self.check_superpower(direct):
-                return CancellationReport(
-                    cause=CancelCause.SUPERPOWER,
-                    from_token=self,
-                )
+        elif self.check_superpower(direct):
+            return CancellationReport(
+                cause=CancelCause.SUPERPOWER,
+                from_token=self,
+            )
+        elif self.cached_report is not None:
+            return self.cached_report
 
         for token in self.tokens:
             report = token.get_report(direct=False)
             if report.cause != CancelCause.NOT_CANCELLED:
+                self.cached_report = report
                 return report
 
         return CancellationReport(

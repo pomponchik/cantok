@@ -2,7 +2,7 @@ from threading import Thread
 
 import pytest
 
-from cantok.tokens.abstract_token import CancelCause, CancellationReport
+from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
 from cantok import CounterToken, SimpleToken, CounterCancellationError
 
 
@@ -227,3 +227,87 @@ def test_decrement_counter_after_zero():
     token.is_cancelled()
 
     assert token.counter == 0
+
+
+def test_quasitemp_counter_token_plus_temp_simple_token():
+    token = CounterToken(0) + SimpleToken()
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], CounterToken)
+
+
+def test_not_quasitemp_counter_token_plus_temp_simple_token():
+    counter_token = CounterToken(1)
+    token = counter_token + SimpleToken()
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], CounterToken)
+    assert token.tokens[0] is counter_token
+
+
+def test_quasitemp_counter_token_plus_not_temp_simple_token():
+    simple_token = SimpleToken()
+    token = CounterToken(1) + simple_token
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[0], CounterToken)
+    assert token.tokens[1] is simple_token
+
+
+def test_not_quasitemp_counter_token_plus_not_temp_simple_token():
+    simple_token = SimpleToken()
+    counter_token = CounterToken(1)
+    token = counter_token + simple_token
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[0], CounterToken)
+    assert token.tokens[0] is counter_token
+    assert token.tokens[1] is simple_token
+
+
+def test_quasitemp_counter_token_plus_temp_simple_token_reverse():
+    token = SimpleToken() + CounterToken(1)
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], CounterToken)
+
+
+def test_not_quasitemp_counter_token_plus_temp_simple_token_reverse():
+    counter_token = CounterToken(1)
+    token = SimpleToken() + counter_token
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], CounterToken)
+    assert token.tokens[0] is counter_token
+
+
+def test_quasitemp_counter_token_plus_not_temp_simple_token_reverse():
+    simple_token = SimpleToken()
+    token = simple_token + CounterToken(1)
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[1], CounterToken)
+    assert token.tokens[0] is simple_token
+
+
+def test_not_quasitemp_counter_token_plus_not_temp_simple_token_reverse():
+    simple_token = SimpleToken()
+    counter_token = CounterToken(1)
+    token = simple_token + counter_token
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[1], CounterToken)
+    assert token.tokens[1] is counter_token
+    assert token.tokens[0] is simple_token

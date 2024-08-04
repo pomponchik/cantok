@@ -4,7 +4,7 @@ Any tokens can be summed up among themselves. The summation operation generates 
 from cantok import SimpleToken, TimeoutToken
 
 print(repr(SimpleToken() + TimeoutToken(5)))
-# SimpleToken(SimpleToken(), TimeoutToken(5, monotonic=False))
+#> SimpleToken(TimeoutToken(5))
 ```
 
 This feature is convenient to use if your function has received a token with certain restrictions and wants to throw it into other called functions, imposing additional restrictions:

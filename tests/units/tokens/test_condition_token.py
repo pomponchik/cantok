@@ -4,7 +4,7 @@ from functools import partial
 
 import pytest
 
-from cantok.tokens.abstract_token import CancelCause, CancellationReport
+from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
 from cantok import SimpleToken, ConditionToken, ConditionCancellationError
 
 
@@ -340,3 +340,107 @@ def test_cached_condition_cancelling(options):
         assert counter == 5
         assert token.cancelled == False
         assert counter == 6
+
+
+def test_quasitemp_condition_token_plus_temp_simple_token():
+    token = ConditionToken(lambda: False) + SimpleToken()
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], ConditionToken)
+
+
+def test_not_quasitemp_condition_token_plus_temp_simple_token():
+    condition_token = ConditionToken(lambda: False)
+    token = condition_token + SimpleToken()
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], ConditionToken)
+    assert token.tokens[0] is condition_token
+
+
+def test_quasitemp_condition_token_plus_not_temp_simple_token():
+    simple_token = SimpleToken()
+    token = ConditionToken(lambda: False) + simple_token
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[0], ConditionToken)
+    assert token.tokens[1] is simple_token
+
+
+def test_not_quasitemp_condition_token_plus_not_temp_simple_token():
+    simple_token = SimpleToken()
+    condition_token = ConditionToken(lambda: False)
+    token = condition_token + simple_token
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[0], ConditionToken)
+    assert token.tokens[0] is condition_token
+    assert token.tokens[1] is simple_token
+
+
+def test_quasitemp_condition_token_plus_temp_simple_token_reverse():
+    token = SimpleToken() + ConditionToken(lambda: False)
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], ConditionToken)
+
+
+def test_not_quasitemp_condition_token_plus_temp_simple_token_reverse():
+    condition_token = ConditionToken(lambda: False)
+    token = SimpleToken() + condition_token
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], ConditionToken)
+    assert token.tokens[0] is condition_token
+
+
+def test_quasitemp_condition_token_plus_not_temp_simple_token_reverse():
+    simple_token = SimpleToken()
+    token = simple_token + ConditionToken(lambda: False)
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[1], ConditionToken)
+    assert token.tokens[0] is simple_token
+
+
+def test_not_quasitemp_condition_token_plus_not_temp_simple_token_reverse():
+    simple_token = SimpleToken()
+    condition_token = ConditionToken(lambda: False)
+    token = simple_token + condition_token
+
+    assert isinstance(token, SimpleToken)
+    assert token is not simple_token
+    assert len(token.tokens) == 2
+    assert isinstance(token.tokens[1], ConditionToken)
+    assert token.tokens[1] is condition_token
+    assert token.tokens[0] is simple_token
+
+
+def test_condition_function_is_more_important_than_cache():
+    flag = False
+    inner_token = SimpleToken(cancelled=True)
+    token = ConditionToken(lambda: flag, inner_token)
+
+    for report in token.get_report(True), token.get_report(False):
+        assert report is not None
+        assert isinstance(report, CancellationReport)
+        assert report.from_token is inner_token
+        assert report.cause == CancelCause.CANCELLED
+
+    flag = True
+
+    for report in token.get_report(True), token.get_report(False):
+        assert report is not None
+        assert isinstance(report, CancellationReport)
+        assert report.from_token is token
+        assert report.cause == CancelCause.SUPERPOWER
