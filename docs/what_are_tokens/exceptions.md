@@ -6,7 +6,8 @@ from cantok import TimeoutToken
 token = TimeoutToken(1)
 token.wait()
 token.check()
-# cantok.errors.TimeoutCancellationError: The timeout of 1 seconds has expired.
+#> ...
+#> cantok.errors.TimeoutCancellationError: The timeout of 1 seconds has expired.
 ```
 
 Each type of token (except [`DefaultToken`](../types_of_tokens/DefaultToken.md)) has a corresponding type of exception that can be raised in this case:
@@ -34,7 +35,7 @@ token = TimeoutToken(0)
 try:
     token.check()
 except CancellationError as e:
-    print(type(e) is TimeoutToken.exception)  # True
+    print(type(e) is TimeoutToken.exception)  #> True
 ```
 
 And each exception object has a `token` attribute indicating the specific token that was canceled. This can be useful in situations where several tokens are nested in one another and you want to find out which one has been canceled:
@@ -48,5 +49,5 @@ token = SimpleToken(nested_token)
 try:
     token.check()
 except CancellationError as e:
-    print(e.token is nested_token)  # True
+    print(e.token is nested_token)  #> True
 ```

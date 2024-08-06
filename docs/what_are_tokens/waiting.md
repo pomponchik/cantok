@@ -6,7 +6,8 @@ from cantok import TimeoutToken
 token = TimeoutToken(5)
 token.wait()  # It will take about 5 seconds.
 token.check()  # Since the timeout has expired, an exception will be raised.
-# cantok.errors.TimeoutCancellationError: The timeout of 5 seconds has expired.
+#> ...
+#> cantok.errors.TimeoutCancellationError: The timeout of 5 seconds has expired.
 ```
 
 If you add the `await` keyword before calling `wait()`, the method will be automatically used in non-blocking mode:
