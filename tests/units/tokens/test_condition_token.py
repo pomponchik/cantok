@@ -450,6 +450,7 @@ def test_repr_of_condition_token():
     assert repr(ConditionToken(lambda: False, default=False)) == 'ConditionToken(λ)'
     assert repr(ConditionToken(lambda: False, default=True)) == 'ConditionToken(λ, default=True)'
     assert repr(ConditionToken(lambda: False, suppress_exceptions=False, default=True)) == 'ConditionToken(λ, suppress_exceptions=False, default=True)'
+    assert repr(ConditionToken(lambda: False, suppress_exceptions=False, default=True, cancelled=True)) == 'ConditionToken(λ, cancelled=True, suppress_exceptions=False, default=True)'
 
     assert repr(ConditionToken(function)) == 'ConditionToken(function)'
     assert repr(ConditionToken(function, ConditionToken(function))) == 'ConditionToken(function, ConditionToken(function))'
@@ -458,3 +459,5 @@ def test_repr_of_condition_token():
     assert repr(ConditionToken(function, default=False)) == 'ConditionToken(function)'
     assert repr(ConditionToken(function, default=True)) == 'ConditionToken(function, default=True)'
     assert repr(ConditionToken(function, suppress_exceptions=False, default=True)) == 'ConditionToken(function, suppress_exceptions=False, default=True)'
+
+    assert repr(ConditionToken(function, suppress_exceptions=False, default=True, cancelled=True)) == 'ConditionToken(function, cancelled=True, suppress_exceptions=False, default=True)'
