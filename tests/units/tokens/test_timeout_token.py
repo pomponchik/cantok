@@ -224,9 +224,9 @@ def test_timeout_wait():
 def test_quasitemp_timeout_token_plus_temp_simple_token():
     token = TimeoutToken(1) + SimpleToken()
 
-    assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token, TimeoutToken)
+    assert len(token.tokens) == 0
+    assert token.timeout == 1
 
 
 def test_not_quasitemp_timeout_token_plus_temp_simple_token():
@@ -243,11 +243,11 @@ def test_quasitemp_timeout_token_plus_not_temp_simple_token():
     simple_token = SimpleToken()
     token = TimeoutToken(1) + simple_token
 
-    assert isinstance(token, SimpleToken)
+    assert isinstance(token, TimeoutToken)
     assert token is not simple_token
-    assert len(token.tokens) == 2
-    assert isinstance(token.tokens[0], TimeoutToken)
-    assert token.tokens[1] is simple_token
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], SimpleToken)
+    assert token.tokens[0] is simple_token
 
 
 def test_not_quasitemp_timeout_token_plus_not_temp_simple_token():
@@ -266,9 +266,9 @@ def test_not_quasitemp_timeout_token_plus_not_temp_simple_token():
 def test_quasitemp_timeout_token_plus_temp_simple_token_reverse():
     token = SimpleToken() + TimeoutToken(1)
 
-    assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token, TimeoutToken)
+    assert len(token.tokens) == 0
+    assert token.timeout == 1
 
 
 def test_not_quasitemp_timeout_token_plus_temp_simple_token_reverse():
@@ -285,10 +285,11 @@ def test_quasitemp_timeout_token_plus_not_temp_simple_token_reverse():
     simple_token = SimpleToken()
     token = simple_token + TimeoutToken(1)
 
-    assert isinstance(token, SimpleToken)
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 1
     assert token is not simple_token
-    assert len(token.tokens) == 2
-    assert isinstance(token.tokens[1], TimeoutToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], SimpleToken)
     assert token.tokens[0] is simple_token
 
 
@@ -316,7 +317,7 @@ def test_timeout_is_more_important_than_cache():
         assert report.from_token is inner_token
         assert report.cause == CancelCause.CANCELLED
 
-    sleep(sleep_time * 2)
+    sleep(sleep_time * 10)
 
     for report in token.get_report(True), token.get_report(False):
         assert report is not None
