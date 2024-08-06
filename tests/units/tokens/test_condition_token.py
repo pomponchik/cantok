@@ -435,7 +435,7 @@ def test_zero_condition_token_report_is_about_superpower():
 def test_creating_condition_token_with_no_suppress_exceptions_is_not_calling_condition():
     calls = []
 
-    token = ConditionToken(lambda: calls.append(True) is None, suppress_exceptions=False)
+    ConditionToken(lambda: calls.append(True) is None, suppress_exceptions=False)
 
     assert not calls
 
