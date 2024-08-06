@@ -1,5 +1,6 @@
 from typing import Callable, Dict, Any
 from contextlib import suppress
+from types import LambdaType
 
 from cantok import AbstractToken
 from cantok.errors import ConditionCancellationError
@@ -57,13 +58,23 @@ class ConditionToken(AbstractToken):
         return result
 
     def text_representation_of_superpower(self) -> str:
-        return repr(self.function)
+        result = self.function.__name__
+        
+        if result == '<lambda>':
+            return 'λ'
+
+        return result
 
     def get_extra_kwargs(self) -> Dict[str, Any]:
-        return {
-            'suppress_exceptions': self.suppress_exceptions,
-            'default': self.default,
-        }
+        result = {}
+
+        if not self.suppress_exceptions:
+            result['suppress_exceptions'] = self.suppress_exceptions
+
+        if self.default is not False:
+            result['default'] = self.default
+
+        return result
 
     def get_superpower_exception_message(self) -> str:
         return 'The cancellation condition was satisfied.'

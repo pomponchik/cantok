@@ -100,22 +100,6 @@ def test_condition_function_returning_not_bool_value():
 
 
 @pytest.mark.parametrize(
-    'suppress_exceptions_flag',
-    [True, False],
-)
-@pytest.mark.parametrize(
-    'default_flag',
-    [True, False],
-)
-def test_test_representaion_of_extra_kwargs(suppress_exceptions_flag, default_flag):
-    assert ConditionToken(
-        lambda: False,
-        suppress_exceptions=suppress_exceptions_flag,
-        default=default_flag,
-    ).text_representation_of_extra_kwargs() == f'suppress_exceptions={suppress_exceptions_flag}, default={default_flag}'
-
-
-@pytest.mark.parametrize(
     'default',
     [True, False],
 )
@@ -446,3 +430,31 @@ def test_condition_function_is_more_important_than_cache():
 def test_zero_condition_token_report_is_about_superpower():
     for report in ConditionToken(lambda: True).get_report(True), ConditionToken(lambda: True).get_report(False):
         assert report.cause == CancelCause.SUPERPOWER
+
+
+def test_creating_condition_token_with_no_suppress_exceptions_is_not_calling_condition():
+    calls = []
+
+    token = ConditionToken(lambda: calls.append(True) is None, suppress_exceptions=False)
+
+    assert not calls
+
+
+def test_repr_of_condition_token():
+    def function(): return False
+
+    assert repr(ConditionToken(lambda: False)) == 'ConditionToken(λ)'
+    assert repr(ConditionToken(lambda: False, ConditionToken(lambda: False))) == 'ConditionToken(λ, ConditionToken(λ))'
+    assert repr(ConditionToken(lambda: False, suppress_exceptions=True)) == 'ConditionToken(λ)'
+    assert repr(ConditionToken(lambda: False, suppress_exceptions=False)) == 'ConditionToken(λ, suppress_exceptions=False)'
+    assert repr(ConditionToken(lambda: False, default=False)) == 'ConditionToken(λ)'
+    assert repr(ConditionToken(lambda: False, default=True)) == 'ConditionToken(λ, default=True)'
+    assert repr(ConditionToken(lambda: False, suppress_exceptions=False, default=True)) == 'ConditionToken(λ, suppress_exceptions=False, default=True)'
+
+    assert repr(ConditionToken(function)) == 'ConditionToken(function)'
+    assert repr(ConditionToken(function, ConditionToken(function))) == 'ConditionToken(function, ConditionToken(function))'
+    assert repr(ConditionToken(function, suppress_exceptions=True)) == 'ConditionToken(function)'
+    assert repr(ConditionToken(function, suppress_exceptions=False)) == 'ConditionToken(function, suppress_exceptions=False)'
+    assert repr(ConditionToken(function, default=False)) == 'ConditionToken(function)'
+    assert repr(ConditionToken(function, default=True)) == 'ConditionToken(function, default=True)'
+    assert repr(ConditionToken(function, suppress_exceptions=False, default=True)) == 'ConditionToken(function, suppress_exceptions=False, default=True)'
