@@ -9,7 +9,7 @@ third_token = SimpleToken(first_token, second_token)
 
 first_token.cancel()
 
-print(first_token.cancelled)  # True
-print(second_token.cancelled)  # False
-print(third_token.cancelled)  # True
+print(first_token.cancelled)  #> True
+print(second_token.cancelled)  #> False
+print(third_token.cancelled)  #> True
 ```

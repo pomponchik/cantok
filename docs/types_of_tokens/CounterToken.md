@@ -11,7 +11,7 @@ counter = 0
 while token:
     counter += 1
 
-print(counter)  # 5
+print(counter)  #> 5
 ```
 
 The counter inside the `CounterToken` is reduced under one of three conditions:
@@ -28,9 +28,9 @@ from cantok import SimpleToken, CounterToken
 first_counter_token = CounterToken(1, direct=False)
 second_counter_token = CounterToken(1, direct=True)
 
-print(SimpleToken(first_counter_token, second_counter_token).cancelled)  # False
-print(first_counter_token.cancelled)  # True
-print(second_counter_token.cancelled)  # False
+print(SimpleToken(first_counter_token, second_counter_token).cancelled)  #> False
+print(first_counter_token.cancelled)  #> True
+print(second_counter_token.cancelled)  #> False
 ```
 
 Like all other tokens, `CounterToken` can accept other tokens as parameters during initialization:

@@ -5,9 +5,9 @@ from time import sleep
 from cantok import TimeoutToken
 
 token = TimeoutToken(5)
-print(token.cancelled)  # False
+print(token.cancelled)  #> False
 sleep(10)
-print(token.cancelled)  # True
+print(token.cancelled)  #> True
 ```
 
 Just like `ConditionToken`, `TimeoutToken` can include other tokens:
