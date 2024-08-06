@@ -176,6 +176,7 @@ def test_add_temp_tokens(first_token_class, second_token_class, first_arguments,
     assert isinstance(tokens_sum, first_token_class)
     assert len(tokens_sum.tokens) == 1
     assert isinstance(tokens_sum.tokens[0], second_token_class)
+    assert len(tokens_sum.tokens[0].tokens) == 0
 
 
 @pytest.mark.parametrize(
