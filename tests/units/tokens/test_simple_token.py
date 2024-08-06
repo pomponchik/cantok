@@ -155,6 +155,17 @@ def test_sum_of_2_not_temp_simple_tokens():
     assert result.tokens[1] is second_token
 
 
+def test_sum_of_2_not_temp_simple_tokens_and_one_temp():
+    first_token = SimpleToken()
+    second_token = SimpleToken()
+    result = first_token + second_token + SimpleToken()
+
+    assert isinstance(result, SimpleToken)
+    assert len(result.tokens) == 2
+    assert result.tokens[0] is first_token
+    assert result.tokens[1] is second_token
+
+
 def test_sum_of_3_not_temp_simple_tokens():
     first_token = SimpleToken()
     second_token = SimpleToken()
