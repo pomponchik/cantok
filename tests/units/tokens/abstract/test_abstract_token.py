@@ -142,7 +142,7 @@ def test_str(token_fabric):
     'second_token_fabric',
     ALL_TOKENS_FABRICS,
 )
-def test_add_tokens(first_token_fabric, second_token_fabric):
+def test_add_not_temp_tokens(first_token_fabric, second_token_fabric):
     first_token = first_token_fabric()
     second_token = second_token_fabric()
 
@@ -152,6 +152,83 @@ def test_add_tokens(first_token_fabric, second_token_fabric):
     assert len(tokens_sum.tokens) == 2
     assert tokens_sum.tokens[0] is first_token
     assert tokens_sum.tokens[1] is second_token
+
+
+@pytest.mark.parametrize(
+    ['first_token_class', 'first_arguments'],
+    [
+        (TimeoutToken, [15]),
+        (ConditionToken, [lambda: False]),
+        (CounterToken, [15]),
+    ],
+)
+@pytest.mark.parametrize(
+    ['second_token_class', 'second_arguments'],
+    [
+        (TimeoutToken, [15]),
+        (ConditionToken, [lambda: False]),
+        (CounterToken, [15]),
+    ],
+)
+def test_add_temp_tokens(first_token_class, second_token_class, first_arguments, second_arguments):
+    tokens_sum = first_token_class(*first_arguments) + second_token_class(*second_arguments)
+
+    assert isinstance(tokens_sum, first_token_class)
+    assert len(tokens_sum.tokens) == 1
+    assert isinstance(tokens_sum.tokens[0], second_token_class)
+    assert len(tokens_sum.tokens[0].tokens) == 0
+
+
+@pytest.mark.parametrize(
+    ['first_token_class', 'first_arguments'],
+    [
+        (TimeoutToken, [15]),
+        (ConditionToken, [lambda: False]),
+        (CounterToken, [15]),
+    ],
+)
+@pytest.mark.parametrize(
+    ['second_token_class', 'second_arguments'],
+    [
+        (TimeoutToken, [15]),
+        (ConditionToken, [lambda: False]),
+        (CounterToken, [15]),
+    ],
+)
+def test_add_not_temp_token_and_temp_token(first_token_class, second_token_class, first_arguments, second_arguments):
+    first_token = first_token_class(*first_arguments)
+    tokens_sum = first_token + second_token_class(*second_arguments)
+
+    assert isinstance(tokens_sum, second_token_class)
+    assert len(tokens_sum.tokens) == 1
+    assert isinstance(tokens_sum.tokens[0], first_token_class)
+    assert len(tokens_sum.tokens[0].tokens) == 0
+
+
+@pytest.mark.parametrize(
+    ['first_token_class', 'first_arguments'],
+    [
+        (TimeoutToken, [15]),
+        (ConditionToken, [lambda: False]),
+        (CounterToken, [15]),
+    ],
+)
+@pytest.mark.parametrize(
+    ['second_token_class', 'second_arguments'],
+    [
+        (TimeoutToken, [15]),
+        (ConditionToken, [lambda: False]),
+        (CounterToken, [15]),
+    ],
+)
+def test_add_temp_token_and_not_temp_token(first_token_class, second_token_class, first_arguments, second_arguments):
+    second_token = second_token_class(*second_arguments)
+    tokens_sum = first_token_class(*first_arguments) + second_token
+
+    assert isinstance(tokens_sum, first_token_class)
+    assert len(tokens_sum.tokens) == 1
+    assert isinstance(tokens_sum.tokens[0], second_token_class)
+    assert len(tokens_sum.tokens[0].tokens) == 0
 
 
 @pytest.mark.parametrize(
@@ -669,3 +746,40 @@ def test_superpower_is_more_important_than_cache(first_token_fabric, second_toke
         assert isinstance(report, CancellationReport)
         assert report.from_token is token
         assert report.cause == CancelCause.CANCELLED
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_just_neste_temp_simple_token_to_another_token(token_fabric):
+    token = token_fabric(SimpleToken())
+
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], SimpleToken)
+    assert token
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_any_token_plus_temp_cancelled_simple_token_gives_cancelled_simple_token(token_fabric):
+    token = token_fabric() + SimpleToken(cancelled=True)
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 0
+    assert not token
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_any_token_plus_cancelled_simple_token_gives_cancelled_simple_token(token_fabric):
+    simple_token = SimpleToken(cancelled=True)
+    token = token_fabric() + simple_token
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 0
+    assert not token

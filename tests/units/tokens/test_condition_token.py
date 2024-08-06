@@ -100,22 +100,6 @@ def test_condition_function_returning_not_bool_value():
 
 
 @pytest.mark.parametrize(
-    'suppress_exceptions_flag',
-    [True, False],
-)
-@pytest.mark.parametrize(
-    'default_flag',
-    [True, False],
-)
-def test_test_representaion_of_extra_kwargs(suppress_exceptions_flag, default_flag):
-    assert ConditionToken(
-        lambda: False,
-        suppress_exceptions=suppress_exceptions_flag,
-        default=default_flag,
-    ).text_representation_of_extra_kwargs() == f'suppress_exceptions={suppress_exceptions_flag}, default={default_flag}'
-
-
-@pytest.mark.parametrize(
     'default',
     [True, False],
 )
@@ -345,9 +329,8 @@ def test_cached_condition_cancelling(options):
 def test_quasitemp_condition_token_plus_temp_simple_token():
     token = ConditionToken(lambda: False) + SimpleToken()
 
-    assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], ConditionToken)
+    assert isinstance(token, ConditionToken)
+    assert len(token.tokens) == 0
 
 
 def test_not_quasitemp_condition_token_plus_temp_simple_token():
@@ -364,11 +347,11 @@ def test_quasitemp_condition_token_plus_not_temp_simple_token():
     simple_token = SimpleToken()
     token = ConditionToken(lambda: False) + simple_token
 
-    assert isinstance(token, SimpleToken)
+    assert isinstance(token, ConditionToken)
     assert token is not simple_token
-    assert len(token.tokens) == 2
-    assert isinstance(token.tokens[0], ConditionToken)
-    assert token.tokens[1] is simple_token
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], SimpleToken)
+    assert token.tokens[0] is simple_token
 
 
 def test_not_quasitemp_condition_token_plus_not_temp_simple_token():
@@ -387,9 +370,8 @@ def test_not_quasitemp_condition_token_plus_not_temp_simple_token():
 def test_quasitemp_condition_token_plus_temp_simple_token_reverse():
     token = SimpleToken() + ConditionToken(lambda: False)
 
-    assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], ConditionToken)
+    assert isinstance(token, ConditionToken)
+    assert len(token.tokens) == 0
 
 
 def test_not_quasitemp_condition_token_plus_temp_simple_token_reverse():
@@ -406,10 +388,9 @@ def test_quasitemp_condition_token_plus_not_temp_simple_token_reverse():
     simple_token = SimpleToken()
     token = simple_token + ConditionToken(lambda: False)
 
-    assert isinstance(token, SimpleToken)
+    assert isinstance(token, ConditionToken)
     assert token is not simple_token
-    assert len(token.tokens) == 2
-    assert isinstance(token.tokens[1], ConditionToken)
+    assert len(token.tokens) == 1
     assert token.tokens[0] is simple_token
 
 
@@ -444,3 +425,39 @@ def test_condition_function_is_more_important_than_cache():
         assert isinstance(report, CancellationReport)
         assert report.from_token is token
         assert report.cause == CancelCause.SUPERPOWER
+
+
+def test_zero_condition_token_report_is_about_superpower():
+    for report in ConditionToken(lambda: True).get_report(True), ConditionToken(lambda: True).get_report(False):
+        assert report.cause == CancelCause.SUPERPOWER
+
+
+def test_creating_condition_token_with_no_suppress_exceptions_is_not_calling_condition():
+    calls = []
+
+    ConditionToken(lambda: calls.append(True) is None, suppress_exceptions=False)
+
+    assert not calls
+
+
+def test_repr_of_condition_token():
+    def function(): return False
+
+    assert repr(ConditionToken(lambda: False)) == 'ConditionToken(λ)'
+    assert repr(ConditionToken(lambda: False, ConditionToken(lambda: False))) == 'ConditionToken(λ, ConditionToken(λ))'
+    assert repr(ConditionToken(lambda: False, suppress_exceptions=True)) == 'ConditionToken(λ)'
+    assert repr(ConditionToken(lambda: False, suppress_exceptions=False)) == 'ConditionToken(λ, suppress_exceptions=False)'
+    assert repr(ConditionToken(lambda: False, default=False)) == 'ConditionToken(λ)'
+    assert repr(ConditionToken(lambda: False, default=True)) == 'ConditionToken(λ, default=True)'
+    assert repr(ConditionToken(lambda: False, suppress_exceptions=False, default=True)) == 'ConditionToken(λ, suppress_exceptions=False, default=True)'
+    assert repr(ConditionToken(lambda: False, suppress_exceptions=False, default=True, cancelled=True)) == 'ConditionToken(λ, cancelled=True, suppress_exceptions=False, default=True)'
+
+    assert repr(ConditionToken(function)) == 'ConditionToken(function)'
+    assert repr(ConditionToken(function, ConditionToken(function))) == 'ConditionToken(function, ConditionToken(function))'
+    assert repr(ConditionToken(function, suppress_exceptions=True)) == 'ConditionToken(function)'
+    assert repr(ConditionToken(function, suppress_exceptions=False)) == 'ConditionToken(function, suppress_exceptions=False)'
+    assert repr(ConditionToken(function, default=False)) == 'ConditionToken(function)'
+    assert repr(ConditionToken(function, default=True)) == 'ConditionToken(function, default=True)'
+    assert repr(ConditionToken(function, suppress_exceptions=False, default=True)) == 'ConditionToken(function, suppress_exceptions=False, default=True)'
+
+    assert repr(ConditionToken(function, suppress_exceptions=False, default=True, cancelled=True)) == 'ConditionToken(function, cancelled=True, suppress_exceptions=False, default=True)'

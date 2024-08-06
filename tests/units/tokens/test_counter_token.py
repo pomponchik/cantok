@@ -232,9 +232,8 @@ def test_decrement_counter_after_zero():
 def test_quasitemp_counter_token_plus_temp_simple_token():
     token = CounterToken(0) + SimpleToken()
 
-    assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token, CounterToken)
+    assert len(token.tokens) == 0
 
 
 def test_not_quasitemp_counter_token_plus_temp_simple_token():
@@ -251,11 +250,11 @@ def test_quasitemp_counter_token_plus_not_temp_simple_token():
     simple_token = SimpleToken()
     token = CounterToken(1) + simple_token
 
-    assert isinstance(token, SimpleToken)
+    assert isinstance(token, CounterToken)
     assert token is not simple_token
-    assert len(token.tokens) == 2
-    assert isinstance(token.tokens[0], CounterToken)
-    assert token.tokens[1] is simple_token
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], SimpleToken)
+    assert token.tokens[0] is simple_token
 
 
 def test_not_quasitemp_counter_token_plus_not_temp_simple_token():
@@ -274,9 +273,8 @@ def test_not_quasitemp_counter_token_plus_not_temp_simple_token():
 def test_quasitemp_counter_token_plus_temp_simple_token_reverse():
     token = SimpleToken() + CounterToken(1)
 
-    assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token, CounterToken)
+    assert len(token.tokens) == 0
 
 
 def test_not_quasitemp_counter_token_plus_temp_simple_token_reverse():
@@ -293,10 +291,10 @@ def test_quasitemp_counter_token_plus_not_temp_simple_token_reverse():
     simple_token = SimpleToken()
     token = simple_token + CounterToken(1)
 
-    assert isinstance(token, SimpleToken)
+    assert isinstance(token, CounterToken)
     assert token is not simple_token
-    assert len(token.tokens) == 2
-    assert isinstance(token.tokens[1], CounterToken)
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], SimpleToken)
     assert token.tokens[0] is simple_token
 
 
@@ -311,3 +309,26 @@ def test_not_quasitemp_counter_token_plus_not_temp_simple_token_reverse():
     assert isinstance(token.tokens[1], CounterToken)
     assert token.tokens[1] is counter_token
     assert token.tokens[0] is simple_token
+
+
+def test_zero_counter_token_report_is_about_superpower():
+    for report in CounterToken(0).get_report(True), CounterToken(0).get_report(False):
+        assert report.cause == CancelCause.SUPERPOWER
+
+
+def test_repr_for_counter_token():
+    assert repr(CounterToken(0)) == 'CounterToken(0)'
+    assert repr(CounterToken(1)) == 'CounterToken(1)'
+    assert repr(CounterToken(10000)) == 'CounterToken(10000)'
+
+    assert repr(CounterToken(10000, CounterToken(10000))) == 'CounterToken(10000, CounterToken(10000))'
+    assert repr(CounterToken(10000, CounterToken(10000), CounterToken(10000))) == 'CounterToken(10000, CounterToken(10000), CounterToken(10000))'
+
+    assert repr(CounterToken(10000, direct=True)) == 'CounterToken(10000)'
+    assert repr(CounterToken(10000, direct=False)) == 'CounterToken(10000, direct=False)'
+
+    assert repr(CounterToken(10000, cancelled=False)) == 'CounterToken(10000)'
+    assert repr(CounterToken(10000, cancelled=True)) == 'CounterToken(10000, cancelled=True)'
+
+    assert repr(CounterToken(10000, direct=False, cancelled=True)) == 'CounterToken(10000, cancelled=True, direct=False)'
+    assert repr(CounterToken(10000, CounterToken(10000), direct=False, cancelled=True)) == 'CounterToken(10000, CounterToken(10000), cancelled=True, direct=False)'

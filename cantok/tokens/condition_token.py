@@ -57,13 +57,23 @@ class ConditionToken(AbstractToken):
         return result
 
     def text_representation_of_superpower(self) -> str:
-        return repr(self.function)
+        result = self.function.__name__
+
+        if result == '<lambda>':
+            return 'λ'
+
+        return result
 
     def get_extra_kwargs(self) -> Dict[str, Any]:
-        return {
-            'suppress_exceptions': self.suppress_exceptions,
-            'default': self.default,
-        }
+        result = {}
+
+        if not self.suppress_exceptions:
+            result['suppress_exceptions'] = self.suppress_exceptions
+
+        if self.default is not False:
+            result['default'] = self.default  # type: ignore[assignment]
+
+        return result
 
     def get_superpower_exception_message(self) -> str:
         return 'The cancellation condition was satisfied.'

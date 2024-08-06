@@ -18,8 +18,15 @@ class AbstractToken(ABC):
         from cantok import DefaultToken
 
         self.cached_report: Optional[CancellationReport] = None
-        self.tokens: List[AbstractToken] = [token for token in tokens if not isinstance(token, DefaultToken)]
         self._cancelled: bool = cancelled
+        self.tokens: List[AbstractToken] = []
+
+        for token in tokens:
+            if isinstance(token, DefaultToken):
+                pass
+            else:
+                self.tokens.append(token)
+
         self.lock: RLock = RLock()
 
     def __repr__(self) -> str:
@@ -54,17 +61,28 @@ class AbstractToken(ABC):
         if not isinstance(item, AbstractToken):
             raise TypeError('Cancellation Token can only be combined with another Cancellation Token.')
 
-        from cantok import SimpleToken
+        from cantok import SimpleToken, DefaultToken
 
         nested_tokens = []
+        container_token: Optional[AbstractToken] = None
 
         for token in self, item:
-            if isinstance(token, SimpleToken) and getrefcount(token) < 6:
+            if token._cancelled:
+                return SimpleToken(cancelled=True)
+            elif isinstance(token, SimpleToken) and getrefcount(token) < 6:
                 nested_tokens.extend(token.tokens)
+            elif isinstance(token, DefaultToken):
+                pass
+            elif not isinstance(token, SimpleToken) and getrefcount(token) < 6 and container_token is None:
+                container_token = token
             else:
                 nested_tokens.append(token)
 
-        return SimpleToken(*nested_tokens)
+        if container_token is None:
+            return SimpleToken(*nested_tokens)
+        else:
+            container_token.tokens.extend(nested_tokens)
+            return container_token
 
     def __bool__(self) -> bool:
         return self.keep_on()
