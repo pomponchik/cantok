@@ -159,7 +159,7 @@ def test_add_not_temp_tokens(first_token_fabric, second_token_fabric):
     [
         (TimeoutToken, [15]),
         (ConditionToken, [lambda: False]),
-        #(CounterToken, [15]),
+        (CounterToken, [15]),
     ],
 )
 @pytest.mark.parametrize(
@@ -167,7 +167,7 @@ def test_add_not_temp_tokens(first_token_fabric, second_token_fabric):
     [
         (TimeoutToken, [15]),
         (ConditionToken, [lambda: False]),
-        #(CounterToken, [15]),
+        (CounterToken, [15]),
     ],
 )
 def test_add_temp_tokens(first_token_class, second_token_class, first_arguments, second_arguments):
