@@ -57,14 +57,21 @@ class AbstractToken(ABC):
         from cantok import SimpleToken
 
         nested_tokens = []
+        container_token: Optional[AbstractToken] = None
 
         for token in self, item:
             if isinstance(token, SimpleToken) and getrefcount(token) < 6:
                 nested_tokens.extend(token.tokens)
+            elif not isinstance(token, SimpleToken) and getrefcount(token) < 6 and container_token is None:
+                container_token = token
             else:
                 nested_tokens.append(token)
 
-        return SimpleToken(*nested_tokens)
+        if container_token is None:
+            return SimpleToken(*nested_tokens)
+        else:
+            container_token.tokens.extend(nested_tokens)
+            return container_token
 
     def __bool__(self) -> bool:
         return self.keep_on()
