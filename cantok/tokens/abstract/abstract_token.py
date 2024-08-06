@@ -62,7 +62,9 @@ class AbstractToken(ABC):
         for token in self, item:
             if isinstance(token, SimpleToken) and getrefcount(token) < 6:
                 nested_tokens.extend(token.tokens)
-            elif not isinstance(token, SimpleToken) and not isinstance(token, DefaultToken) and getrefcount(token) < 6 and container_token is None:
+            elif isinstance(token, DefaultToken):
+                pass
+            elif not isinstance(token, SimpleToken) and getrefcount(token) < 6 and container_token is None:
                 container_token = token
             else:
                 nested_tokens.append(token)
