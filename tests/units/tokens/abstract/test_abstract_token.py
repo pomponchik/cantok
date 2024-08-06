@@ -724,7 +724,7 @@ def test_any_token_plus_temp_cancelled_simple_token_gives_cancelled_simple_token
     'token_fabric',
     ALL_TOKENS_FABRICS,
 )
-def test_any_token_plus_temp_cancelled_simple_token_gives_cancelled_simple_token(token_fabric):
+def test_any_token_plus_cancelled_simple_token_gives_cancelled_simple_token(token_fabric):
     simple_token = SimpleToken(cancelled=True)
     token = token_fabric() + simple_token
 
