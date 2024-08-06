@@ -324,3 +324,8 @@ def test_timeout_is_more_important_than_cache():
         assert isinstance(report, CancellationReport)
         assert report.from_token is token
         assert report.cause == CancelCause.SUPERPOWER
+
+
+def test_zero_timeout_token_report_is_about_superpower():
+    for report in TimeoutToken(0).get_report(True), TimeoutToken(0).get_report(False):
+        assert report.cause == CancelCause.SUPERPOWER

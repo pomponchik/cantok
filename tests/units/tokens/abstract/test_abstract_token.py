@@ -669,3 +669,40 @@ def test_superpower_is_more_important_than_cache(first_token_fabric, second_toke
         assert isinstance(report, CancellationReport)
         assert report.from_token is token
         assert report.cause == CancelCause.CANCELLED
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_just_neste_temp_simple_token_to_another_token(token_fabric):
+    token = token_fabric(SimpleToken())
+
+    assert len(token.tokens) == 1
+    assert isinstance(token.tokens[0], SimpleToken)
+    assert token
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_any_token_plus_temp_cancelled_simple_token_gives_cancelled_simple_token(token_fabric):
+    token = token_fabric() + SimpleToken(cancelled=True)
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 0
+    assert not token
+
+
+@pytest.mark.parametrize(
+    'token_fabric',
+    ALL_TOKENS_FABRICS,
+)
+def test_any_token_plus_temp_cancelled_simple_token_gives_cancelled_simple_token(token_fabric):
+    simple_token = SimpleToken(cancelled=True)
+    token = token_fabric() + simple_token
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 0
+    assert not token

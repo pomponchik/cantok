@@ -311,3 +311,8 @@ def test_not_quasitemp_counter_token_plus_not_temp_simple_token_reverse():
     assert isinstance(token.tokens[1], CounterToken)
     assert token.tokens[1] is counter_token
     assert token.tokens[0] is simple_token
+
+
+def test_zero_counter_token_report_is_about_superpower():
+    for report in CounterToken(0).get_report(True), CounterToken(0).get_report(False):
+        assert report.cause == CancelCause.SUPERPOWER

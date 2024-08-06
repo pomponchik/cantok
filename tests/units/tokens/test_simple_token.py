@@ -364,3 +364,11 @@ def test_sum_of_not_temp_condition_token_and_not_temp_timeout_token_throw_temp_s
     assert token.tokens[1] is timeout_token
     assert isinstance(token.tokens[1], TimeoutToken)
     assert token.tokens[1].timeout == 1
+
+
+def test_temp_timeout_token_plus_temp_cancelled_simple_token():
+    token = TimeoutToken(1) + SimpleToken(cancelled=True)
+
+    assert isinstance(token, SimpleToken)
+    assert not token
+    assert len(token.tokens) == 0

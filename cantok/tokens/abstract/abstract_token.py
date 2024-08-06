@@ -1,7 +1,7 @@
 from sys import getrefcount
 from abc import ABC, abstractmethod
 from threading import RLock
-from typing import List, Dict, Awaitable, Optional, Union, Any
+from typing import List, Dict, Tuple, Awaitable, Optional, Union, Any
 
 
 from cantok.errors import CancellationError
@@ -15,11 +15,22 @@ class AbstractToken(ABC):
     rollback_if_nondirect_polling = False
 
     def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
-        from cantok import DefaultToken
+        from cantok import DefaultToken, SimpleToken
 
         self.cached_report: Optional[CancellationReport] = None
-        self.tokens: List[AbstractToken] = [token for token in tokens if not isinstance(token, DefaultToken)]
         self._cancelled: bool = cancelled
+        self.tokens: List[AbstractToken] = []
+
+        for token in tokens:
+            if isinstance(token, DefaultToken):
+                pass
+            #elif token._cancelled:
+            #    self.cancel()
+            #    self.tokens = []
+            #    break
+            else:
+                self.tokens.append(token)
+
         self.lock: RLock = RLock()
 
     def __repr__(self) -> str:
@@ -58,9 +69,12 @@ class AbstractToken(ABC):
 
         nested_tokens = []
         container_token: Optional[AbstractToken] = None
+        cancel_result: bool = False
 
         for token in self, item:
-            if isinstance(token, SimpleToken) and getrefcount(token) < 6:
+            if token._cancelled:
+                return SimpleToken(cancelled=True)
+            elif isinstance(token, SimpleToken) and getrefcount(token) < 6:
                 nested_tokens.extend(token.tokens)
             elif isinstance(token, DefaultToken):
                 pass

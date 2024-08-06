@@ -441,3 +441,8 @@ def test_condition_function_is_more_important_than_cache():
         assert isinstance(report, CancellationReport)
         assert report.from_token is token
         assert report.cause == CancelCause.SUPERPOWER
+
+
+def test_zero_condition_token_report_is_about_superpower():
+    for report in ConditionToken(lambda: True).get_report(True), ConditionToken(lambda: True).get_report(False):
+        assert report.cause == CancelCause.SUPERPOWER
