@@ -59,7 +59,7 @@ class ConditionToken(AbstractToken):
 
     def text_representation_of_superpower(self) -> str:
         result = self.function.__name__
-        
+
         if result == '<lambda>':
             return 'λ'
 
@@ -72,7 +72,7 @@ class ConditionToken(AbstractToken):
             result['suppress_exceptions'] = self.suppress_exceptions
 
         if self.default is not False:
-            result['default'] = self.default
+            result['default'] = self.default  # type: ignore[assignment]
 
         return result
 
