@@ -54,7 +54,7 @@ class AbstractToken(ABC):
         if not isinstance(item, AbstractToken):
             raise TypeError('Cancellation Token can only be combined with another Cancellation Token.')
 
-        from cantok import SimpleToken
+        from cantok import SimpleToken, DefaultToken
 
         nested_tokens = []
         container_token: Optional[AbstractToken] = None
@@ -62,7 +62,7 @@ class AbstractToken(ABC):
         for token in self, item:
             if isinstance(token, SimpleToken) and getrefcount(token) < 6:
                 nested_tokens.extend(token.tokens)
-            elif not isinstance(token, SimpleToken) and getrefcount(token) < 6 and container_token is None:
+            elif not isinstance(token, SimpleToken) and not isinstance(token, DefaultToken) and getrefcount(token) < 6 and container_token is None:
                 container_token = token
             else:
                 nested_tokens.append(token)
