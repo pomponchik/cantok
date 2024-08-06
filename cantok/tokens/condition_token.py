@@ -1,6 +1,5 @@
 from typing import Callable, Dict, Any
 from contextlib import suppress
-from types import LambdaType
 
 from cantok import AbstractToken
 from cantok.errors import ConditionCancellationError
