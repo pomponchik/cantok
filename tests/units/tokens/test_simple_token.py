@@ -1,7 +1,7 @@
 import pytest
 
 from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
-from cantok import SimpleToken, TimeoutToken, CancellationError
+from cantok import SimpleToken, TimeoutToken, ConditionToken, CancellationError
 
 
 def test_just_created_token_without_arguments():
@@ -226,3 +226,16 @@ def test_sum_of_first_not_temp_and_second_temp_timeout_tokens_throw_temp_simple_
 
     assert isinstance(token.tokens[1], TimeoutToken)
     assert token.tokens[1].timeout == 2
+
+
+def test_sum_of_temp_timeout_token_and_temp_condition_token_throw_temp_simple_tokens():
+    token = SimpleToken(TimeoutToken(1)) + SimpleToken(ConditionToken(lambda: False))
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 2
+    assert token
+
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert token.tokens[0].timeout == 1
+
+    assert isinstance(token.tokens[1], ConditionToken)
