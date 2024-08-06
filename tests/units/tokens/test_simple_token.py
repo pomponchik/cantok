@@ -286,3 +286,20 @@ def test_sum_of_not_temp_timeout_token_and_not_temp_condition_token_throw_temp_s
 
     assert token.tokens[1] is condition_token
     assert isinstance(token.tokens[1], ConditionToken)
+
+
+def test_sum_of_not_temp_condition_token_and_not_temp_timeout_token_throw_temp_simple_tokens():
+    timeout_token = TimeoutToken(1)
+    condition_token = ConditionToken(lambda: False)
+    token = SimpleToken(condition_token) + SimpleToken(timeout_token)
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 2
+    assert token
+
+    assert token.tokens[0] is condition_token
+    assert isinstance(token.tokens[0], ConditionToken)
+
+    assert token.tokens[1] is timeout_token
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1].timeout == 1
