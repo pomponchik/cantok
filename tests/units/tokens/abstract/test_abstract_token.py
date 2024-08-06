@@ -142,7 +142,7 @@ def test_str(token_fabric):
     'second_token_fabric',
     ALL_TOKENS_FABRICS,
 )
-def test_add_tokens(first_token_fabric, second_token_fabric):
+def test_add_not_temp_tokens(first_token_fabric, second_token_fabric):
     first_token = first_token_fabric()
     second_token = second_token_fabric()
 
@@ -152,6 +152,30 @@ def test_add_tokens(first_token_fabric, second_token_fabric):
     assert len(tokens_sum.tokens) == 2
     assert tokens_sum.tokens[0] is first_token
     assert tokens_sum.tokens[1] is second_token
+
+
+@pytest.mark.parametrize(
+    ['first_token_class', 'first_arguments'],
+    [
+        (TimeoutToken, [15]),
+        (ConditionToken, [lambda: False]),
+        #(CounterToken, [15]),
+    ],
+)
+@pytest.mark.parametrize(
+    ['second_token_class', 'second_arguments'],
+    [
+        (TimeoutToken, [15]),
+        (ConditionToken, [lambda: False]),
+        #(CounterToken, [15]),
+    ],
+)
+def test_add_temp_tokens(first_token_class, second_token_class, first_arguments, second_arguments):
+    tokens_sum = first_token_class(*first_arguments) + second_token_class(*second_arguments)
+
+    assert isinstance(tokens_sum, first_token_class)
+    assert len(tokens_sum.tokens) == 1
+    assert isinstance(tokens_sum.tokens[0], second_token_class)
 
 
 @pytest.mark.parametrize(

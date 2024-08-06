@@ -16,7 +16,7 @@ class CounterToken(ConditionToken):
         self.initial_counter = counter
         self.direct = direct
         self.rollback_if_nondirect_polling = self.direct
-
+        
         def function() -> bool:
             with self.lock:
                 if not self.counter:
