@@ -24,10 +24,6 @@ class AbstractToken(ABC):
         for token in tokens:
             if isinstance(token, DefaultToken):
                 pass
-            #elif token._cancelled:
-            #    self.cancel()
-            #    self.tokens = []
-            #    break
             else:
                 self.tokens.append(token)
 
