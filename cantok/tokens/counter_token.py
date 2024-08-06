@@ -16,7 +16,7 @@ class CounterToken(ConditionToken):
         self.initial_counter = counter
         self.direct = direct
         self.rollback_if_nondirect_polling = self.direct
-        
+
         def function() -> bool:
             with self.lock:
                 if not self.counter:
@@ -33,9 +33,11 @@ class CounterToken(ConditionToken):
         return str(self.counter)
 
     def get_extra_kwargs(self) -> Dict[str, Any]:
-        return {
-            'direct': self.direct,
-        }
+        if not self.direct:
+            return {
+                'direct': self.direct,
+            }
+        return {}
 
     def get_superpower_data(self) -> Dict[str, Any]:
         return {'counter': self.counter}
