@@ -173,8 +173,10 @@ def test_sum_of_2_temp_timeout_tokens_throw_temp_simple_tokens():
 
     assert isinstance(token, SimpleToken)
     assert len(token.tokens) == 2
+
     assert isinstance(token.tokens[0], TimeoutToken)
     assert token.tokens[0].timeout == 1
+
     assert isinstance(token.tokens[1], TimeoutToken)
     assert token.tokens[1].timeout == 2
 
@@ -186,9 +188,26 @@ def test_sum_of_2_not_temp_timeout_tokens_throw_temp_simple_tokens():
 
     assert isinstance(token, SimpleToken)
     assert len(token.tokens) == 2
+
     assert token.tokens[0] is first_timeout_token
     assert isinstance(token.tokens[0], TimeoutToken)
     assert token.tokens[0].timeout == 1
+
+    assert token.tokens[1] is second_timeout_token
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1].timeout == 2
+
+
+def test_sum_of_first_temp_and_second_not_temp_timeout_tokens_throw_temp_simple_tokens():
+    second_timeout_token = TimeoutToken(2)
+    token = SimpleToken(TimeoutToken(1)) + SimpleToken(second_timeout_token)
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 2
+    
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert token.tokens[0].timeout == 1
+
     assert token.tokens[1] is second_timeout_token
     assert isinstance(token.tokens[1], TimeoutToken)
     assert token.tokens[1].timeout == 2
