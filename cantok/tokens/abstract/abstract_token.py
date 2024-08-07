@@ -1,7 +1,7 @@
 from sys import getrefcount
 from abc import ABC, abstractmethod
 from threading import RLock
-from typing import List, Dict, Awaitable, Optional, Union, Any
+from typing import Tuple, List, Dict, Awaitable, Optional, Union, Any
 
 
 from cantok.errors import CancellationError
@@ -15,17 +15,9 @@ class AbstractToken(ABC):
     rollback_if_nondirect_polling = False
 
     def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
-        from cantok import DefaultToken
-
         self.cached_report: Optional[CancellationReport] = None
         self._cancelled: bool = cancelled
-        self.tokens: List[AbstractToken] = []
-
-        for token in tokens:
-            if isinstance(token, DefaultToken):
-                pass
-            else:
-                self.tokens.append(token)
+        self.tokens: List[AbstractToken] = self.filter_tokens(tokens)
 
         self.lock: RLock = RLock()
 
@@ -81,11 +73,24 @@ class AbstractToken(ABC):
         if container_token is None:
             return SimpleToken(*nested_tokens)
         else:
-            container_token.tokens.extend(nested_tokens)
+            container_token.tokens.extend(container_token.filter_tokens(nested_tokens))
             return container_token
 
     def __bool__(self) -> bool:
         return self.keep_on()
+
+    def filter_tokens(self, tokens: Tuple['AbstractToken', ...]) -> List['AbstractToken']:
+        from cantok import DefaultToken
+        
+        result: List[AbstractToken] = []
+
+        for token in tokens:
+            if isinstance(token, DefaultToken):
+                pass
+            else:
+                result.append(token)
+
+        return result
 
     @property
     def cancelled(self) -> bool:

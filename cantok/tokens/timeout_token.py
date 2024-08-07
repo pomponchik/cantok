@@ -1,6 +1,6 @@
 from time import monotonic_ns, perf_counter
 
-from typing import Union, Callable, Dict, Any
+from typing import Union, Callable, Tuple, List, Dict, Any
 
 from cantok import AbstractToken
 from cantok import ConditionToken
@@ -25,10 +25,24 @@ class TimeoutToken(ConditionToken):
             timer = perf_counter
 
         start_time: Union[int, float] = timer()
+        deadline = start_time + timeout
         def function() -> bool:
-            return timer() >= (start_time + timeout)
+            return timer() >= deadline
+
+        self.deadline = deadline
 
         super().__init__(function, *tokens, cancelled=cancelled)
+
+    def filter_tokens(self, tokens: Tuple['AbstractToken', ...]) -> List['AbstractToken']:
+        result: List[AbstractToken] = []
+
+        for token in tokens:
+            if isinstance(token, TimeoutToken) and token.monotonic == self.monotonic and self.deadline < token.deadline:
+                result.extend(token.tokens)
+            else:
+                result.append(token)
+
+        return super().filter_tokens(result)
 
     def text_representation_of_superpower(self) -> str:
         return str(self.timeout)
