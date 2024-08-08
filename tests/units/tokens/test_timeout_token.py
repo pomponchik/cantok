@@ -2019,7 +2019,7 @@ def test_not_temp_timeout_token_plus_negative_timeout_token():
     assert not token.tokens
 
 
-def test_temp_negative_timeout_token_plus_temp_timeout_token():
+def test_temp_negative_timeout_token_plus_timeout_token():
     second = TimeoutToken(1)
     token = TimeoutToken(1, cancelled=True) + second
 
@@ -2028,7 +2028,7 @@ def test_temp_negative_timeout_token_plus_temp_timeout_token():
     assert not token.tokens
 
 
-def test_temp_timeout_token_plus_temp_negative_timeout_token():
+def test_temp_timeout_token_plus_negative_timeout_token():
     second = TimeoutToken(1, cancelled=True)
     token = TimeoutToken(1) + second
 
