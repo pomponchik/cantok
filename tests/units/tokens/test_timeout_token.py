@@ -205,8 +205,6 @@ def test_run_async_multiple_timeouts():
     asyncio.run(runner())
     finish_time = perf_counter()
 
-    print(finish_time - start_time)
-
     assert (finish_time - start_time) < (sleep_duration * number_of_tokens)
 
 
@@ -388,9 +386,6 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_mo
 def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_temp_not_monotonic_timeout_token_with_same_monotonic_flag(timeout_for_equal_or_bigger_token, addictional_kwargs):
     token = TimeoutToken(1, **addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, **addictional_kwargs)
 
-    print(token.deadline)
-    print(token.tokens[0].deadline if len(token.tokens) > 0 else None)
-    print(repr(token))
     assert isinstance(token, TimeoutToken)
     assert token.timeout == 1
     assert len(token.tokens) == 0
