@@ -307,7 +307,7 @@ def test_not_quasitemp_timeout_token_plus_not_temp_simple_token_reverse():
 
 
 def test_timeout_is_more_important_than_cache():
-    sleep_time = 0.0001
+    sleep_time = 0.001
     inner_token = SimpleToken(cancelled=True)
     token = TimeoutToken(sleep_time, inner_token)
 
