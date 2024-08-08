@@ -3,27 +3,13 @@ from sys import getrefcount
 from abc import ABC, abstractmethod
 from threading import RLock
 from typing import List, Dict, Awaitable, Optional, Union, Any
-from collections.abc import Iterable
-
-try:
-    from typing import TypeAlias
-except ImportError:  # pragma: no cover
-    from typing_extensions import TypeAlias
 
 from cantok.errors import CancellationError
 from cantok.tokens.abstract.cancel_cause import CancelCause
 from cantok.tokens.abstract.report import CancellationReport
 from cantok.tokens.abstract.coroutine_wrapper import WaitCoroutineWrapper
+from cantok.types import IterableWithTokens
 
-if sys.version_info > (3, 9):
-    from typing import TypeAlias
-else:  # pragma: no cover
-    from typing_extensions import TypeAlias
-
-if sys.version_info > (3, 8):
-    IterableWithTokens: TypeAlias = Iterable['AbstractToken']  # pragma: no cover
-else:
-    IterableWithTokens = Iterable  # pragma: no cover
 
 class AbstractToken(ABC):
     exception = CancellationError

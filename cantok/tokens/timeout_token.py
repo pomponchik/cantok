@@ -3,20 +3,11 @@ from typing import Union, Callable, List, Dict, Any
 from collections.abc import Iterable
 import sys
 
-try:
-    from typing import TypeAlias
-except ImportError:  # pragma: no cover
-    from typing_extensions import TypeAlias
-
 from cantok import AbstractToken
 from cantok import ConditionToken
 from cantok.errors import TimeoutCancellationError
+from cantok.types import IterableWithTokens
 
-
-if sys.version_info >= (3, 8):
-    IterableWithTokens: TypeAlias = Iterable[AbstractToken]  # pragma: no cover
-else:
-    IterableWithTokens = Iterable  # pragma: no cover
 
 class TimeoutToken(ConditionToken):
     exception = TimeoutCancellationError
