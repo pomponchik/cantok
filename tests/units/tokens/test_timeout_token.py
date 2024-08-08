@@ -390,6 +390,7 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
 
     print(token.deadline)
     print(token.tokens[0].deadline if len(token.tokens) > 0 else None)
+    print(token)
     assert isinstance(token, TimeoutToken)
     assert token.timeout == 1
     assert len(token.tokens) == 0
