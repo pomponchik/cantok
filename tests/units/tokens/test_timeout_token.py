@@ -4,7 +4,7 @@ from time import sleep, perf_counter
 import pytest
 
 from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
-from cantok import SimpleToken, TimeoutToken, ConditionToken, TimeoutCancellationError
+from cantok import SimpleToken, TimeoutToken, ConditionToken, CounterToken, TimeoutCancellationError
 
 
 @pytest.mark.parametrize(
@@ -699,63 +699,6 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert token.tokens[1] is right
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @pytest.mark.parametrize(
     ['addictional_kwargs'],
     [
@@ -1159,3 +1102,864 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert token.tokens[0] is left
     assert token.tokens[1] is right
     assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
+    token = TimeoutToken(2, CounterToken(5), **addictional_kwargs) + TimeoutToken(1, ConditionToken(lambda: True), **addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 1
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 0
+    assert isinstance(token.tokens[0], ConditionToken)
+    assert isinstance(token.tokens[1], CounterToken)
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    token = TimeoutToken(2, CounterToken(5), **left_addictional_kwargs) + TimeoutToken(1, ConditionToken(lambda: True), **right_addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 2
+    assert len(token.tokens) == 2
+    assert len(token.tokens[1].tokens) == 1
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1].timeout == 1
+    assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert len(token.tokens[0].tokens) == 0
+    assert isinstance(token.tokens[0], CounterToken)
+
+
+@pytest.mark.parametrize(
+    ['timeout_for_equal_or_bigger_token'],
+    [
+        (1,),
+        (2,),
+    ],
+)
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_temp_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(timeout_for_equal_or_bigger_token, addictional_kwargs):
+    token = TimeoutToken(1, CounterToken(5), **addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, ConditionToken(lambda: True), **addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 1
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 0
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], ConditionToken)
+
+
+@pytest.mark.parametrize(
+    ['timeout_for_equal_or_bigger_token'],
+    [
+        (1,),
+        (2,),
+    ],
+)
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_temp_not_monotonic_timeout_token_with_not_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(timeout_for_equal_or_bigger_token, left_addictional_kwargs, right_addictional_kwargs):
+    token = TimeoutToken(1, CounterToken(5), **left_addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, ConditionToken(lambda: True), **right_addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 1
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+    assert token.tokens[1].timeout == timeout_for_equal_or_bigger_token
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
+    left_timeout_token = TimeoutToken(2, CounterToken(5), **addictional_kwargs)
+    token = left_timeout_token + TimeoutToken(1, ConditionToken(lambda: True), **addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert token is not left_timeout_token
+    assert token.tokens[1] is left_timeout_token
+    assert token.timeout == 1
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert isinstance(token.tokens[0], ConditionToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1].timeout == 2
+    assert isinstance(token.tokens[1].tokens[0], CounterToken)
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_bigger_timeout_token_plus_less_temp_timeout_token_with_not_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    left_timeout_token = TimeoutToken(2, CounterToken(5), **left_addictional_kwargs)
+    token = left_timeout_token + TimeoutToken(1, ConditionToken(lambda: True), **right_addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert token is not left_timeout_token
+    assert token.tokens[1] is left_timeout_token
+    assert token.timeout == 1
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert isinstance(token.tokens[0], ConditionToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1].timeout == 2
+    assert isinstance(token.tokens[1].tokens[0], CounterToken)
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
+    left_timeout_token = TimeoutToken(1, CounterToken(5), **addictional_kwargs)
+    token = left_timeout_token + TimeoutToken(2, ConditionToken(lambda: True), **addictional_kwargs)
+
+    assert isinstance(token, SimpleToken)
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert isinstance(token.tokens[0], ConditionToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1].timeout == 1
+    assert isinstance(token.tokens[1].tokens[0], CounterToken)
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout_token_with_not_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    left_timeout_token = TimeoutToken(1, CounterToken(5), **left_addictional_kwargs)
+    token = left_timeout_token + TimeoutToken(2, ConditionToken(lambda: True), **right_addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 2
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert isinstance(token.tokens[0], ConditionToken)
+    assert token.tokens[0] is not left_timeout_token
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1].timeout == 1
+    assert token.tokens[1] is left_timeout_token
+    assert isinstance(token.tokens[1].tokens[0], CounterToken)
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
+    right_timeout_token = TimeoutToken(1, ConditionToken(lambda: True), **addictional_kwargs)
+    token = TimeoutToken(2, CounterToken(5), **addictional_kwargs) + right_timeout_token
+
+    assert isinstance(token, SimpleToken)
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+    assert token.tokens[1].timeout == 1
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert token.tokens[1] is right_timeout_token
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_bigger_temp_timeout_token_plus_less_timeout_token_with_not_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    right_timeout_token = TimeoutToken(1, ConditionToken(lambda: True), **right_addictional_kwargs)
+    token = TimeoutToken(2, CounterToken(5), **left_addictional_kwargs) + right_timeout_token
+
+    assert isinstance(token, TimeoutToken)
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+    assert token.tokens[1].timeout == 1
+    assert token.timeout == 2
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert token.tokens[1] is right_timeout_token
+    assert token is not right_timeout_token
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
+    right_timeout_token = TimeoutToken(2, ConditionToken(lambda: True), **addictional_kwargs)
+    token = TimeoutToken(1, CounterToken(5), **addictional_kwargs) + right_timeout_token
+
+    TimeoutToken(1, CounterToken(5), TimeoutToken(2, ConditionToken(lambda: True)))
+
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 1
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert token.timeout == 1
+    assert token.tokens[1].timeout == 2
+    assert token.tokens[1] is right_timeout_token
+    assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+    assert isinstance(token.tokens[0], CounterToken)
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout_token_with_not_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    right_timeout_token = TimeoutToken(2, ConditionToken(lambda: True), **right_addictional_kwargs)
+    token = TimeoutToken(1, CounterToken(5), **left_addictional_kwargs) + right_timeout_token
+
+    TimeoutToken(1, CounterToken(5), TimeoutToken(2, ConditionToken(lambda: True)))
+
+    assert isinstance(token, TimeoutToken)
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+    assert token.timeout == 1
+    assert token.tokens[1].timeout == 2
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert token.tokens[1] is right_timeout_token
+    assert token is not right_timeout_token
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
+    left = TimeoutToken(2, CounterToken(5), **addictional_kwargs)
+    right = TimeoutToken(1, ConditionToken(lambda: False), **addictional_kwargs)
+    token = left + right
+
+    assert isinstance(token, SimpleToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+    assert token
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+    assert token.tokens[0] is left
+    assert token.tokens[1] is right
+    assert token.tokens[0].timeout == 2
+    assert token.tokens[1].timeout == 1
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_bigger_timeout_token_plus_less_timeout_token_with_not_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    left = TimeoutToken(2, CounterToken(5), **left_addictional_kwargs)
+    right = TimeoutToken(1, ConditionToken(lambda: False), **right_addictional_kwargs)
+    token = left + right
+
+    assert isinstance(token, SimpleToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+    assert token
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+    assert token.tokens[0] is left
+    assert token.tokens[1] is right
+    assert token.tokens[0].timeout == 2
+    assert token.tokens[1].timeout == 1
+
+
+@pytest.mark.parametrize(
+    ['timeout_for_equal_or_bigger_token'],
+    [
+        (1,),
+        (2,),
+    ],
+)
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(timeout_for_equal_or_bigger_token, addictional_kwargs):
+    left = TimeoutToken(1, CounterToken(5), **addictional_kwargs)
+    right = TimeoutToken(timeout_for_equal_or_bigger_token, ConditionToken(lambda: False), **addictional_kwargs)
+    token = left + right
+
+    assert isinstance(token, SimpleToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+    assert token
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+    assert token.tokens[0] is left
+    assert token.tokens[1] is right
+    assert token.tokens[0].timeout == 1
+    assert token.tokens[1].timeout == timeout_for_equal_or_bigger_token
+
+
+@pytest.mark.parametrize(
+    ['timeout_for_equal_or_bigger_token'],
+    [
+        (1,),
+        (2,),
+    ],
+)
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_monotonic_timeout_token_with_not_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(timeout_for_equal_or_bigger_token, left_addictional_kwargs, right_addictional_kwargs):
+    left = TimeoutToken(1, CounterToken(5), **left_addictional_kwargs)
+    right = TimeoutToken(timeout_for_equal_or_bigger_token, ConditionToken(lambda: False), **right_addictional_kwargs)
+    token = left + right
+
+    assert isinstance(token, SimpleToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert isinstance(token.tokens[1].tokens[0], ConditionToken)
+    assert token
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[1].tokens) == 1
+    assert len(token.tokens[1].tokens[0].tokens) == 0
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+    assert token.tokens[0] is left
+    assert token.tokens[1] is right
+    assert token.tokens[0].timeout == 1
+    assert token.tokens[1].timeout == timeout_for_equal_or_bigger_token
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
+    token = TimeoutToken(2, CounterToken(5), **addictional_kwargs) + TimeoutToken(1, **addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 1
+    assert len(token.tokens) == 1
+    assert len(token.tokens[0].tokens) == 0
+    assert isinstance(token.tokens[0], CounterToken)
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_monotonic_flag_with_temp_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    token = TimeoutToken(2, CounterToken(5), **left_addictional_kwargs) + TimeoutToken(1, **right_addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 2
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 0
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1].timeout == 1
+
+
+@pytest.mark.parametrize(
+    ['timeout_for_equal_or_bigger_token'],
+    [
+        (1,),
+        (2,),
+    ],
+)
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_temp_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(timeout_for_equal_or_bigger_token, addictional_kwargs):
+    token = TimeoutToken(1, CounterToken(5), **addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, **addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert isinstance(token.tokens[0], CounterToken)
+    assert token.timeout == 1
+    assert len(token.tokens) == 1
+    assert len(token.tokens[0].tokens) == 0
+    assert isinstance(token.tokens[0], CounterToken)
+
+
+@pytest.mark.parametrize(
+    ['timeout_for_equal_or_bigger_token'],
+    [
+        (1,),
+        (2,),
+    ],
+)
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_temp_not_monotonic_timeout_token_with_not_same_monotonic_flag_with_temp_counter_token_at_left(timeout_for_equal_or_bigger_token, left_addictional_kwargs, right_addictional_kwargs):
+    token = TimeoutToken(1, CounterToken(5), **left_addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, **right_addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 1
+    assert token.tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 0
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
+    left_timeout_token = TimeoutToken(2, CounterToken(5), **addictional_kwargs)
+    token = left_timeout_token + TimeoutToken(1, **addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert token is not left_timeout_token
+    assert token.tokens[0] is left_timeout_token
+    assert token.timeout == 1
+    assert token.tokens[0].timeout == 2
+    assert len(token.tokens) == 1
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_bigger_timeout_token_plus_less_temp_timeout_token_with_not_same_monotonic_flag_with_temp_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    left_timeout_token = TimeoutToken(2, CounterToken(5), **left_addictional_kwargs)
+    token = left_timeout_token + TimeoutToken(1, **right_addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert token is not left_timeout_token
+    assert token.tokens[0] is left_timeout_token
+    assert token.timeout == 1
+    assert token.tokens[0].timeout == 2
+    assert len(token.tokens) == 1
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
+    left_timeout_token = TimeoutToken(1, CounterToken(5), **addictional_kwargs)
+    token = left_timeout_token + TimeoutToken(2, **addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert isinstance(token.tokens[0], CounterToken)
+    assert len(token.tokens) == 1
+    assert len(token.tokens[0].tokens) == 0
+    assert token is left_timeout_token
+    assert token.timeout == 1
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout_token_with_not_same_monotonic_flag_with_temp_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    left_timeout_token = TimeoutToken(1, CounterToken(5), **left_addictional_kwargs)
+    token = left_timeout_token + TimeoutToken(2, **right_addictional_kwargs)
+
+    assert isinstance(token, TimeoutToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert token.timeout == 2
+    assert token.tokens[0].timeout == 1
+    assert token.tokens[0] is left_timeout_token
+    assert token is not left_timeout_token
+    assert token.timeout == 2
+    assert len(token.tokens) == 1
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
+    right_timeout_token = TimeoutToken(1, **addictional_kwargs)
+    token = TimeoutToken(2, CounterToken(5), **addictional_kwargs) + right_timeout_token
+
+    assert isinstance(token, SimpleToken)
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1].timeout == 1
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 0
+    assert token.tokens[1] is right_timeout_token
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_bigger_temp_timeout_token_plus_less_timeout_token_with_not_same_monotonic_flag_with_temp_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    right_timeout_token = TimeoutToken(1, **right_addictional_kwargs)
+    token = TimeoutToken(2, CounterToken(5), **left_addictional_kwargs) + right_timeout_token
+
+    assert isinstance(token, TimeoutToken)
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.tokens[1].timeout == 1
+    assert token.timeout == 2
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 0
+    assert token.tokens[1] is right_timeout_token
+    assert token is not right_timeout_token
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
+    right_timeout_token = TimeoutToken(2, **addictional_kwargs)
+    token = TimeoutToken(1, CounterToken(5), **addictional_kwargs) + right_timeout_token
+
+    assert isinstance(token, TimeoutToken)
+    assert token.timeout == 1
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 0
+    assert token.tokens[1].timeout == 2
+    assert token.tokens[1] is right_timeout_token
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout_token_with_not_same_monotonic_flag_with_temp_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    right_timeout_token = TimeoutToken(2, **right_addictional_kwargs)
+    token = TimeoutToken(1, CounterToken(5), **left_addictional_kwargs) + right_timeout_token
+
+    assert isinstance(token, TimeoutToken)
+    assert isinstance(token.tokens[0], CounterToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert token.timeout == 1
+    assert token.tokens[1].timeout == 2
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 0
+    assert len(token.tokens[1].tokens) == 0
+    assert token.tokens[1] is right_timeout_token
+    assert token is not right_timeout_token
+
+
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
+    left = TimeoutToken(2, CounterToken(5), **addictional_kwargs)
+    right = TimeoutToken(1, **addictional_kwargs)
+    token = left + right
+
+    assert isinstance(token, SimpleToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert token
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[1].tokens) == 0
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+    assert token.tokens[0] is left
+    assert token.tokens[1] is right
+    assert token.tokens[0].timeout == 2
+    assert token.tokens[1].timeout == 1
+
+
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_bigger_timeout_token_plus_less_timeout_token_with_not_same_monotonic_flag_with_temp_counter_token_at_left(left_addictional_kwargs, right_addictional_kwargs):
+    left = TimeoutToken(2, CounterToken(5), **left_addictional_kwargs)
+    right = TimeoutToken(1, **right_addictional_kwargs)
+    token = left + right
+
+    assert isinstance(token, SimpleToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert token
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[1].tokens) == 0
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+    assert token.tokens[0] is left
+    assert token.tokens[1] is right
+    assert token.tokens[0].timeout == 2
+    assert token.tokens[1].timeout == 1
+
+
+@pytest.mark.parametrize(
+    ['timeout_for_equal_or_bigger_token'],
+    [
+        (1,),
+        (2,),
+    ],
+)
+@pytest.mark.parametrize(
+    ['addictional_kwargs'],
+    [
+        ({'monotonic': False},),
+        ({},),
+        ({'monotonic': True},),
+    ],
+)
+def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(timeout_for_equal_or_bigger_token, addictional_kwargs):
+    left = TimeoutToken(1, CounterToken(5), **addictional_kwargs)
+    right = TimeoutToken(timeout_for_equal_or_bigger_token, **addictional_kwargs)
+    token = left + right
+
+    assert isinstance(token, SimpleToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert token
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[1].tokens) == 0
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+    assert token.tokens[0] is left
+    assert token.tokens[1] is right
+    assert token.tokens[0].timeout == 1
+    assert token.tokens[1].timeout == timeout_for_equal_or_bigger_token
+
+
+@pytest.mark.parametrize(
+    ['timeout_for_equal_or_bigger_token'],
+    [
+        (1,),
+        (2,),
+    ],
+)
+@pytest.mark.parametrize(
+    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    [
+        ({'monotonic': False}, {'monotonic': True}),
+        ({}, {'monotonic': True}),
+        ({'monotonic': True}, {'monotonic': False}),
+        ({'monotonic': True}, {}),
+    ],
+)
+def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_monotonic_timeout_token_with_not_same_monotonic_flag_with_temp_counter_token_at_left(timeout_for_equal_or_bigger_token, left_addictional_kwargs, right_addictional_kwargs):
+    left = TimeoutToken(1, CounterToken(5), **left_addictional_kwargs)
+    right = TimeoutToken(timeout_for_equal_or_bigger_token, **right_addictional_kwargs)
+    token = left + right
+
+    assert isinstance(token, SimpleToken)
+    assert isinstance(token.tokens[0], TimeoutToken)
+    assert isinstance(token.tokens[1], TimeoutToken)
+    assert isinstance(token.tokens[0].tokens[0], CounterToken)
+    assert token
+    assert len(token.tokens) == 2
+    assert len(token.tokens[0].tokens) == 1
+    assert len(token.tokens[1].tokens) == 0
+    assert len(token.tokens[0].tokens[0].tokens) == 0
+    assert token.tokens[0] is left
+    assert token.tokens[1] is right
+    assert token.tokens[0].timeout == 1
+    assert token.tokens[1].timeout == timeout_for_equal_or_bigger_token
