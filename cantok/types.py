@@ -8,6 +8,6 @@ else:
     from typing_extensions import TypeAlias  # pragma: no cover
 
 if sys.version_info > (3, 8):
-    IterableWithTokens: TypeAlias = Iterable['AbstractToken']  # type: ignore[name-defined]
+    IterableWithTokens: TypeAlias = Iterable['AbstractToken']  # type: ignore[name-defined, unused-ignore]
 else:
     IterableWithTokens = Iterable  # pragma: no cover
