@@ -1,6 +1,6 @@
 from time import monotonic_ns, perf_counter
-
 from typing import Union, Callable, Tuple, List, Dict, Any
+from collections.abc import Iterable
 
 from cantok import AbstractToken
 from cantok import ConditionToken
@@ -33,7 +33,7 @@ class TimeoutToken(ConditionToken):
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
-    def filter_tokens(self, tokens: Tuple['AbstractToken', ...]) -> List['AbstractToken']:
+    def filter_tokens(self, tokens: Iterable[AbstractToken]) -> List[AbstractToken]:
         result: List[AbstractToken] = []
 
         for token in tokens:
