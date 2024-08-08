@@ -94,13 +94,13 @@ class AbstractToken(ABC):
         if container_token is None:
             return SimpleToken(*nested_tokens)
         else:
-            container_token.tokens.extend(container_token.filter_tokens(nested_tokens, expected_refcount=6))
+            container_token.tokens.extend(container_token.filter_tokens(nested_tokens))
             return container_token
 
     def __bool__(self) -> bool:
         return self.keep_on()
 
-    def filter_tokens(self, tokens: IterableWithTokens, expected_refcount: int = 0) -> List['AbstractToken']:  # type: ignore[type-arg]
+    def filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:  # type: ignore[type-arg]
         from cantok import DefaultToken
 
         result: List[AbstractToken] = []
