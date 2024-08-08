@@ -1,5 +1,5 @@
 from time import monotonic_ns, perf_counter
-from typing import Union, Callable, Tuple, List, Dict, Any
+from typing import Union, Callable, List, Dict, Any
 from collections.abc import Iterable
 
 from cantok import AbstractToken

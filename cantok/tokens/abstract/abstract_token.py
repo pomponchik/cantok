@@ -1,7 +1,7 @@
 from sys import getrefcount
 from abc import ABC, abstractmethod
 from threading import RLock
-from typing import Tuple, List, Dict, Awaitable, Optional, Union, Any
+from typing import List, Dict, Awaitable, Optional, Union, Any
 from collections.abc import Iterable
 
 from cantok.errors import CancellationError
