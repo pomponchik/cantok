@@ -34,11 +34,11 @@ class TimeoutToken(ConditionToken):
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
-    def filter_tokens(self, tokens: IterableWithTokens) -> List[AbstractToken]:  # type: ignore[type-arg]
+    def filter_tokens(self, tokens: IterableWithTokens, expected_refcount: int = 7) -> List[AbstractToken]:  # type: ignore[type-arg]
         result: List[AbstractToken] = []
 
         for token in tokens:
-            if isinstance(token, TimeoutToken) and token.monotonic == self.monotonic and self.deadline <= token.deadline and getrefcount(token) < 7:
+            if isinstance(token, TimeoutToken) and token.monotonic == self.monotonic and self.deadline <= token.deadline and getrefcount(token) < expected_refcount:
                 result.extend(token.tokens)
             else:
                 result.append(token)
