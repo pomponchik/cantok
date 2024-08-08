@@ -59,7 +59,7 @@ class AbstractToken(ABC):
         container_token: Optional[AbstractToken] = None
 
         if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken):
-            if self.monotonic == item.monotonic and self.deadline >= item.deadline and getrefcount(item) < 6:
+            if self.monotonic == item.monotonic and self.deadline >= item.deadline and getrefcount(self) < 4:
                 item.tokens.extend(self.tokens)
                 return item
 
