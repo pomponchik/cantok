@@ -1,7 +1,12 @@
 from time import monotonic_ns, perf_counter
-from typing import TypeAlias, Union, Callable, List, Dict, Any
+from typing import Union, Callable, List, Dict, Any
 from collections.abc import Iterable
 import sys
+
+try:
+    from typing import TypeAlias
+except ImportError:  # pragma: no cover
+    from typing_extensions import TypeAlias
 
 from cantok import AbstractToken
 from cantok import ConditionToken
