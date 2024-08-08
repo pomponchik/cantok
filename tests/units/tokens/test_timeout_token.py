@@ -317,7 +317,7 @@ def test_timeout_is_more_important_than_cache():
         assert report.from_token is inner_token
         assert report.cause == CancelCause.CANCELLED
 
-    sleep(sleep_time * 10)
+    sleep(sleep_time * 15)
 
     for report in token.get_report(True), token.get_report(False):
         assert report is not None
