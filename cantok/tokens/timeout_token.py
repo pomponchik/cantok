@@ -39,7 +39,7 @@ class TimeoutToken(ConditionToken):
         result: List[AbstractToken] = []
 
         for token in tokens:
-            if isinstance(token, TimeoutToken) and token.monotonic == self.monotonic and self.deadline < token.deadline:
+            if isinstance(token, TimeoutToken) and token.monotonic == self.monotonic and self.deadline <= token.deadline:
                 result.extend(token.tokens)
             else:
                 result.append(token)
