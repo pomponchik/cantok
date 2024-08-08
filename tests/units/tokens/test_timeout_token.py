@@ -551,7 +551,10 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
 
     assert isinstance(token, TimeoutToken)
     assert token.timeout == 1
-    assert len(token.tokens) == 0
+    assert len(token.tokens) == 1
+    assert len(token.tokens[0].tokens) == 0
+    assert token.tokens[0].timeout == 2
+    assert token.tokens[0] is right_timeout_token
 
 
 @pytest.mark.parametrize(
