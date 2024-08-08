@@ -60,8 +60,14 @@ class AbstractToken(ABC):
 
         if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken):
             if self.monotonic == item.monotonic and self.deadline >= item.deadline and getrefcount(self) < 4:
-                item.tokens.extend(self.tokens)
-                return item
+                if getrefcount(item) < 4:
+                    item.tokens.extend(self.tokens)
+                    return item
+                else:
+                    if self.tokens:
+                        return SimpleToken(item, *(self.tokens))
+                    else:
+                        return item
 
         for token in self, item:
             if token._cancelled:
