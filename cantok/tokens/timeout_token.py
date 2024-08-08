@@ -1,4 +1,5 @@
 from time import monotonic_ns, perf_counter
+from sys import getrefcount
 from typing import Union, Callable, List, Dict, Any
 
 from cantok import AbstractToken
@@ -37,7 +38,7 @@ class TimeoutToken(ConditionToken):
         result: List[AbstractToken] = []
 
         for token in tokens:
-            if isinstance(token, TimeoutToken) and token.monotonic == self.monotonic and self.deadline <= token.deadline:
+            if isinstance(token, TimeoutToken) and token.monotonic == self.monotonic and self.deadline <= token.deadline and getrefcount(token) < 7:
                 result.extend(token.tokens)
             else:
                 result.append(token)
