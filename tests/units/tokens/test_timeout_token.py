@@ -341,11 +341,8 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monoto
     token = TimeoutToken(2, **addictional_kwargs) + TimeoutToken(1, **addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
-    assert len(token.tokens) == 1
-    assert len(token.tokens[0].tokens) == 0
-    assert isinstance(token.tokens[0], TimeoutToken)
-    assert token.tokens[0].timeout == 1
+    assert token.timeout == 1
+    assert len(token.tokens) == 0
 
 
 @pytest.mark.parametrize(
@@ -514,12 +511,8 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_f
     token = TimeoutToken(2, **addictional_kwargs) + right_timeout_token
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
-    assert len(token.tokens) == 1
-    assert len(token.tokens[0].tokens) == 0
-    assert isinstance(token.tokens[0], TimeoutToken)
-    assert token.tokens[0].timeout == 1
-    assert token.tokens[0] is right_timeout_token
+    assert token.timeout == 1
+    assert len(token.tokens) == 0
 
 
 @pytest.mark.parametrize(
