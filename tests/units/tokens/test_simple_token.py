@@ -197,9 +197,8 @@ def test_sum_of_2_temp_timeout_tokens_throw_right_temp_simple_token():
 
     assert isinstance(token, TimeoutToken)
     assert len(token.tokens) == 1
+    assert len(token.tokens[0].tokens) == 0
     assert token.timeout == 1
-
-    assert isinstance(token.tokens[0], TimeoutToken)
     assert token.tokens[0].timeout == 2
 
 

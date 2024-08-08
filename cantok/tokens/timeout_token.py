@@ -1,5 +1,4 @@
 from time import monotonic_ns, perf_counter
-
 from typing import Union, Callable, Dict, Any
 
 from cantok import AbstractToken
@@ -25,8 +24,11 @@ class TimeoutToken(ConditionToken):
             timer = perf_counter
 
         start_time: Union[int, float] = timer()
+        deadline = start_time + timeout
         def function() -> bool:
-            return timer() >= (start_time + timeout)
+            return timer() >= deadline
+
+        self.deadline = deadline
 
         super().__init__(function, *tokens, cancelled=cancelled)
 

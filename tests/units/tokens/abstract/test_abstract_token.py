@@ -173,10 +173,14 @@ def test_add_not_temp_tokens(first_token_fabric, second_token_fabric):
 def test_add_temp_tokens(first_token_class, second_token_class, first_arguments, second_arguments):
     tokens_sum = first_token_class(*first_arguments) + second_token_class(*second_arguments)
 
-    assert isinstance(tokens_sum, first_token_class)
-    assert len(tokens_sum.tokens) == 1
-    assert isinstance(tokens_sum.tokens[0], second_token_class)
-    assert len(tokens_sum.tokens[0].tokens) == 0
+    if not (first_token_class is TimeoutToken and second_token_class is TimeoutToken):
+        assert isinstance(tokens_sum, first_token_class)
+        assert len(tokens_sum.tokens) == 1
+        assert isinstance(tokens_sum.tokens[0], second_token_class)
+        assert len(tokens_sum.tokens[0].tokens) == 0
+    else:
+        assert isinstance(tokens_sum, TimeoutToken)
+        assert len(tokens_sum.tokens) == 0
 
 
 @pytest.mark.parametrize(
@@ -199,10 +203,14 @@ def test_add_not_temp_token_and_temp_token(first_token_class, second_token_class
     first_token = first_token_class(*first_arguments)
     tokens_sum = first_token + second_token_class(*second_arguments)
 
-    assert isinstance(tokens_sum, second_token_class)
-    assert len(tokens_sum.tokens) == 1
-    assert isinstance(tokens_sum.tokens[0], first_token_class)
-    assert len(tokens_sum.tokens[0].tokens) == 0
+    if first_token_class is TimeoutToken and second_token_class is TimeoutToken:
+        assert tokens_sum is first_token
+        assert not tokens_sum.tokens
+    else:
+        assert isinstance(tokens_sum, second_token_class)
+        assert len(tokens_sum.tokens) == 1
+        assert isinstance(tokens_sum.tokens[0], first_token_class)
+        assert len(tokens_sum.tokens[0].tokens) == 0
 
 
 @pytest.mark.parametrize(
@@ -225,10 +233,14 @@ def test_add_temp_token_and_not_temp_token(first_token_class, second_token_class
     second_token = second_token_class(*second_arguments)
     tokens_sum = first_token_class(*first_arguments) + second_token
 
-    assert isinstance(tokens_sum, first_token_class)
-    assert len(tokens_sum.tokens) == 1
-    assert isinstance(tokens_sum.tokens[0], second_token_class)
-    assert len(tokens_sum.tokens[0].tokens) == 0
+    if first_token_class is TimeoutToken and second_token_class is TimeoutToken:
+        assert isinstance(tokens_sum, TimeoutToken)
+        assert len(tokens_sum.tokens) == 0
+    else:
+        assert isinstance(tokens_sum, first_token_class)
+        assert len(tokens_sum.tokens) == 1
+        assert isinstance(tokens_sum.tokens[0], second_token_class)
+        assert len(tokens_sum.tokens[0].tokens) == 0
 
 
 @pytest.mark.parametrize(

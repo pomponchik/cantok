@@ -3,11 +3,11 @@ from abc import ABC, abstractmethod
 from threading import RLock
 from typing import List, Dict, Awaitable, Optional, Union, Any
 
-
 from cantok.errors import CancellationError
 from cantok.tokens.abstract.cancel_cause import CancelCause
 from cantok.tokens.abstract.report import CancellationReport
 from cantok.tokens.abstract.coroutine_wrapper import WaitCoroutineWrapper
+from cantok.types import IterableWithTokens
 
 
 class AbstractToken(ABC):
@@ -15,17 +15,9 @@ class AbstractToken(ABC):
     rollback_if_nondirect_polling = False
 
     def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
-        from cantok import DefaultToken
-
         self.cached_report: Optional[CancellationReport] = None
         self._cancelled: bool = cancelled
-        self.tokens: List[AbstractToken] = []
-
-        for token in tokens:
-            if isinstance(token, DefaultToken):
-                pass
-            else:
-                self.tokens.append(token)
+        self.tokens: List[AbstractToken] = self.filter_tokens(tokens)
 
         self.lock: RLock = RLock()
 
@@ -61,15 +53,36 @@ class AbstractToken(ABC):
         if not isinstance(item, AbstractToken):
             raise TypeError('Cancellation Token can only be combined with another Cancellation Token.')
 
-        from cantok import SimpleToken, DefaultToken
+        from cantok import SimpleToken, DefaultToken, TimeoutToken
+
+        if self._cancelled or item._cancelled:
+            return SimpleToken(cancelled=True)
 
         nested_tokens = []
         container_token: Optional[AbstractToken] = None
 
+        if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken) and self.monotonic == item.monotonic:
+            if self.deadline >= item.deadline and getrefcount(self) < 4:
+                if getrefcount(item) < 4:
+                    item.tokens.extend(self.tokens)
+                    return item
+                else:
+                    if self.tokens:
+                        return SimpleToken(*(self.tokens), item)
+                    else:
+                        return item
+            elif self.deadline < item.deadline and getrefcount(item) < 4:
+                if getrefcount(self) < 4:
+                    self.tokens.extend(item.tokens)
+                    return self
+                else:
+                    if item.tokens:
+                        return SimpleToken(*(item.tokens), self)
+                    else:
+                        return self
+
         for token in self, item:
-            if token._cancelled:
-                return SimpleToken(cancelled=True)
-            elif isinstance(token, SimpleToken) and getrefcount(token) < 6:
+            if isinstance(token, SimpleToken) and getrefcount(token) < 6:
                 nested_tokens.extend(token.tokens)
             elif isinstance(token, DefaultToken):
                 pass
@@ -81,11 +94,24 @@ class AbstractToken(ABC):
         if container_token is None:
             return SimpleToken(*nested_tokens)
         else:
-            container_token.tokens.extend(nested_tokens)
+            container_token.tokens.extend(container_token.filter_tokens(nested_tokens))
             return container_token
 
     def __bool__(self) -> bool:
         return self.keep_on()
+
+    def filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:  # type: ignore[type-arg]
+        from cantok import DefaultToken
+
+        result: List[AbstractToken] = []
+
+        for token in tokens:
+            if isinstance(token, DefaultToken):
+                pass
+            else:
+                result.append(token)
+
+        return result
 
     @property
     def cancelled(self) -> bool:
