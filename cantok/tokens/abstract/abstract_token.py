@@ -55,6 +55,9 @@ class AbstractToken(ABC):
 
         from cantok import SimpleToken, DefaultToken, TimeoutToken
 
+        if self._cancelled or item._cancelled:
+            return SimpleToken(cancelled=True)
+
         nested_tokens = []
         container_token: Optional[AbstractToken] = None
 
@@ -79,9 +82,7 @@ class AbstractToken(ABC):
                         return self
 
         for token in self, item:
-            if token._cancelled:
-                return SimpleToken(cancelled=True)
-            elif isinstance(token, SimpleToken) and getrefcount(token) < 6:
+            if isinstance(token, SimpleToken) and getrefcount(token) < 6:
                 nested_tokens.extend(token.tokens)
             elif isinstance(token, DefaultToken):
                 pass
