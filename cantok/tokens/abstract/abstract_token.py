@@ -2,8 +2,13 @@ import sys
 from sys import getrefcount
 from abc import ABC, abstractmethod
 from threading import RLock
-from typing import TypeAlias, List, Dict, Awaitable, Optional, Union, Any
+from typing import List, Dict, Awaitable, Optional, Union, Any
 from collections.abc import Iterable
+
+try:
+    from typing import TypeAlias
+except ImportError:  # pragma: no cover
+    from typing_extensions import TypeAlias
 
 from cantok.errors import CancellationError
 from cantok.tokens.abstract.cancel_cause import CancelCause
