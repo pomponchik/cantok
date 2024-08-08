@@ -203,10 +203,14 @@ def test_add_not_temp_token_and_temp_token(first_token_class, second_token_class
     first_token = first_token_class(*first_arguments)
     tokens_sum = first_token + second_token_class(*second_arguments)
 
-    assert isinstance(tokens_sum, second_token_class)
-    assert len(tokens_sum.tokens) == 1
-    assert isinstance(tokens_sum.tokens[0], first_token_class)
-    assert len(tokens_sum.tokens[0].tokens) == 0
+    if first_token_class is TimeoutToken and second_token_class is TimeoutToken:
+        assert tokens_sum is first_token
+        assert not tokens_sum.tokens
+    else:
+        assert isinstance(tokens_sum, second_token_class)
+        assert len(tokens_sum.tokens) == 1
+        assert isinstance(tokens_sum.tokens[0], first_token_class)
+        assert len(tokens_sum.tokens[0].tokens) == 0
 
 
 @pytest.mark.parametrize(

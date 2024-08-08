@@ -58,16 +58,25 @@ class AbstractToken(ABC):
         nested_tokens = []
         container_token: Optional[AbstractToken] = None
 
-        if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken):
-            if self.monotonic == item.monotonic and self.deadline >= item.deadline and getrefcount(self) < 4:
+        if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken) and self.monotonic == item.monotonic:
+            if self.deadline >= item.deadline and getrefcount(self) < 4:
                 if getrefcount(item) < 4:
                     item.tokens.extend(self.tokens)
                     return item
                 else:
                     if self.tokens:
-                        return SimpleToken(item, *(self.tokens))
+                        return SimpleToken(*(self.tokens), item)
                     else:
                         return item
+            elif self.deadline < item.deadline and getrefcount(item) < 4:
+                if getrefcount(self) < 4:
+                    self.tokens.extend(item.tokens)
+                    return self
+                else:
+                    if item.tokens:
+                        return SimpleToken(*(item.tokens), self)
+                    else:
+                        return self
 
         for token in self, item:
             if token._cancelled:
