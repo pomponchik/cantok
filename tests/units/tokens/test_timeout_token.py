@@ -1963,3 +1963,75 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert token.tokens[1] is right
     assert token.tokens[0].timeout == 1
     assert token.tokens[1].timeout == timeout_for_equal_or_bigger_token
+
+
+def test_temp_negative_timeout_token_plus_temp_timeout_token():
+    token = TimeoutToken(1, cancelled=True) + TimeoutToken(1)
+
+    assert isinstance(token, SimpleToken)
+    assert not token
+    assert not token.tokens
+
+
+def test_temp_timeout_token_plus_temp_negative_timeout_token():
+    token = TimeoutToken(1) + TimeoutToken(1, cancelled=True)
+
+    assert isinstance(token, SimpleToken)
+    assert not token
+    assert not token.tokens
+
+
+def test_not_temp_negative_timeout_token_plus_temp_timeout_token():
+    first = TimeoutToken(1, cancelled=True)
+    token = first + TimeoutToken(1)
+
+    assert isinstance(token, SimpleToken)
+    assert not token
+    assert not token.tokens
+
+
+def test_not_temp_timeout_token_plus_temp_negative_timeout_token():
+    first = TimeoutToken(1)
+    token = first + TimeoutToken(1, cancelled=True)
+
+    assert isinstance(token, SimpleToken)
+    assert not token
+    assert not token.tokens
+
+
+def test_not_temp_negative_timeout_token_plus_timeout_token():
+    first = TimeoutToken(1, cancelled=True)
+    second = TimeoutToken(1)
+    token = first + second
+
+    assert isinstance(token, SimpleToken)
+    assert not token
+    assert not token.tokens
+
+
+def test_not_temp_timeout_token_plus_negative_timeout_token():
+    first = TimeoutToken(1)
+    second = TimeoutToken(1, cancelled=True)
+    token = first + second
+
+    assert isinstance(token, SimpleToken)
+    assert not token
+    assert not token.tokens
+
+
+def test_temp_negative_timeout_token_plus_temp_timeout_token():
+    second = TimeoutToken(1)
+    token = TimeoutToken(1, cancelled=True) + second
+
+    assert isinstance(token, SimpleToken)
+    assert not token
+    assert not token.tokens
+
+
+def test_temp_timeout_token_plus_temp_negative_timeout_token():
+    second = TimeoutToken(1, cancelled=True)
+    token = TimeoutToken(1) + second
+
+    assert isinstance(token, SimpleToken)
+    assert not token
+    assert not token.tokens
