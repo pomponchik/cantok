@@ -10,4 +10,4 @@ else:
 if sys.version_info >= (3, 9):
     IterableWithTokens: TypeAlias = Iterable['AbstractToken']  # type: ignore[name-defined, unused-ignore] # pragma: no cover
 else:
-    IterableWithTokens = Iterable  # pragma: no cover
+    IterableWithTokens = Iterable['AbstractToken']  # pragma: no cover
