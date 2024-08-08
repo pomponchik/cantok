@@ -1,4 +1,3 @@
-import sys
 from sys import getrefcount
 from abc import ABC, abstractmethod
 from threading import RLock
