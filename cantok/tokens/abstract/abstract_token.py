@@ -15,6 +15,10 @@ from cantok.tokens.abstract.cancel_cause import CancelCause
 from cantok.tokens.abstract.report import CancellationReport
 from cantok.tokens.abstract.coroutine_wrapper import WaitCoroutineWrapper
 
+if sys.version_info > (3, 9):
+    from typing import TypeAlias
+else:  # pragma: no cover
+    from typing_extensions import TypeAlias
 
 if sys.version_info > (3, 8):
     IterableWithTokens: TypeAlias = Iterable['AbstractToken']  # pragma: no cover
