@@ -35,7 +35,7 @@ class TimeoutToken(ConditionToken):
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
-    def filter_tokens(self, tokens: IterableWithTokens) -> List[AbstractToken]:
+    def filter_tokens(self, tokens: IterableWithTokens) -> List[AbstractToken]:  # type: ignore[type-arg]
         result: List[AbstractToken] = []
 
         for token in tokens:
