@@ -1,11 +1,17 @@
 from time import monotonic_ns, perf_counter
-from typing import Union, Callable, List, Dict, Any
+from typing import TypeAlias, Union, Callable, List, Dict, Any
 from collections.abc import Iterable
+import sys
 
 from cantok import AbstractToken
 from cantok import ConditionToken
 from cantok.errors import TimeoutCancellationError
 
+
+if sys.version_info >= (3, 8):
+    IterableWithTokens: TypeAlias = Iterable[AbstractToken]  # pragma: no cover
+else:
+    IterableWithTokens = Iterable  # pragma: no cover
 
 class TimeoutToken(ConditionToken):
     exception = TimeoutCancellationError
@@ -33,7 +39,7 @@ class TimeoutToken(ConditionToken):
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
-    def filter_tokens(self, tokens: Iterable[AbstractToken]) -> List[AbstractToken]:
+    def filter_tokens(self, tokens: IterableWithTokens) -> List[AbstractToken]:
         result: List[AbstractToken] = []
 
         for token in tokens:
