@@ -1,11 +1,9 @@
 from time import monotonic_ns, perf_counter
-from sys import getrefcount
-from typing import Union, Callable, List, Dict, Any
+from typing import Union, Callable, Dict, Any
 
 from cantok import AbstractToken
 from cantok import ConditionToken
 from cantok.errors import TimeoutCancellationError
-from cantok.types import IterableWithTokens
 
 
 class TimeoutToken(ConditionToken):
