@@ -461,3 +461,17 @@ def test_repr_of_condition_token():
     assert repr(ConditionToken(function, suppress_exceptions=False, default=True)) == 'ConditionToken(function, suppress_exceptions=False, default=True)'
 
     assert repr(ConditionToken(function, suppress_exceptions=False, default=True, cancelled=True)) == 'ConditionToken(function, cancelled=True, suppress_exceptions=False, default=True)'
+
+
+def test_repr_for_class_based_function():
+    class SomeChecker:
+        def __call__(self) -> bool:
+            return True
+
+        def __str__(self) -> str:
+            return 'str_string'
+
+        def __repr__(self) -> str:
+            return 'repr_string'
+
+    assert repr(ConditionToken(SomeChecker())) == 'ConditionToken(repr_string)'
