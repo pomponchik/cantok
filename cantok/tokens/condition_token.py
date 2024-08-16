@@ -57,12 +57,16 @@ class ConditionToken(AbstractToken):
         return result
 
     def text_representation_of_superpower(self) -> str:
-        result = self.function.__name__
+        if hasattr(self.function, '__name__'):
+            result = self.function.__name__
 
-        if result == '<lambda>':
-            return 'λ'
+            if result == '<lambda>':
+                return 'λ'
 
-        return result
+            return result
+
+        else:
+            return repr(self.function)
 
     def get_extra_kwargs(self) -> Dict[str, Any]:
         result = {}
