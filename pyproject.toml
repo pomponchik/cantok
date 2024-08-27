@@ -13,6 +13,7 @@ readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
     'typing_extensions ; python_version <= "3.9"',
+    'displayhooks>=0.0.1',
 ]
 classifiers = [
     "Operating System :: OS Independent",
