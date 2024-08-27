@@ -15,7 +15,7 @@ from cantok import SimpleToken, TimeoutToken, ConditionToken, CounterToken
         (lambda: ConditionToken(lambda: True).wait(), ''),
         (lambda: CounterToken(0).wait(), ''),
         (lambda: 1, '1\n'),
-        (lambda: 'kek', f'{repr('kek')}\n'),
+        (lambda: 'kek', f'{repr("kek")}\n'),
     ],
 )
 def test_displayhook_printing_coroutine_wrappers_and_other_objects(create_value, expected_string):
