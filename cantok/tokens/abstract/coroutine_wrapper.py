@@ -1,10 +1,12 @@
+import sys
 import weakref
-from sys import getrefcount
 from typing import Dict, Union, Optional, Any
 from types import TracebackType
 from collections.abc import Coroutine
 from time import sleep as sync_sleep
 from asyncio import sleep as async_sleep
+
+from displayhooks import not_display
 
 
 class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
@@ -33,7 +35,7 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
     @staticmethod
     def sync_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine: Coroutine) -> None:  # type: ignore[type-arg, name-defined]
         if not flags.get('used', False):
-            if getrefcount(wrapped_coroutine) < 5:
+            if sys.getrefcount(wrapped_coroutine) < 5:
                 wrapped_coroutine.close()
 
                 while token_for_wait:
@@ -51,3 +53,6 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
         await async_sleep(0)
 
         token_for_check.check()
+
+
+not_display(WaitCoroutineWrapper)
