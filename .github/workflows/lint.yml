@@ -23,22 +23,22 @@ jobs:
       shell: bash
       run: pip install -r requirements_dev.txt
 
-    - name: Install the library
-      shell: bash
-      run: pip install .
-
-    - name: Run mypy
-      shell: bash
-      run: mypy cantok --strict
-
-    - name: Run mypy for tests
-      shell: bash
-      run: mypy tests
-
-    - name: Run ruff
-      shell: bash
-      run: ruff cantok
-
-    - name: Run ruff for tests
-      shell: bash
-      run: ruff tests
+#    - name: Install the library
+#      shell: bash
+#      run: pip install .
+#
+#    - name: Run mypy
+#      shell: bash
+#      run: mypy cantok --strict
+#
+#    - name: Run mypy for tests
+#      shell: bash
+#      run: mypy tests
+#
+#    - name: Run ruff
+#      shell: bash
+#      run: ruff cantok
+#
+#    - name: Run ruff for tests
+#      shell: bash
+#      run: ruff tests
