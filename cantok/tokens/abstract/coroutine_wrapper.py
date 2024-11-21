@@ -9,7 +9,7 @@ from asyncio import sleep as async_sleep
 from displayhooks import not_display
 
 
-class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
+class WaitCoroutineWrapper(Coroutine):
     def __init__(self, step: Union[int, float], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken') -> None:  # type: ignore[name-defined]
         self.step = step
         self.token_for_wait = token_for_wait
