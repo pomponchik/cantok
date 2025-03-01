@@ -1,8 +1,9 @@
 pytest==7.4.2
-coverage==7.2.7
+coverage==7.6.12
 build==0.9.0
 twine==4.0.2
 mypy==1.4.1
 ruff==0.0.290
 mkdocs-material==9.2.7
+mutmut==3.2.3
 full_match==0.0.1
