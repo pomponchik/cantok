@@ -10,7 +10,7 @@ authors = [
 ]
 description = 'Implementation of the "Cancellation Token" pattern'
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     'typing_extensions ; python_version <= "3.9"',
     'displayhooks>=0.0.2',
@@ -22,7 +22,6 @@ classifiers = [
     'Operating System :: POSIX',
     'Operating System :: POSIX :: Linux',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
