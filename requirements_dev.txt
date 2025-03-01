@@ -1,9 +1,9 @@
-pytest
-coverage
-build
-twine
-mypy
-ruff
-mkdocs-material
+pytest==8.3.4
+coverage==7.6.12
+build==1.2.2.post1
+twine==6.1.0
+mypy==1.15.0
+ruff==0.9.9
+mkdocs-material==9.6.6
 mutmut==3.2.3
 full_match==0.0.1
