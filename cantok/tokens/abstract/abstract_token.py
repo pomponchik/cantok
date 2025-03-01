@@ -100,7 +100,7 @@ class AbstractToken(ABC):
     def __bool__(self) -> bool:
         return self.keep_on()
 
-    def filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:  # type: ignore[type-arg]
+    def filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:
         from cantok import DefaultToken
 
         result: List[AbstractToken] = []
