@@ -1,5 +1,6 @@
 import sys
-from collections.abc import Iterable
+from collections.abc import Iterable as IterableFromCollections
+from typing import Iterable as IterableFromTyping
 
 if sys.version_info >= (3, 10):
     from typing import TypeAlias  # pragma: no cover
@@ -8,6 +9,6 @@ else:
 
 
 if sys.version_info >= (3, 9):
-    IterableWithTokens: TypeAlias = Iterable['AbstractToken']  # type: ignore[name-defined, unused-ignore] # pragma: no cover
+    IterableWithTokens: TypeAlias = IterableFromCollections['AbstractToken']  # type: ignore[name-defined, unused-ignore] # pragma: no cover
 else:
-    IterableWithTokens = Iterable['AbstractToken']  # type: ignore[name-defined] # pragma: no cover
+    IterableWithTokens = IterableFromTyping['AbstractToken']  # type: ignore[name-defined] # pragma: no cover
