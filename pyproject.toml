@@ -12,7 +12,7 @@ requires-python = ">=3.8"
 dependencies = [
     'typing_extensions ; python_version <= "3.9"',
     'displayhooks>=0.0.4',
-    'transfunctions==0.0.9',
+    'transfunctions==0.0.8',
 ]
 classifiers = [
     "Operating System :: OS Independent",
