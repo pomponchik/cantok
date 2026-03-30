@@ -158,6 +158,10 @@ class AbstractToken(ABC):
 
         return WaitCoroutineWrapper(step, self + token, token)
 
+    def cancel(self) -> 'AbstractToken':
+        self._cancelled = True
+        return self
+
     def _get_report(self, direct: bool = True) -> CancellationReport:
         if self._cancelled:
             return CancellationReport(
@@ -182,10 +186,6 @@ class AbstractToken(ABC):
             cause=CancelCause.NOT_CANCELLED,
             from_token=self,
         )
-
-    def cancel(self) -> 'AbstractToken':
-        self._cancelled = True
-        return self
 
     @abstractmethod
     def _superpower(self) -> bool:  # pragma: no cover
