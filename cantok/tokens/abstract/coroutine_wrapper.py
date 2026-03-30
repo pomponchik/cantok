@@ -35,7 +35,16 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
     @staticmethod
     def sync_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken', wrapped_coroutine: Coroutine) -> None:  # type: ignore[type-arg, name-defined]
         if not flags.get('used', False):
-            if sys.getrefcount(wrapped_coroutine) < 5:
+            # In Python <=3.13, LOAD_FAST increments refcount, so getrefcount() returns
+            # true_refs + 2; threshold < 5 means "fewer than 3 external refs" (i.e. only
+            # the finalize args-tuple and this parameter hold the coroutine, indicating it
+            # is not being actively awaited by the event loop).
+            # In Python 3.14+, LOAD_FAST_BORROW does not increment refcount, AND
+            # native_coro.__await__() returns a new coroutine_wrapper object instead of
+            # the coroutine itself, so getrefcount() returns true_refs + 1; threshold < 4
+            # expresses the same "fewer than 3 external refs" condition.
+            _refcount_threshold = 4 if sys.version_info >= (3, 14) else 5
+            if sys.getrefcount(wrapped_coroutine) < _refcount_threshold:
                 wrapped_coroutine.close()
 
                 while token_for_wait:

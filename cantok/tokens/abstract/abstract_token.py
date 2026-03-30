@@ -1,3 +1,4 @@
+import sys
 from sys import getrefcount
 from abc import ABC, abstractmethod
 from threading import RLock
@@ -8,6 +9,15 @@ from cantok.tokens.abstract.cancel_cause import CancelCause
 from cantok.tokens.abstract.report import CancellationReport
 from cantok.tokens.abstract.coroutine_wrapper import WaitCoroutineWrapper
 from cantok.types import IterableWithTokens
+
+# In Python <=3.13, LOAD_FAST increments refcounts, so we can distinguish
+# temporary tokens (0 external refs) from stored tokens (1+ external refs)
+# by comparing getrefcount() against these thresholds.
+# The TimeoutToken branch runs before the loop (no tuple/loop-var refs), so
+# its threshold is lower (4) than the generic loop threshold (6).
+if sys.version_info < (3, 14):
+    _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD = 4
+    _GENERIC_TOKEN_REFCOUNT_THRESHOLD = 6
 
 
 class AbstractToken(ABC):
@@ -61,9 +71,36 @@ class AbstractToken(ABC):
         nested_tokens = []
         container_token: Optional[AbstractToken] = None
 
+        if sys.version_info >= (3, 14):
+            # In Python 3.14+, LOAD_FAST_BORROW does not increment refcounts,
+            # making refcount-based detection of temporary tokens unreliable.
+            # Instead, inspect the caller's frame: a token is "temporary" if it
+            # does not appear in the caller's local variables or module globals.
+            _frame = sys._getframe(1)
+            _caller_locals = list(_frame.f_locals.values())
+            _caller_globals = list(_frame.f_globals.values())
+
+            def is_temp(token: 'AbstractToken') -> bool:
+                for v in _caller_locals:
+                    if v is token:
+                        return False
+                for v in _caller_globals:
+                    if v is token:
+                        return False
+                return True
+
+            _self_is_temp = is_temp(self)
+            _item_is_temp = is_temp(item)
+        else:
+            _self_is_temp = getrefcount(self) < _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD
+            _item_is_temp = getrefcount(item) < _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD
+
+            def is_temp(token: 'AbstractToken') -> bool:
+                return getrefcount(token) < _GENERIC_TOKEN_REFCOUNT_THRESHOLD
+
         if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken) and self.monotonic == item.monotonic:
-            if self.deadline >= item.deadline and getrefcount(self) < 4:
-                if getrefcount(item) < 4:
+            if self.deadline >= item.deadline and _self_is_temp:
+                if _item_is_temp:
                     item.tokens.extend(self.tokens)
                     return item
                 else:
@@ -71,8 +108,8 @@ class AbstractToken(ABC):
                         return SimpleToken(*(self.tokens), item)
                     else:
                         return item
-            elif self.deadline < item.deadline and getrefcount(item) < 4:
-                if getrefcount(self) < 4:
+            elif self.deadline < item.deadline and _item_is_temp:
+                if _self_is_temp:
                     self.tokens.extend(item.tokens)
                     return self
                 else:
@@ -82,11 +119,11 @@ class AbstractToken(ABC):
                         return self
 
         for token in self, item:
-            if isinstance(token, SimpleToken) and getrefcount(token) < 6:
+            if isinstance(token, SimpleToken) and is_temp(token):
                 nested_tokens.extend(token.tokens)
             elif isinstance(token, DefaultToken):
                 pass
-            elif not isinstance(token, SimpleToken) and getrefcount(token) < 6 and container_token is None:
+            elif not isinstance(token, SimpleToken) and is_temp(token) and container_token is None:
                 container_token = token
             else:
                 nested_tokens.append(token)
