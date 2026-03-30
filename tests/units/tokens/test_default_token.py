@@ -68,21 +68,21 @@ def test_default_plus_default():
     empty_sum = DefaultToken() + DefaultToken()
 
     assert isinstance(empty_sum, SimpleToken)
-    assert len(empty_sum.tokens) == 0
+    assert len(empty_sum._tokens) == 0
 
 
 def test_default_plus_default_plus_default():
     empty_sum = DefaultToken() + DefaultToken() + DefaultToken()
 
     assert isinstance(empty_sum, SimpleToken)
-    assert len(empty_sum.tokens) == 0
+    assert len(empty_sum._tokens) == 0
 
 
 def test_default_token_plus_temp_simple_token():
     empty_sum = DefaultToken() + SimpleToken()
 
     assert isinstance(empty_sum, SimpleToken)
-    assert len(empty_sum.tokens) == 0
+    assert len(empty_sum._tokens) == 0
 
 
 def test_default_token_plus_not_temp_simple_token():
@@ -90,9 +90,9 @@ def test_default_token_plus_not_temp_simple_token():
     total = DefaultToken() + simple_token
 
     assert isinstance(total, SimpleToken)
-    assert len(total.tokens) == 1
+    assert len(total._tokens) == 1
     assert total is not simple_token
-    assert total.tokens[0] is simple_token
+    assert total._tokens[0] is simple_token
 
 
 def test_temp_default_token_plus_temp_timeout_token():
@@ -100,7 +100,7 @@ def test_temp_default_token_plus_temp_timeout_token():
 
     assert isinstance(token, TimeoutToken)
     assert token.timeout == 1
-    assert len(token.tokens) == 0
+    assert len(token._tokens) == 0
 
 
 def test_temp_timeout_token_plus_temp_default_token():
@@ -108,4 +108,4 @@ def test_temp_timeout_token_plus_temp_default_token():
 
     assert isinstance(token, TimeoutToken)
     assert token.timeout == 1
-    assert len(token.tokens) == 0
+    assert len(token._tokens) == 0

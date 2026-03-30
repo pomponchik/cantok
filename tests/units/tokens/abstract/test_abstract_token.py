@@ -159,9 +159,9 @@ def test_add_not_temp_tokens(first_token_fabric, second_token_fabric):
     tokens_sum = first_token + second_token
 
     assert isinstance(tokens_sum, SimpleToken)
-    assert len(tokens_sum.tokens) == 2
-    assert tokens_sum.tokens[0] is first_token
-    assert tokens_sum.tokens[1] is second_token
+    assert len(tokens_sum._tokens) == 2
+    assert tokens_sum._tokens[0] is first_token
+    assert tokens_sum._tokens[1] is second_token
 
 
 @pytest.mark.parametrize(
@@ -185,12 +185,12 @@ def test_add_temp_tokens(first_token_class, second_token_class, first_arguments,
 
     if not (first_token_class is TimeoutToken and second_token_class is TimeoutToken):
         assert isinstance(tokens_sum, first_token_class)
-        assert len(tokens_sum.tokens) == 1
-        assert isinstance(tokens_sum.tokens[0], second_token_class)
-        assert len(tokens_sum.tokens[0].tokens) == 0
+        assert len(tokens_sum._tokens) == 1
+        assert isinstance(tokens_sum._tokens[0], second_token_class)
+        assert len(tokens_sum._tokens[0]._tokens) == 0
     else:
         assert isinstance(tokens_sum, TimeoutToken)
-        assert len(tokens_sum.tokens) == 0
+        assert len(tokens_sum._tokens) == 0
 
 
 @pytest.mark.parametrize(
@@ -215,12 +215,12 @@ def test_add_not_temp_token_and_temp_token(first_token_class, second_token_class
 
     if first_token_class is TimeoutToken and second_token_class is TimeoutToken:
         assert tokens_sum is first_token
-        assert not tokens_sum.tokens
+        assert not tokens_sum._tokens
     else:
         assert isinstance(tokens_sum, second_token_class)
-        assert len(tokens_sum.tokens) == 1
-        assert isinstance(tokens_sum.tokens[0], first_token_class)
-        assert len(tokens_sum.tokens[0].tokens) == 0
+        assert len(tokens_sum._tokens) == 1
+        assert isinstance(tokens_sum._tokens[0], first_token_class)
+        assert len(tokens_sum._tokens[0]._tokens) == 0
 
 
 @pytest.mark.parametrize(
@@ -245,12 +245,12 @@ def test_add_temp_token_and_not_temp_token(first_token_class, second_token_class
 
     if first_token_class is TimeoutToken and second_token_class is TimeoutToken:
         assert isinstance(tokens_sum, TimeoutToken)
-        assert len(tokens_sum.tokens) == 0
+        assert len(tokens_sum._tokens) == 0
     else:
         assert isinstance(tokens_sum, first_token_class)
-        assert len(tokens_sum.tokens) == 1
-        assert isinstance(tokens_sum.tokens[0], second_token_class)
-        assert len(tokens_sum.tokens[0].tokens) == 0
+        assert len(tokens_sum._tokens) == 1
+        assert isinstance(tokens_sum._tokens[0], second_token_class)
+        assert len(tokens_sum._tokens[0]._tokens) == 0
 
 
 @pytest.mark.parametrize(
@@ -273,10 +273,10 @@ def test_add_three_tokens_except_simple_token(first_token_fabric, second_token_f
     tokens_sum = first_token + second_token + third_token
 
     assert isinstance(tokens_sum, SimpleToken)
-    assert len(tokens_sum.tokens) == 3
-    assert tokens_sum.tokens[0] is first_token
-    assert tokens_sum.tokens[1] is second_token
-    assert tokens_sum.tokens[2] is third_token
+    assert len(tokens_sum._tokens) == 3
+    assert tokens_sum._tokens[0] is first_token
+    assert tokens_sum._tokens[1] is second_token
+    assert tokens_sum._tokens[2] is third_token
 
 
 @pytest.mark.parametrize(
@@ -289,8 +289,8 @@ def test_add_another_token_and_temp_simple_token(first_token_fabric):
     tokens_sum = first_token + SimpleToken()
 
     assert isinstance(tokens_sum, SimpleToken)
-    assert len(tokens_sum.tokens) == 1
-    assert tokens_sum.tokens[0] is first_token
+    assert len(tokens_sum._tokens) == 1
+    assert tokens_sum._tokens[0] is first_token
 
 
 @pytest.mark.parametrize(
@@ -303,8 +303,8 @@ def test_add_temp_simple_token_and_another_token(second_token_fabric):
     tokens_sum = SimpleToken() + second_token
 
     assert isinstance(tokens_sum, SimpleToken)
-    assert len(tokens_sum.tokens) == 1
-    assert tokens_sum.tokens[0] is second_token
+    assert len(tokens_sum._tokens) == 1
+    assert tokens_sum._tokens[0] is second_token
 
 
 @pytest.mark.parametrize(
@@ -318,9 +318,9 @@ def test_add_another_token_and_not_temp_simple_token(first_token_fabric):
     tokens_sum = first_token + simple_token
 
     assert isinstance(tokens_sum, SimpleToken)
-    assert len(tokens_sum.tokens) == 2
-    assert tokens_sum.tokens[0] is first_token
-    assert tokens_sum.tokens[1] is simple_token
+    assert len(tokens_sum._tokens) == 2
+    assert tokens_sum._tokens[0] is first_token
+    assert tokens_sum._tokens[1] is simple_token
 
 
 @pytest.mark.parametrize(
@@ -334,9 +334,9 @@ def test_add_not_temp_simple_token_and_another_token(second_token_fabric):
     tokens_sum = simple_token + second_token
 
     assert isinstance(tokens_sum, SimpleToken)
-    assert len(tokens_sum.tokens) == 2
-    assert tokens_sum.tokens[0] is simple_token
-    assert tokens_sum.tokens[1] is second_token
+    assert len(tokens_sum._tokens) == 2
+    assert tokens_sum._tokens[0] is simple_token
+    assert tokens_sum._tokens[1] is second_token
 
 
 @pytest.mark.parametrize(
@@ -350,8 +350,8 @@ def test_add_tokens_and_first_is_default_token(second_token_fabric):
     tokens_sum = first_token + second_token
 
     assert isinstance(tokens_sum, SimpleToken)
-    assert len(tokens_sum.tokens) == 1
-    assert tokens_sum.tokens[0] is second_token
+    assert len(tokens_sum._tokens) == 1
+    assert tokens_sum._tokens[0] is second_token
 
 
 @pytest.mark.parametrize(
@@ -365,8 +365,8 @@ def test_add_tokens_and_second_one_is_default_token(first_token_fabric):
     tokens_sum = first_token + second_token
 
     assert isinstance(tokens_sum, SimpleToken)
-    assert len(tokens_sum.tokens) == 1
-    assert tokens_sum.tokens[0] is first_token
+    assert len(tokens_sum._tokens) == 1
+    assert tokens_sum._tokens[0] is first_token
 
 
 @pytest.mark.parametrize(
@@ -645,7 +645,7 @@ def test_insert_default_token_to_another_tokens(token_fabric):
     token = token_fabric(DefaultToken())
 
     assert not isinstance(token, DefaultToken)
-    assert len(token.tokens) == 0
+    assert len(token._tokens) == 0
 
 
 @pytest.mark.parametrize(
@@ -773,8 +773,8 @@ def test_superpower_is_more_important_than_cache(first_token_fabric, second_toke
 def test_just_neste_temp_simple_token_to_another_token(token_fabric):
     token = token_fabric(SimpleToken())
 
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], SimpleToken)
+    assert len(token._tokens) == 1
+    assert isinstance(token._tokens[0], SimpleToken)
     assert token
 
 
@@ -786,7 +786,7 @@ def test_any_token_plus_temp_cancelled_simple_token_gives_cancelled_simple_token
     token = token_fabric() + SimpleToken(cancelled=True)
 
     assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 0
+    assert len(token._tokens) == 0
     assert not token
 
 
@@ -799,5 +799,5 @@ def test_any_token_plus_cancelled_simple_token_gives_cancelled_simple_token(toke
     token = token_fabric() + simple_token
 
     assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 0
+    assert len(token._tokens) == 0
     assert not token

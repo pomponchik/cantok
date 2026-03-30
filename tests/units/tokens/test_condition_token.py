@@ -328,7 +328,7 @@ def test_quasitemp_condition_token_plus_temp_simple_token():
     token = ConditionToken(lambda: False) + SimpleToken()
 
     assert isinstance(token, ConditionToken)
-    assert len(token.tokens) == 0
+    assert len(token._tokens) == 0
 
 
 def test_not_quasitemp_condition_token_plus_temp_simple_token():
@@ -336,9 +336,9 @@ def test_not_quasitemp_condition_token_plus_temp_simple_token():
     token = condition_token + SimpleToken()
 
     assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], ConditionToken)
-    assert token.tokens[0] is condition_token
+    assert len(token._tokens) == 1
+    assert isinstance(token._tokens[0], ConditionToken)
+    assert token._tokens[0] is condition_token
 
 
 def test_quasitemp_condition_token_plus_not_temp_simple_token():
@@ -347,9 +347,9 @@ def test_quasitemp_condition_token_plus_not_temp_simple_token():
 
     assert isinstance(token, ConditionToken)
     assert token is not simple_token
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], SimpleToken)
-    assert token.tokens[0] is simple_token
+    assert len(token._tokens) == 1
+    assert isinstance(token._tokens[0], SimpleToken)
+    assert token._tokens[0] is simple_token
 
 
 def test_not_quasitemp_condition_token_plus_not_temp_simple_token():
@@ -359,17 +359,17 @@ def test_not_quasitemp_condition_token_plus_not_temp_simple_token():
 
     assert isinstance(token, SimpleToken)
     assert token is not simple_token
-    assert len(token.tokens) == 2
-    assert isinstance(token.tokens[0], ConditionToken)
-    assert token.tokens[0] is condition_token
-    assert token.tokens[1] is simple_token
+    assert len(token._tokens) == 2
+    assert isinstance(token._tokens[0], ConditionToken)
+    assert token._tokens[0] is condition_token
+    assert token._tokens[1] is simple_token
 
 
 def test_quasitemp_condition_token_plus_temp_simple_token_reverse():
     token = SimpleToken() + ConditionToken(lambda: False)
 
     assert isinstance(token, ConditionToken)
-    assert len(token.tokens) == 0
+    assert len(token._tokens) == 0
 
 
 def test_not_quasitemp_condition_token_plus_temp_simple_token_reverse():
@@ -377,9 +377,9 @@ def test_not_quasitemp_condition_token_plus_temp_simple_token_reverse():
     token = SimpleToken() + condition_token
 
     assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], ConditionToken)
-    assert token.tokens[0] is condition_token
+    assert len(token._tokens) == 1
+    assert isinstance(token._tokens[0], ConditionToken)
+    assert token._tokens[0] is condition_token
 
 
 def test_quasitemp_condition_token_plus_not_temp_simple_token_reverse():
@@ -388,8 +388,8 @@ def test_quasitemp_condition_token_plus_not_temp_simple_token_reverse():
 
     assert isinstance(token, ConditionToken)
     assert token is not simple_token
-    assert len(token.tokens) == 1
-    assert token.tokens[0] is simple_token
+    assert len(token._tokens) == 1
+    assert token._tokens[0] is simple_token
 
 
 def test_not_quasitemp_condition_token_plus_not_temp_simple_token_reverse():
@@ -399,10 +399,10 @@ def test_not_quasitemp_condition_token_plus_not_temp_simple_token_reverse():
 
     assert isinstance(token, SimpleToken)
     assert token is not simple_token
-    assert len(token.tokens) == 2
-    assert isinstance(token.tokens[1], ConditionToken)
-    assert token.tokens[1] is condition_token
-    assert token.tokens[0] is simple_token
+    assert len(token._tokens) == 2
+    assert isinstance(token._tokens[1], ConditionToken)
+    assert token._tokens[1] is condition_token
+    assert token._tokens[0] is simple_token
 
 
 def test_condition_function_is_more_important_than_cache():

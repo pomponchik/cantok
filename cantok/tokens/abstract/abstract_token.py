@@ -17,7 +17,7 @@ class AbstractToken(ABC):
     def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
         self.cached_report: Optional[CancellationReport] = None
         self._cancelled: bool = cancelled
-        self.tokens: List[AbstractToken] = self._filter_tokens(tokens)
+        self._tokens: List[AbstractToken] = self._filter_tokens(tokens)
 
         self.lock: RLock = RLock()
 
@@ -26,7 +26,7 @@ class AbstractToken(ABC):
         superpower = self._text_representation_of_superpower()
         if superpower:
             chunks.append(superpower)
-        other_tokens = ', '.join([repr(x) for x in self.tokens])
+        other_tokens = ', '.join([repr(x) for x in self._tokens])
         if other_tokens:
             chunks.append(other_tokens)
         report = self._get_report(direct=False)
@@ -79,22 +79,22 @@ class AbstractToken(ABC):
         if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken) and self.monotonic == item.monotonic:
             if self.deadline >= item.deadline and _self_is_temp:
                 if _item_is_temp:
-                    item.tokens.extend(self.tokens)
+                    item._tokens.extend(self._tokens)
                     return item
-                if self.tokens:
-                    return SimpleToken(*(self.tokens), item)
+                if self._tokens:
+                    return SimpleToken(*(self._tokens), item)
                 return item
             if self.deadline < item.deadline and _item_is_temp:
                 if _self_is_temp:
-                    self.tokens.extend(item.tokens)
+                    self._tokens.extend(item._tokens)
                     return self
-                if item.tokens:
-                    return SimpleToken(*(item.tokens), self)
+                if item._tokens:
+                    return SimpleToken(*(item._tokens), self)
                 return self
 
         for token in self, item:
             if isinstance(token, SimpleToken) and is_temp(token):
-                nested_tokens.extend(token.tokens)
+                nested_tokens.extend(token._tokens)
             elif isinstance(token, DefaultToken):
                 pass
             elif not isinstance(token, SimpleToken) and is_temp(token) and container_token is None:
@@ -104,7 +104,7 @@ class AbstractToken(ABC):
 
         if container_token is None:
             return SimpleToken(*nested_tokens)
-        container_token.tokens.extend(container_token._filter_tokens(nested_tokens))
+        container_token._tokens.extend(container_token._filter_tokens(nested_tokens))
         return container_token
 
     def __bool__(self) -> bool:
@@ -186,7 +186,7 @@ class AbstractToken(ABC):
         if self.cached_report is not None:
             return self.cached_report
 
-        for token in self.tokens:
+        for token in self._tokens:
             report = token._get_report(direct=False)
             if report.cause != CancelCause.NOT_CANCELLED:
                 self.cached_report = report
