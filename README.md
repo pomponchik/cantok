@@ -44,4 +44,4 @@ while token:
 print(counter)
 ```
 
-Read more in the [documentation](https://cantok.readthedocs.io/en/latest/)!
+Read more in the [documentation](https://cantok.readthedocs.io/en/latest/).
