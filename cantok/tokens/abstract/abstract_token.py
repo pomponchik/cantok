@@ -178,8 +178,11 @@ class AbstractToken(ABC):
         :param timeout: Maximum time to wait, in seconds. If exceeded,
                         raises TimeoutCancellationError. Defaults to None (no limit).
 
+        >>> import asyncio
+        >>>
         >>> token = TimeoutToken(5)
         >>> token.wait()   # blocks for ~5 seconds, then returns
+        >>> asyncio.run(token.wait())   # non-blocking, inside an asyncio event loop
         """
         if step < 0:
             raise ValueError('The token polling iteration time cannot be less than zero.')
