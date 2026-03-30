@@ -46,7 +46,7 @@ class CounterToken(ConditionToken):
             }
         return {}
 
-    def get_superpower_data(self) -> Dict[str, Any]:
+    def _get_superpower_data(self) -> Dict[str, Any]:
         return {'counter': self.counter}
 
     def get_superpower_exception_message(self) -> str:

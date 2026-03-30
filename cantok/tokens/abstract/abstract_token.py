@@ -201,12 +201,12 @@ class AbstractToken(ABC):
 
     def _check_superpower_with_rollback(self) -> bool:
         with self.lock:
-            superpower_data = self.get_superpower_data()
+            superpower_data = self._get_superpower_data()
             result = self._superpower()
             self._superpower_rollback(superpower_data)
             return result
 
-    def get_superpower_data(self) -> Dict[str, Any]:  # pragma: no cover
+    def _get_superpower_data(self) -> Dict[str, Any]:  # pragma: no cover
         return {}
 
     @abstractmethod
