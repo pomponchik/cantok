@@ -81,7 +81,7 @@ def test_check_superpower_raised_nested():
 def test_get_report_cancelled():
     token = SimpleToken(cancelled=True)
 
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.CANCELLED
@@ -100,7 +100,7 @@ def test_get_report_cancelled_nested(cancelled_flag, cancelled_flag_nested, from
     nested_token = SimpleToken(cancelled=cancelled_flag_nested)
     token = SimpleToken(nested_token, cancelled=cancelled_flag)
 
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.CANCELLED

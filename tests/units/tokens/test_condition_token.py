@@ -154,7 +154,7 @@ def test_check_superpower_raised_nested():
 def test_get_report_cancelled():
     token = ConditionToken(lambda: True)
 
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.SUPERPOWER
@@ -173,7 +173,7 @@ def test_get_report_cancelled_nested(cancelled, cancelled_nested, from_token_is_
     nested_token = ConditionToken(lambda: cancelled_nested)
     token = ConditionToken(lambda: cancelled, nested_token)
 
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.SUPERPOWER
@@ -410,7 +410,7 @@ def test_condition_function_is_more_important_than_cache():
     inner_token = SimpleToken(cancelled=True)
     token = ConditionToken(lambda: flag, inner_token)
 
-    for report in token.get_report(True), token.get_report(False):
+    for report in token._get_report(True), token._get_report(False):
         assert report is not None
         assert isinstance(report, CancellationReport)
         assert report.from_token is inner_token
@@ -418,7 +418,7 @@ def test_condition_function_is_more_important_than_cache():
 
     flag = True
 
-    for report in token.get_report(True), token.get_report(False):
+    for report in token._get_report(True), token._get_report(False):
         assert report is not None
         assert isinstance(report, CancellationReport)
         assert report.from_token is token
@@ -426,7 +426,7 @@ def test_condition_function_is_more_important_than_cache():
 
 
 def test_zero_condition_token_report_is_about_superpower():
-    for report in ConditionToken(lambda: True).get_report(True), ConditionToken(lambda: True).get_report(False):
+    for report in ConditionToken(lambda: True)._get_report(True), ConditionToken(lambda: True)._get_report(False):
         assert report.cause == CancelCause.SUPERPOWER
 
 

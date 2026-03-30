@@ -131,7 +131,7 @@ def test_get_report_cancelled():
     while not token.cancelled:
         pass
 
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.SUPERPOWER
@@ -150,7 +150,7 @@ def test_get_report_cancelled_nested(counter, counter_nested, from_token_is_nest
     nested_token = CounterToken(counter_nested)
     token = CounterToken(counter, nested_token)
 
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.SUPERPOWER
@@ -307,7 +307,7 @@ def test_not_quasitemp_counter_token_plus_not_temp_simple_token_reverse():
 
 
 def test_zero_counter_token_report_is_about_superpower():
-    for report in CounterToken(0).get_report(True), CounterToken(0).get_report(False):
+    for report in CounterToken(0)._get_report(True), CounterToken(0)._get_report(False):
         assert report.cause == CancelCause.SUPERPOWER
 
 

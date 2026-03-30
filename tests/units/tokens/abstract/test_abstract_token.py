@@ -459,7 +459,7 @@ def test_check_cancelled_token_nested(token_fabric_1, token_fabric_2):
 )
 def test_get_report_not_cancelled(token_fabric):
     token = token_fabric()
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.NOT_CANCELLED
@@ -472,7 +472,7 @@ def test_get_report_not_cancelled(token_fabric):
 )
 def test_get_report_not_cancelled_nested(token_fabric):
     token = token_fabric(token_fabric())
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.NOT_CANCELLED
@@ -491,7 +491,7 @@ def test_get_report_cancelled(token_fabric_1, token_fabric_2):
     nested_token = token_fabric_1()
     token = token_fabric_2(nested_token)
     nested_token.cancel()
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.CANCELLED
@@ -663,8 +663,8 @@ def test_insert_default_token_to_another_tokens(token_fabric):
         lambda x: x.keep_on(),
         lambda x: bool(x),
         lambda x: x.is_cancelled(),
-        lambda x: x.get_report(True),
-        lambda x: x.get_report(False),
+        lambda x: x._get_report(True),
+        lambda x: x._get_report(False),
     ],
 )
 def test_report_cache_is_working_in_simple_case(first_token_fabric, second_token_fabric, action):
@@ -681,8 +681,8 @@ def test_report_cache_is_working_in_simple_case(first_token_fabric, second_token
     assert cached_report.from_token.is_cancelled()
     assert cached_report.cause == CancelCause.CANCELLED
 
-    assert token.get_report(True) is cached_report
-    assert token.get_report(False) is cached_report
+    assert token._get_report(True) is cached_report
+    assert token._get_report(False) is cached_report
 
 
 @pytest.mark.parametrize(
@@ -700,8 +700,8 @@ def test_report_cache_is_working_in_simple_case(first_token_fabric, second_token
         lambda x: x.keep_on(),
         lambda x: bool(x),
         lambda x: x.is_cancelled(),
-        lambda x: x.get_report(True),
-        lambda x: x.get_report(False),
+        lambda x: x._get_report(True),
+        lambda x: x._get_report(False),
     ],
 )
 def test_cache_is_using_after_self_flag(first_token_fabric, second_token_fabric, action):
@@ -713,7 +713,7 @@ def test_cache_is_using_after_self_flag(first_token_fabric, second_token_fabric,
 
     token.cancel()
 
-    for new_report in token.get_report(True), token.get_report(False):
+    for new_report in token._get_report(True), token._get_report(False):
         assert new_report is not cached_report
         assert new_report is not None
         assert isinstance(new_report, CancellationReport)
@@ -736,14 +736,14 @@ def test_cache_is_using_after_self_flag(first_token_fabric, second_token_fabric,
         lambda x: x.keep_on(),
         lambda x: bool(x),
         lambda x: x.is_cancelled(),
-        lambda x: x.get_report(True),
-        lambda x: x.get_report(False),
+        lambda x: x._get_report(True),
+        lambda x: x._get_report(False),
     ],
 )
 def test_superpower_is_more_important_than_cache(first_token_fabric, second_token_fabric, action):
     token = first_token_fabric(second_token_fabric(cancelled=True))
 
-    for report in token.get_report(True), token.get_report(False):
+    for report in token._get_report(True), token._get_report(False):
         assert report is not None
         assert isinstance(report, CancellationReport)
         assert report.from_token is token
@@ -751,7 +751,7 @@ def test_superpower_is_more_important_than_cache(first_token_fabric, second_toke
 
     action(token)
 
-    for report in token.get_report(True), token.get_report(False):
+    for report in token._get_report(True), token._get_report(False):
         assert report is not None
         assert isinstance(report, CancellationReport)
         assert report.from_token is token
@@ -759,7 +759,7 @@ def test_superpower_is_more_important_than_cache(first_token_fabric, second_toke
 
     token.cancel()
 
-    for report in token.get_report(True), token.get_report(False):
+    for report in token._get_report(True), token._get_report(False):
         assert report is not None
         assert isinstance(report, CancellationReport)
         assert report.from_token is token

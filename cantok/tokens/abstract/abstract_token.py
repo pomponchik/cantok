@@ -29,7 +29,7 @@ class AbstractToken(ABC):
         other_tokens = ', '.join([repr(x) for x in self.tokens])
         if other_tokens:
             chunks.append(other_tokens)
-        report = self.get_report(direct=False)
+        report = self._get_report(direct=False)
         if report.cause == CancelCause.NOT_CANCELLED:
             extra_kwargs = {}
         elif report.from_token is self and report.cause == CancelCause.CANCELLED:
@@ -139,7 +139,7 @@ class AbstractToken(ABC):
         return not self.is_cancelled()
 
     def is_cancelled(self, direct: bool = True) -> bool:
-        return self.get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
+        return self._get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
 
     def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None) -> Awaitable:  # type: ignore[type-arg]
         if step < 0:
@@ -158,7 +158,7 @@ class AbstractToken(ABC):
 
         return WaitCoroutineWrapper(step, self + token, token)
 
-    def get_report(self, direct: bool = True) -> CancellationReport:
+    def _get_report(self, direct: bool = True) -> CancellationReport:
         if self._cancelled:
             return CancellationReport(
                 cause=CancelCause.CANCELLED,
@@ -173,7 +173,7 @@ class AbstractToken(ABC):
             return self.cached_report
 
         for token in self.tokens:
-            report = token.get_report(direct=False)
+            report = token._get_report(direct=False)
             if report.cause != CancelCause.NOT_CANCELLED:
                 self.cached_report = report
                 return report
@@ -225,7 +225,7 @@ class AbstractToken(ABC):
 
     def check(self) -> None:
         with self.lock:
-            report = self.get_report()
+            report = self._get_report()
 
             if report.cause == CancelCause.CANCELLED:
                 report.from_token.raise_cancelled_exception()

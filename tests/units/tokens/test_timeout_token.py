@@ -156,7 +156,7 @@ def test_get_report_cancelled():
     while not token.cancelled:
         pass
 
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.SUPERPOWER
@@ -175,7 +175,7 @@ def test_get_report_cancelled_nested(timeout, timeout_nested, from_token_is_nest
     nested_token = TimeoutToken(timeout_nested)
     token = TimeoutToken(timeout, nested_token)
 
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.SUPERPOWER
@@ -313,7 +313,7 @@ def test_timeout_is_more_important_than_cache():
     inner_token = SimpleToken(cancelled=True)
     token = TimeoutToken(sleep_time, inner_token)
 
-    for report in token.get_report(True), token.get_report(False):
+    for report in token._get_report(True), token._get_report(False):
         assert report is not None
         assert isinstance(report, CancellationReport)
         assert report.from_token is inner_token
@@ -321,7 +321,7 @@ def test_timeout_is_more_important_than_cache():
 
     sleep(sleep_time * 15)
 
-    for report in token.get_report(True), token.get_report(False):
+    for report in token._get_report(True), token._get_report(False):
         assert report is not None
         assert isinstance(report, CancellationReport)
         assert report.from_token is token
@@ -329,7 +329,7 @@ def test_timeout_is_more_important_than_cache():
 
 
 def test_zero_timeout_token_report_is_about_superpower():
-    for report in TimeoutToken(0).get_report(True), TimeoutToken(0).get_report(False):
+    for report in TimeoutToken(0)._get_report(True), TimeoutToken(0)._get_report(False):
         assert report.cause == CancelCause.SUPERPOWER
 
 
