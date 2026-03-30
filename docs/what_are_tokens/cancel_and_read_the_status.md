@@ -34,7 +34,7 @@ print(token.cancelled)  #> True
 print(token.is_cancelled())  #> True
 ```
 
-Choose what you like best. The attribute is considered more elegant, but the method call more clearly reflects the complexity of the work that is actually being done to answer the question "has the token been cancelled?".
+Choose what you like best. The attribute is considered more elegant, but calling the method more clearly reflects the complexity of the work actually being done to answer the question "has the token been cancelled?".
 
 There is another method opposite to `is_cancelled()` — `keep_on()`. It answers the opposite question, and can be used in the same situations:
 

@@ -20,7 +20,7 @@ The counter inside the `CounterToken` is decremented under one of three conditio
 - Calling the `is_cancelled()` method.
 - Calling the `keep_on()` method.
 
-If you use `CounterToken` inside other tokens, the wrapping token can query the status of the `CounterToken`. To avoid unintended side effects, this operation does not decrease the counter. However, if for some reason you need it to decrease, pass `direct=False` as an argument:
+If you use `CounterToken` inside other tokens, the wrapping token can query the status of the `CounterToken`. To avoid unintended side effects, querying the status does not decrease the counter. However, if for some reason you need it to decrease, pass `direct=False` as an argument:
 
 ```python
 from cantok import SimpleToken, CounterToken

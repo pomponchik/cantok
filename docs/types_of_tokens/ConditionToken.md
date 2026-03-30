@@ -12,7 +12,7 @@ while token:
 print(counter)  #> 5
 ```
 
-By default, if the passed function raises an exception, it will be silently suppressed. However, you can make the raised exceptions explicit by setting the `suppress_exceptions` parameter to `False`:
+By default, if the passed function raises an exception, the exception will be silently suppressed. However, you can make the raised exceptions explicit by setting the `suppress_exceptions` parameter to `False`:
 
 ```python
 def function(): raise ValueError
@@ -54,7 +54,7 @@ token.check()
 #> 2
 ```
 
-`ConditionToken` has another feature. If the condition has triggered at least once and cancelled the token, then the condition is no longer polled and the token is permanently considered cancelled. You can change this by manipulating the `caching` parameter when creating a token. By setting it to `False`, you will make sure that the condition is polled every time.
+`ConditionToken` has another feature. If the condition has evaluated to True at least once and cancelled the token, then the condition is no longer polled and the token is permanently considered cancelled. You can change this by manipulating the `caching` parameter when creating a token. By setting it to `False`, you will make sure that the condition is polled every time.
 
 ```python
 counter = 0
@@ -75,4 +75,4 @@ print(token.cancelled)
 #> False
 ```
 
-However, we do not recommend doing this. In the vast majority of cases, you do not want your token to be able to roll back the fact of its cancellation. If the token has been cancelled once, it must remain cancelled. Manipulate the `caching` parameter only if you are sure that you understand what you are doing.
+However, we do not recommend doing this. In the vast majority of cases, you do not want your token to be able to undo its cancellation. If the token has been cancelled once, it must remain cancelled. Manipulate the `caching` parameter only if you are sure that you understand what you are doing.
