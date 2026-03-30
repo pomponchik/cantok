@@ -15,11 +15,16 @@ from cantok.types import IterableWithTokens
 # by comparing getrefcount() against these thresholds.
 # The TimeoutToken branch runs before the loop (no tuple/loop-var refs), so
 # its threshold is lower (4) than the generic loop threshold.
-# The generic loop threshold is 7 (not 6 as in the original inline code) because
-# calling is_temp(token) as a function adds 1 extra reference via the parameter binding.
+# The generic loop threshold is 7 for Python 3.9+ (not 6 as in the original inline code)
+# because calling is_temp(token) as a function adds 1 extra reference via parameter binding.
+# Python 3.8 does not exhibit this extra reference, so its threshold stays at 6.
 if sys.version_info < (3, 14):  # pragma: no cover
     _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD = 4
-    _GENERIC_TOKEN_REFCOUNT_THRESHOLD = 7
+    # Python 3.8 generates bytecode that results in one fewer reference when
+    # is_temp(token) is called in the for-loop context vs Python 3.9+.
+    # Python 3.9 changed function call mechanics (vectorcall improvements)
+    # which adds one extra LOAD_FAST-incremented reference in this context.
+    _GENERIC_TOKEN_REFCOUNT_THRESHOLD = 6 if sys.version_info < (3, 9) else 7
 
 
 class AbstractToken(ABC):
