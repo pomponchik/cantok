@@ -110,19 +110,6 @@ class AbstractToken(ABC):
     def __bool__(self) -> bool:
         return self.keep_on()
 
-    def _filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:
-        from cantok import DefaultToken  # noqa: PLC0415
-
-        result: List[AbstractToken] = []
-
-        for token in tokens:
-            if isinstance(token, DefaultToken):
-                pass
-            else:
-                result.append(token)
-
-        return result
-
     @property
     def cancelled(self) -> bool:
         return self.is_cancelled()
@@ -161,6 +148,19 @@ class AbstractToken(ABC):
     def cancel(self) -> 'AbstractToken':
         self._cancelled = True
         return self
+
+    def _filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:
+        from cantok import DefaultToken  # noqa: PLC0415
+
+        result: List[AbstractToken] = []
+
+        for token in tokens:
+            if isinstance(token, DefaultToken):
+                pass
+            else:
+                result.append(token)
+
+        return result
 
     def _get_report(self, direct: bool = True) -> CancellationReport:
         if self._cancelled:
