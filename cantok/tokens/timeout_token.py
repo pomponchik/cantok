@@ -6,6 +6,28 @@ from cantok.errors import TimeoutCancellationError
 
 
 class TimeoutToken(ConditionToken):
+    """
+    A token that cancels automatically after a specified duration.
+
+    The timeout is measured from the moment the token is created. When the
+    deadline is reached, any cancellation check will return True and subsequent
+    check() calls will raise TimeoutCancellationError.
+
+    :param timeout: Duration in seconds before cancellation. Must be >= 0.
+    :param monotonic: If True, uses time.monotonic_ns() instead of
+                      time.perf_counter(), which is unaffected by system
+                      clock adjustments. Defaults to False.
+
+    >>> import time
+    >>>
+    >>> token = TimeoutToken(0.1)
+    >>> token.cancelled
+    False
+    >>> time.sleep(0.2)
+    >>> token.cancelled
+    True
+    """
+
     exception = TimeoutCancellationError
 
     def __init__(self, timeout: Union[int, float], *tokens: AbstractToken, cancelled: bool = False, monotonic: bool = False):

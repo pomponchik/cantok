@@ -9,4 +9,4 @@ token.cancel()
 print(token.cancelled)  #> True
 ```
 
-There is not much more to tell about it if you have read [the story](../what_are_tokens/in_general.md) about tokens in general.
+There is not much more to tell about it if you have read [the section](../what_are_tokens/in_general.md) about tokens in general.

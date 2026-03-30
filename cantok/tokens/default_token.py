@@ -3,6 +3,21 @@ from cantok.errors import ImpossibleCancelError
 
 
 class DefaultToken(AbstractToken):
+    """
+    An immutable token that never cancels.
+
+    Useful as a neutral default argument: a function that accepts a token can
+    receive a DefaultToken when no real cancellation is needed, without
+    requiring None checks. Calling cancel() raises ImpossibleCancelError.
+
+    >>> def run(token: AbstractToken = DefaultToken()) -> bool:
+    ...     return token.keep_on()
+    >>> run()               # True — DefaultToken never cancels
+    True
+    >>> run(SimpleToken())  # True — SimpleToken not yet cancelled
+    True
+    """
+
     exception = ImpossibleCancelError
 
     def __init__(self) -> None:

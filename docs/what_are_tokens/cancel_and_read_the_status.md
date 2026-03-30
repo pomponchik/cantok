@@ -1,4 +1,4 @@
-Each token object has a `cancelled` attribute and a `cancel()` method. By the attribute, you can find out whether this token has been canceled:
+Each token object has a `cancelled` attribute and a `cancel()` method. By the attribute, you can find out whether this token has been cancelled:
 
 ```python
 from cantok import SimpleToken
@@ -34,9 +34,9 @@ print(token.cancelled)  #> True
 print(token.is_cancelled())  #> True
 ```
 
-Choose what you like best. To the author of the library, the use of the attribute seems more beautiful, but the method call more clearly reflects the complexity of the work that is actually being done to answer the question "has the token been canceled?".
+Choose what you like best. The attribute is considered more elegant, but calling the method more clearly reflects the complexity of the work actually being done to answer the question "has the token been cancelled?".
 
-There is another method opposite to `is_cancelled()` - `keep_on()`. It answers the opposite question, and can be used in the same situations:
+There is another method opposite to `is_cancelled()` — `keep_on()`. It answers the opposite question, and can be used in the same situations:
 
 ```python
 from cantok import SimpleToken
@@ -62,7 +62,7 @@ print(bool(token))  #> False
 print(token.keep_on())  #> False
 ```
 
-There is another method that is close in meaning to `is_cancelled()` - `check()`. It does nothing if the token is not canceled, or raises an exception if canceled. If the token was canceled by calling the `cancel()` method, a `CancellationError` exception will be raised:
+There is another method that is close in meaning to `is_cancelled()` — `check()`. It does nothing if the token is not cancelled, or raises an exception if cancelled. If the token was cancelled by calling the `cancel()` method, a `CancellationError` exception will be raised:
 
 ```python
 from cantok import SimpleToken

@@ -11,6 +11,34 @@ from cantok.types import IterableWithTokens
 
 
 class AbstractToken(ABC):
+    """
+    Abstract base class for all cancellation tokens.
+
+    A cancellation token represents a signal that can be used to cooperatively
+    cancel a long-running operation. Most subclasses add an automatic cancellation
+    condition (superpower) evaluated on every check; SimpleToken and DefaultToken
+    rely on manual cancellation only.
+
+    Tokens can be composed with the + operator: the resulting token is cancelled
+    when any of the combined tokens is cancelled.
+
+    Use AbstractToken as a type hint when a function accepts any token type.
+    Pass DefaultToken() as the default to make the token optional:
+
+    >>> def run(token: AbstractToken = DefaultToken()) -> bool:
+    ...     return token.keep_on()
+    >>> run()                        # DefaultToken never cancels
+    True
+    >>> run(SimpleToken().cancel())  # cancelled token passed explicitly
+    False
+
+    The idiomatic loop pattern:
+
+    >>> token = SimpleToken()
+    >>> while token:
+    ...     ...  # loop exits when token is cancelled
+    """
+
     exception = CancellationError
     _rollback_if_nondirect_polling = False
 
@@ -112,6 +140,20 @@ class AbstractToken(ABC):
 
     @property
     def cancelled(self) -> bool:
+        """
+        Whether the token is currently cancelled.
+
+        Evaluated dynamically on each access, taking into account the token's own
+        cancellation rules and all embedded tokens. Setting to True cancels the token;
+        setting to False on an already cancelled token raises ValueError.
+
+        >>> token = SimpleToken()
+        >>> token.cancelled
+        False
+        >>> token.cancel()
+        >>> token.cancelled
+        True
+        """
         return self.is_cancelled()
 
     @cancelled.setter
@@ -123,12 +165,53 @@ class AbstractToken(ABC):
                 raise ValueError('You cannot restore a cancelled token.')
 
     def keep_on(self) -> bool:
+        """
+        Returns True if the token is not cancelled, False otherwise.
+        The opposite of is_cancelled().
+
+        >>> token = SimpleToken()
+        >>> token.keep_on()
+        True
+        >>> token.cancel()
+        >>> token.keep_on()
+        False
+        """
         return not self.is_cancelled()
 
     def is_cancelled(self, direct: bool = True) -> bool:
+        """
+        Returns True if the token is cancelled, False otherwise.
+
+        :param direct: When False, tokens with rollback behaviour (e.g. CounterToken
+                       with direct=True) do not apply their side effects while being
+                       polled indirectly through a parent token. Defaults to True.
+
+        >>> token = SimpleToken()
+        >>> token.is_cancelled()
+        False
+        >>> token.cancel()
+        >>> token.is_cancelled()
+        True
+        """
         return self._get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
 
     def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None) -> Awaitable:  # type: ignore[type-arg]
+        """
+        Waits until the token is cancelled.
+
+        When used with ``await``, runs non-blocking inside an asyncio event loop.
+        When called without ``await``, blocks the current thread.
+
+        :param step: Interval between status checks, in seconds. Defaults to 0.0001.
+        :param timeout: Maximum time to wait, in seconds. If exceeded,
+                        raises TimeoutCancellationError. Defaults to None (no limit).
+
+        >>> import asyncio
+        >>>
+        >>> token = TimeoutToken(5)
+        >>> token.wait()   # blocks for ~5 seconds, then returns
+        >>> asyncio.run(token.wait())   # non-blocking, inside an asyncio event loop
+        """
         if step < 0:
             raise ValueError('The token polling iteration time cannot be less than zero.')
         if timeout is not None and timeout < 0:
@@ -146,10 +229,33 @@ class AbstractToken(ABC):
         return WaitCoroutineWrapper(step, self + token, token)
 
     def cancel(self) -> 'AbstractToken':
+        """
+        Cancels the token. Returns the token itself to allow method chaining.
+
+        Cancellation is irreversible: once cancelled, the token cannot be restored.
+
+        >>> token = SimpleToken()
+        >>> token.cancel()
+        >>> token.cancelled
+        True
+        """
         self._cancelled = True
         return self
 
     def check(self) -> None:
+        """
+        Raises an exception if the token is cancelled; does nothing otherwise.
+
+        The exception type depends on the cancellation cause:
+        - Manual cancellation via cancel() raises CancellationError.
+        - Automatic cancellation by a specific token type raises the corresponding
+          subclass (e.g. TimeoutCancellationError for TimeoutToken).
+
+        >>> token = SimpleToken()
+        >>> token.check()   # nothing happens
+        >>> token.cancel()
+        >>> token.check()   # raises CancellationError
+        """
         with self._lock:
             report = self._get_report()
 

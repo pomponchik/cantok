@@ -6,6 +6,31 @@ from cantok.errors import ConditionCancellationError
 
 
 class ConditionToken(AbstractToken):
+    """
+    A token that cancels automatically when a condition function returns True.
+
+    The condition function is evaluated on every cancellation check. Once it
+    returns True, the result is cached by default and the token stays cancelled.
+
+    :param function: A callable returning bool. Called on each cancellation check.
+    :param suppress_exceptions: If True (default), exceptions from the function
+                                are swallowed and treated as the default value.
+    :param default: Value to use when the function raises and suppress_exceptions
+                    is True. Defaults to False.
+    :param before: Callable invoked before the condition function on each check.
+    :param after: Callable invoked after the condition function on each check.
+    :param caching: If True (default), the token stays cancelled once the
+                    condition has returned True, without re-evaluating it.
+
+    >>> items = []
+    >>> token = ConditionToken(lambda: len(items) >= 3)
+    >>> token.cancelled
+    False
+    >>> items += [1, 2, 3]
+    >>> token.cancelled
+    True
+    """
+
     exception = ConditionCancellationError
 
     def __init__(self, function: Callable[[], bool], *tokens: AbstractToken, cancelled: bool = False, suppress_exceptions: bool = True, default: bool = False, before: Callable[[], Any] = lambda: None, after: Callable[[], Any] = lambda: None, caching: bool = True):  # noqa: PLR0913
@@ -25,7 +50,7 @@ class ConditionToken(AbstractToken):
 
         if not self._suppress_exceptions:
             self._before()
-            result = self.run_function()
+            result = self._run_function()
             self._after()
             return result
 
@@ -34,13 +59,13 @@ class ConditionToken(AbstractToken):
         with suppress(Exception):
             self._before()
         with suppress(Exception):
-            result = self.run_function()
+            result = self._run_function()
         with suppress(Exception):
             self._after()
 
         return result
 
-    def run_function(self) -> bool:
+    def _run_function(self) -> bool:
         result = self._function()
 
         if not isinstance(result, bool):
