@@ -15,7 +15,7 @@ class AbstractToken(ABC):
     rollback_if_nondirect_polling = False
 
     def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
-        self.cached_report: Optional[CancellationReport] = None
+        self._cached_report: Optional[CancellationReport] = None
         self._cancelled: bool = cancelled
         self._tokens: List[AbstractToken] = self._filter_tokens(tokens)
 
@@ -183,13 +183,13 @@ class AbstractToken(ABC):
                 cause=CancelCause.SUPERPOWER,
                 from_token=self,
             )
-        if self.cached_report is not None:
-            return self.cached_report
+        if self._cached_report is not None:
+            return self._cached_report
 
         for token in self._tokens:
             report = token._get_report(direct=False)
             if report.cause != CancelCause.NOT_CANCELLED:
-                self.cached_report = report
+                self._cached_report = report
                 return report
 
         return CancellationReport(

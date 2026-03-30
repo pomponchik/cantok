@@ -670,11 +670,11 @@ def test_insert_default_token_to_another_tokens(token_fabric):
 def test_report_cache_is_working_in_simple_case(first_token_fabric, second_token_fabric, action):
     token = first_token_fabric(second_token_fabric(cancelled=True))
 
-    assert token.cached_report is None
+    assert token._cached_report is None
 
     action(token)
 
-    cached_report = token.cached_report
+    cached_report = token._cached_report
 
     assert cached_report is not None
     assert isinstance(cached_report, CancellationReport)
@@ -709,7 +709,7 @@ def test_cache_is_using_after_self_flag(first_token_fabric, second_token_fabric,
 
     action(token)
 
-    cached_report = token.cached_report
+    cached_report = token._cached_report
 
     token.cancel()
 
