@@ -9,7 +9,7 @@ class CounterToken(ConditionToken):
     A token that cancels automatically after a fixed number of iterations.
 
     The internal counter decrements on each direct cancellation check. When it
-    reaches zero the token is cancelled. Useful for limiting the number of
+    reaches zero, the token is cancelled. Useful for limiting the number of
     iterations of a loop without tracking state externally.
 
     :param counter: Number of iterations before cancellation. Must be >= 0.

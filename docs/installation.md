@@ -1,4 +1,4 @@
-Install it from [Pypi](https://pypi.org/project/cantok/):
+Install it from [PyPI](https://pypi.org/project/cantok/):
 
 ```bash
 pip install cantok

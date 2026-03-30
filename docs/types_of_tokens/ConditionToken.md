@@ -1,4 +1,4 @@
-`ConditionToken` has superpower: it can check arbitrary conditions. In addition to this, it can do all the same things as [`SimpleToken`](../types_of_tokens/SimpleToken.md). The condition is a function that returns an answer to the question "has the token been canceled" (`True`/`False`), it is passed to the token as the first required argument during initialization:
+`ConditionToken` has a superpower: it can check arbitrary conditions. In addition to this, it can do all the same things as [`SimpleToken`](../types_of_tokens/SimpleToken.md). The condition is a function that returns an answer to the question "has the token been cancelled" (`True`/`False`), it is passed to the token as the first required argument during initialization:
 
 ```python
 from cantok import ConditionToken
@@ -22,7 +22,7 @@ token = ConditionToken(function, suppress_exceptions=False)
 token.cancelled #  ValueError has been raised.
 ```
 
-If you still use exception suppression mode, by default, in case of an exception, the `cancelled` attribute will contain `False`. If you want to change this, pass it there as the `default` parameter - `True`.
+When using exception suppression mode, the `cancelled` attribute will contain `False` by default in case of an exception. If you want to change this, pass `default=True`.
 
 ```python
 def function(): raise ValueError
@@ -54,7 +54,7 @@ token.check()
 #> 2
 ```
 
-`ConditionToken` has another feature. If the condition has triggered at least once and canceled it, then the condition is no longer polled and the token is permanently considered canceled. You can change this by manipulating the `caching` parameter when creating a token. By setting it to `False`, you will make sure that the condition is polled every time.
+`ConditionToken` has another feature. If the condition has triggered at least once and cancelled it, then the condition is no longer polled and the token is permanently considered cancelled. You can change this by manipulating the `caching` parameter when creating a token. By setting it to `False`, you will make sure that the condition is polled every time.
 
 ```python
 counter = 0
