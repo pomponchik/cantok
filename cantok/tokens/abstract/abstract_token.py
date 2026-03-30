@@ -237,8 +237,8 @@ class AbstractToken(ABC):
         raise CancellationError('The token has been cancelled.', self)
 
     def _raise_superpower_exception(self) -> None:
-        raise self.exception(self.get_superpower_exception_message(), self)
+        raise self.exception(self._get_superpower_exception_message(), self)
 
     @abstractmethod
-    def get_superpower_exception_message(self) -> str:  # pragma: no cover
+    def _get_superpower_exception_message(self) -> str:  # pragma: no cover
         return 'You have done the impossible to see this error.'

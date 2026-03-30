@@ -41,5 +41,5 @@ class TimeoutToken(ConditionToken):
             }
         return {}
 
-    def get_superpower_exception_message(self) -> str:
+    def _get_superpower_exception_message(self) -> str:
         return f'The timeout of {self.timeout} seconds has expired.'

@@ -11,5 +11,5 @@ class SimpleToken(AbstractToken):
     def _text_representation_of_superpower(self) -> str:
         return ''
 
-    def get_superpower_exception_message(self) -> str:
+    def _get_superpower_exception_message(self) -> str:
         return 'The token has been cancelled.'  # pragma: no cover

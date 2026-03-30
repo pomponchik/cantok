@@ -49,5 +49,5 @@ class CounterToken(ConditionToken):
     def _get_superpower_data(self) -> Dict[str, Any]:
         return {'counter': self.counter}
 
-    def get_superpower_exception_message(self) -> str:
+    def _get_superpower_exception_message(self) -> str:
         return f'After {self.initial_counter} attempts, the counter was reset to zero.'
