@@ -19,7 +19,7 @@ class ConditionToken(AbstractToken):
         self.caching = caching
         self.was_cancelled_by_condition = False
 
-    def superpower(self) -> bool:
+    def _superpower(self) -> bool:
         if self.was_cancelled_by_condition and self.caching:
             return True
 

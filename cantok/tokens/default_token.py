@@ -8,7 +8,7 @@ class DefaultToken(AbstractToken):
     def __init__(self) -> None:
         super().__init__()
 
-    def superpower(self) -> bool:
+    def _superpower(self) -> bool:
         return False
 
     def text_representation_of_superpower(self) -> str:

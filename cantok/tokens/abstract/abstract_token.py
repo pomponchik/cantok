@@ -188,7 +188,7 @@ class AbstractToken(ABC):
         return self
 
     @abstractmethod
-    def superpower(self) -> bool:  # pragma: no cover
+    def _superpower(self) -> bool:  # pragma: no cover
         pass
 
     def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover  # noqa: B027
@@ -197,12 +197,12 @@ class AbstractToken(ABC):
     def check_superpower(self, direct: bool) -> bool:
         if self.rollback_if_nondirect_polling and not direct:
             return self.check_superpower_with_rollback()
-        return self.superpower()
+        return self._superpower()
 
     def check_superpower_with_rollback(self) -> bool:
         with self.lock:
             superpower_data = self.get_superpower_data()
-            result = self.superpower()
+            result = self._superpower()
             self.superpower_rollback(superpower_data)
             return result
 
