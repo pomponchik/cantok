@@ -1,6 +1,6 @@
 import sys
 
-import full_match
+from full_match import match
 import pytest
 
 from cantok import DefaultToken, ImpossibleCancelError, SimpleToken, TimeoutToken
@@ -33,7 +33,7 @@ def test_you_can_set_cancelled_attribute_as_false():
 def test_you_cant_set_true_as_cancelled_attribute():
     token = DefaultToken()
 
-    with pytest.raises(ImpossibleCancelError, match=full_match('You cannot cancel a default token.')):
+    with pytest.raises(ImpossibleCancelError, match=match('You cannot cancel a default token.')):
         token.cancelled = True
 
     assert token.cancelled == False
@@ -42,7 +42,7 @@ def test_you_cant_set_true_as_cancelled_attribute():
 def test_you_cannot_cancel_default_token_by_standard_way():
     token = DefaultToken()
 
-    with pytest.raises(ImpossibleCancelError, match=full_match('You cannot cancel a default token.')):
+    with pytest.raises(ImpossibleCancelError, match=match('You cannot cancel a default token.')):
         token.cancel()
 
     assert token.cancelled == False
@@ -54,13 +54,13 @@ def test_str_for_default_token():
 
 @pytest.mark.skipif(sys.version_info >= (3, 10), reason='Format of this exception messages was changed.')
 def test_you_cannot_neste_another_token_to_default_one_old_pythons():
-    with pytest.raises(TypeError, match=full_match('__init__() takes 1 positional argument but 2 were given')):
+    with pytest.raises(TypeError, match=match('__init__() takes 1 positional argument but 2 were given')):
         DefaultToken(SimpleToken())
 
 
 @pytest.mark.skipif(sys.version_info < (3, 10), reason='Format of this exception messages was changed.')
 def test_you_cannot_neste_another_token_to_default_one_new_pythons():
-    with pytest.raises(TypeError, match=full_match('DefaultToken.__init__() takes 1 positional argument but 2 were given')):
+    with pytest.raises(TypeError, match=match('DefaultToken.__init__() takes 1 positional argument but 2 were given')):
         DefaultToken(SimpleToken())
 
 

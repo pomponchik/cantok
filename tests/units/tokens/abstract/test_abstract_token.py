@@ -3,7 +3,7 @@ from functools import partial
 from threading import Thread
 from time import perf_counter, sleep
 
-import full_match
+from full_match import match
 import pytest
 
 from cantok import (
@@ -97,7 +97,7 @@ def test_change_attribute_cancelled(token_fabric, first_cancelled_flag, second_c
 def test_set_cancelled_false_if_this_token_is_not_cancelled_but_nested_token_is(token_fabric):
     token = token_fabric(SimpleToken(cancelled=True))
 
-    with pytest.raises(ValueError, match=full_match('You cannot restore a cancelled token.')):
+    with pytest.raises(ValueError, match=match('You cannot restore a cancelled token.')):
         token.cancelled = False
 
 
