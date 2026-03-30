@@ -11,6 +11,34 @@ from cantok.types import IterableWithTokens
 
 
 class AbstractToken(ABC):
+    """
+    Abstract base class for all cancellation tokens.
+
+    A cancellation token represents a signal that can be used to cooperatively
+    cancel a long-running operation. Most subclasses add an automatic cancellation
+    condition (superpower) evaluated on every check; SimpleToken and DefaultToken
+    rely on manual cancellation only.
+
+    Tokens can be composed with the + operator: the resulting token is cancelled
+    when any of the combined tokens is cancelled.
+
+    Use AbstractToken as a type hint when a function accepts any token type.
+    Pass DefaultToken() as the default to make the token optional:
+
+    >>> def run(token: AbstractToken = DefaultToken()) -> bool:
+    ...     return token.keep_on()
+    >>> run()                        # DefaultToken never cancels
+    True
+    >>> run(SimpleToken().cancel())  # cancelled token passed explicitly
+    False
+
+    The idiomatic loop pattern:
+
+    >>> token = SimpleToken()
+    >>> while token:
+    ...     ...  # loop exits when token is cancelled
+    """
+
     exception = CancellationError
     _rollback_if_nondirect_polling = False
 

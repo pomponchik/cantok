@@ -5,6 +5,23 @@ from cantok.errors import CounterCancellationError
 
 
 class CounterToken(ConditionToken):
+    """
+    A token that cancels automatically after a fixed number of iterations.
+
+    The internal counter decrements on each direct cancellation check. When it
+    reaches zero the token is cancelled. Useful for limiting the number of
+    iterations of a loop without tracking state externally.
+
+    :param counter: Number of iterations before cancellation. Must be >= 0.
+    :param direct: If True (default), counter decrements even when polled
+                   indirectly through a parent token. If False, indirect polls
+                   are rolled back, so only direct checks consume the counter.
+
+    >>> token = CounterToken(3)
+    >>> while token:
+    ...     ...  # loop body executes exactly 3 times
+    """
+
     exception = CounterCancellationError
 
     def __init__(self, counter: int, *tokens: AbstractToken, cancelled: bool = False, direct: bool = True):
