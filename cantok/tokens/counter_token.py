@@ -16,7 +16,7 @@ class CounterToken(ConditionToken):
         self._rollback_if_nondirect_polling = self._direct
 
         counter_bag = {'counter': counter}
-        self.counter_bag = counter_bag
+        self._counter_bag = counter_bag
 
         def function() -> bool:
             with counter_bag['lock']:  # type: ignore[attr-defined]
@@ -27,17 +27,17 @@ class CounterToken(ConditionToken):
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
-        self.counter_bag['lock'] = self._lock  # type: ignore[assignment]
+        self._counter_bag['lock'] = self._lock  # type: ignore[assignment]
 
     @property
     def counter(self) -> int:
-        return self.counter_bag['counter']
+        return self._counter_bag['counter']
 
     def _superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:
-        self.counter_bag['counter'] = superpower_data['counter']
+        self._counter_bag['counter'] = superpower_data['counter']
 
     def _text_representation_of_superpower(self) -> str:
-        return str(self.counter_bag['counter'])
+        return str(self._counter_bag['counter'])
 
     def _get_extra_kwargs(self) -> Dict[str, Any]:
         if not self._direct:
