@@ -1,6 +1,5 @@
 import sys
 from abc import ABC, abstractmethod
-from sys import getrefcount
 from threading import RLock
 from typing import Any, Awaitable, Dict, List, Optional, Union
 
@@ -9,22 +8,6 @@ from cantok.tokens.abstract.cancel_cause import CancelCause
 from cantok.tokens.abstract.coroutine_wrapper import WaitCoroutineWrapper
 from cantok.tokens.abstract.report import CancellationReport
 from cantok.types import IterableWithTokens
-
-# In Python <=3.13, LOAD_FAST increments refcounts, so we can distinguish
-# temporary tokens (0 external refs) from stored tokens (1+ external refs)
-# by comparing getrefcount() against these thresholds.
-# The TimeoutToken branch runs before the loop (no tuple/loop-var refs), so
-# its threshold is lower (4) than the generic loop threshold.
-# The generic loop threshold is 7 for Python 3.9+ (not 6 as in the original inline code)
-# because calling is_temp(token) as a function adds 1 extra reference via parameter binding.
-# Python 3.8 does not exhibit this extra reference, so its threshold stays at 6.
-if sys.version_info < (3, 14):  # pragma: no cover
-    _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD = 4
-    # Python 3.8 generates bytecode that results in one fewer reference when
-    # is_temp(token) is called in the for-loop context vs Python 3.9+.
-    # Python 3.9 changed function call mechanics (vectorcall improvements)
-    # which adds one extra LOAD_FAST-incremented reference in this context.
-    _GENERIC_TOKEN_REFCOUNT_THRESHOLD = 6 if sys.version_info < (3, 9) else 7
 
 
 class AbstractToken(ABC):
@@ -77,29 +60,21 @@ class AbstractToken(ABC):
         nested_tokens = []
         container_token: Optional[AbstractToken] = None
 
-        if sys.version_info >= (3, 14):  # pragma: no cover
-            # In Python 3.14+, LOAD_FAST_BORROW does not increment refcounts,
-            # making refcount-based detection of temporary tokens unreliable.
-            # Instead, inspect the caller's frame: a token is "temporary" if it
-            # does not appear in the caller's local variables or module globals.
-            _frame = sys._getframe(1)
-            _caller_locals = list(_frame.f_locals.values())
-            _caller_globals = list(_frame.f_globals.values())
+        # Inspect the caller's frame to determine if a token is "temporary"
+        # (not stored in any variable). This is robust across all Python versions,
+        # unlike refcount-based detection which varies with bytecode optimizations.
+        _frame = sys._getframe(1)
+        _caller_locals = list(_frame.f_locals.values())
+        _caller_globals = list(_frame.f_globals.values())
 
-            def is_temp(token: 'AbstractToken') -> bool:
-                for v in _caller_locals:
-                    if v is token:
-                        return False
-                return all(v is not token for v in _caller_globals)
+        def is_temp(token: 'AbstractToken') -> bool:
+            for v in _caller_locals:
+                if v is token:
+                    return False
+            return all(v is not token for v in _caller_globals)
 
-            _self_is_temp = is_temp(self)
-            _item_is_temp = is_temp(item)
-        else:  # pragma: no cover
-            _self_is_temp = getrefcount(self) < _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD
-            _item_is_temp = getrefcount(item) < _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD
-
-            def is_temp(token: 'AbstractToken') -> bool:
-                return getrefcount(token) < _GENERIC_TOKEN_REFCOUNT_THRESHOLD
+        _self_is_temp = is_temp(self)
+        _item_is_temp = is_temp(item)
 
         if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken) and self.monotonic == item.monotonic:
             if self.deadline >= item.deadline and _self_is_temp:
