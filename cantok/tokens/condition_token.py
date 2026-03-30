@@ -25,7 +25,7 @@ class ConditionToken(AbstractToken):
 
         if not self._suppress_exceptions:
             self._before()
-            result = self.run_function()
+            result = self._run_function()
             self._after()
             return result
 
@@ -34,13 +34,13 @@ class ConditionToken(AbstractToken):
         with suppress(Exception):
             self._before()
         with suppress(Exception):
-            result = self.run_function()
+            result = self._run_function()
         with suppress(Exception):
             self._after()
 
         return result
 
-    def run_function(self) -> bool:
+    def _run_function(self) -> bool:
         result = self._function()
 
         if not isinstance(result, bool):
