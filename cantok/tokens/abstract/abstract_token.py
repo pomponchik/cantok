@@ -17,7 +17,7 @@ from cantok.types import IterableWithTokens
 # its threshold is lower (4) than the generic loop threshold.
 # The generic loop threshold is 7 (not 6 as in the original inline code) because
 # calling is_temp(token) as a function adds 1 extra reference via the parameter binding.
-if sys.version_info < (3, 14):
+if sys.version_info < (3, 14):  # pragma: no cover
     _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD = 4
     _GENERIC_TOKEN_REFCOUNT_THRESHOLD = 7
 
@@ -89,7 +89,7 @@ class AbstractToken(ABC):
 
             _self_is_temp = is_temp(self)
             _item_is_temp = is_temp(item)
-        else:
+        else:  # pragma: no cover
             _self_is_temp = getrefcount(self) < _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD
             _item_is_temp = getrefcount(item) < _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD
 
