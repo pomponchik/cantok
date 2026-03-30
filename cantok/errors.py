@@ -1,5 +1,5 @@
 class CancellationError(Exception):
-    token: 'AbstractToken'  # type: ignore[name-defined]
+    token: 'AbstractToken'  # type: ignore[name-defined]  # pragma: no cover
 
     def __init__(self, message: str, token: 'AbstractToken') -> None:  # type: ignore[name-defined]
         self.token = token

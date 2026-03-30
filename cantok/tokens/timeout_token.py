@@ -1,8 +1,7 @@
 from time import monotonic_ns, perf_counter
-from typing import Union, Callable, Dict, Any
+from typing import Any, Callable, Dict, Union
 
-from cantok import AbstractToken
-from cantok import ConditionToken
+from cantok import AbstractToken, ConditionToken
 from cantok.errors import TimeoutCancellationError
 
 

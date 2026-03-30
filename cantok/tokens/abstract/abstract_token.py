@@ -1,12 +1,12 @@
-from sys import getrefcount
+import sys
 from abc import ABC, abstractmethod
 from threading import RLock
-from typing import List, Dict, Awaitable, Optional, Union, Any
+from typing import Any, Awaitable, Dict, List, Optional, Union
 
 from cantok.errors import CancellationError
 from cantok.tokens.abstract.cancel_cause import CancelCause
-from cantok.tokens.abstract.report import CancellationReport
 from cantok.tokens.abstract.coroutine_wrapper import WaitCoroutineWrapper
+from cantok.tokens.abstract.report import CancellationReport
 from cantok.types import IterableWithTokens
 
 
@@ -32,11 +32,10 @@ class AbstractToken(ABC):
         report = self.get_report(direct=False)
         if report.cause == CancelCause.NOT_CANCELLED:
             extra_kwargs = {}
+        elif report.from_token is self and report.cause == CancelCause.CANCELLED:
+            extra_kwargs = {'cancelled': True}
         else:
-            if report.from_token is self and report.cause == CancelCause.CANCELLED:
-                extra_kwargs = {'cancelled': True}
-            else:
-                extra_kwargs = {}
+            extra_kwargs = {}
         extra_kwargs.update(**(self.get_extra_kwargs()))
         text_representation_of_extra_kwargs = self.text_representation_of_kwargs(**extra_kwargs)
         if text_representation_of_extra_kwargs:
@@ -49,11 +48,11 @@ class AbstractToken(ABC):
         cancelled_flag = 'cancelled' if self.is_cancelled(direct=False) else 'not cancelled'
         return f'<{type(self).__name__} ({cancelled_flag})>'
 
-    def __add__(self, item: 'AbstractToken') -> 'AbstractToken':
+    def __add__(self, item: 'AbstractToken') -> 'AbstractToken':  # noqa: PLR0911
         if not isinstance(item, AbstractToken):
             raise TypeError('Cancellation Token can only be combined with another Cancellation Token.')
 
-        from cantok import SimpleToken, DefaultToken, TimeoutToken
+        from cantok import DefaultToken, SimpleToken, TimeoutToken  # noqa: PLC0415
 
         if self._cancelled or item._cancelled:
             return SimpleToken(cancelled=True)
@@ -61,47 +60,58 @@ class AbstractToken(ABC):
         nested_tokens = []
         container_token: Optional[AbstractToken] = None
 
+        # Inspect the caller's frame to determine if a token is "temporary"
+        # (not stored in any variable). This is robust across all Python versions,
+        # unlike refcount-based detection which varies with bytecode optimizations.
+        _frame = sys._getframe(1)
+        _caller_locals = list(_frame.f_locals.values())
+        _caller_globals = list(_frame.f_globals.values())
+
+        def is_temp(token: 'AbstractToken') -> bool:
+            for v in _caller_locals:
+                if v is token:
+                    return False
+            return all(v is not token for v in _caller_globals)
+
+        _self_is_temp = is_temp(self)
+        _item_is_temp = is_temp(item)
+
         if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken) and self.monotonic == item.monotonic:
-            if self.deadline >= item.deadline and getrefcount(self) < 4:
-                if getrefcount(item) < 4:
+            if self.deadline >= item.deadline and _self_is_temp:
+                if _item_is_temp:
                     item.tokens.extend(self.tokens)
                     return item
-                else:
-                    if self.tokens:
-                        return SimpleToken(*(self.tokens), item)
-                    else:
-                        return item
-            elif self.deadline < item.deadline and getrefcount(item) < 4:
-                if getrefcount(self) < 4:
+                if self.tokens:
+                    return SimpleToken(*(self.tokens), item)
+                return item
+            if self.deadline < item.deadline and _item_is_temp:
+                if _self_is_temp:
                     self.tokens.extend(item.tokens)
                     return self
-                else:
-                    if item.tokens:
-                        return SimpleToken(*(item.tokens), self)
-                    else:
-                        return self
+                if item.tokens:
+                    return SimpleToken(*(item.tokens), self)
+                return self
 
         for token in self, item:
-            if isinstance(token, SimpleToken) and getrefcount(token) < 6:
+            if isinstance(token, SimpleToken) and is_temp(token):
                 nested_tokens.extend(token.tokens)
             elif isinstance(token, DefaultToken):
                 pass
-            elif not isinstance(token, SimpleToken) and getrefcount(token) < 6 and container_token is None:
+            elif not isinstance(token, SimpleToken) and is_temp(token) and container_token is None:
                 container_token = token
             else:
                 nested_tokens.append(token)
 
         if container_token is None:
             return SimpleToken(*nested_tokens)
-        else:
-            container_token.tokens.extend(container_token.filter_tokens(nested_tokens))
-            return container_token
+        container_token.tokens.extend(container_token.filter_tokens(nested_tokens))
+        return container_token
 
     def __bool__(self) -> bool:
         return self.keep_on()
 
     def filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:
-        from cantok import DefaultToken
+        from cantok import DefaultToken  # noqa: PLC0415
 
         result: List[AbstractToken] = []
 
@@ -122,9 +132,8 @@ class AbstractToken(ABC):
         with self.lock:
             if new_value == True:
                 self._cancelled = True
-            else:
-                if self.is_cancelled():
-                    raise ValueError('You cannot restore a cancelled token.')
+            elif self.is_cancelled():
+                raise ValueError('You cannot restore a cancelled token.')
 
     def keep_on(self) -> bool:
         return not self.is_cancelled()
@@ -141,10 +150,10 @@ class AbstractToken(ABC):
             raise ValueError('The total timeout of waiting cannot be less than the time of one iteration of the token polling.')
 
         if timeout is None:
-            from cantok import SimpleToken
+            from cantok import SimpleToken  # noqa: PLC0415
             token: AbstractToken = SimpleToken()
         else:
-            from cantok import TimeoutToken
+            from cantok import TimeoutToken  # noqa: PLC0415
             token = TimeoutToken(timeout)
 
         return WaitCoroutineWrapper(step, self + token, token)
@@ -155,12 +164,12 @@ class AbstractToken(ABC):
                 cause=CancelCause.CANCELLED,
                 from_token=self,
             )
-        elif self.check_superpower(direct):
+        if self.check_superpower(direct):
             return CancellationReport(
                 cause=CancelCause.SUPERPOWER,
                 from_token=self,
             )
-        elif self.cached_report is not None:
+        if self.cached_report is not None:
             return self.cached_report
 
         for token in self.tokens:
@@ -182,7 +191,7 @@ class AbstractToken(ABC):
     def superpower(self) -> bool:  # pragma: no cover
         pass
 
-    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover
+    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover  # noqa: B027
         pass
 
     def check_superpower(self, direct: bool) -> bool:
@@ -211,7 +220,7 @@ class AbstractToken(ABC):
         return self.text_representation_of_kwargs(**(self.get_extra_kwargs()))
 
     def text_representation_of_kwargs(self, **kwargs: Any) -> str:
-        pairs: List[str] = [f'{key}={repr(value)}' for key, value in kwargs.items()]
+        pairs: List[str] = [f'{key}={value!r}' for key, value in kwargs.items()]
         return ', '.join(pairs)
 
     def check(self) -> None:

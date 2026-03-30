@@ -2,8 +2,8 @@ from threading import Thread
 
 import pytest
 
+from cantok import CounterCancellationError, CounterToken, SimpleToken
 from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
-from cantok import CounterToken, SimpleToken, CounterCancellationError
 
 
 @pytest.mark.parametrize(
@@ -28,11 +28,11 @@ def test_counter(iterations):
 def test_double_str():
     token = CounterToken(1)
 
-    assert str(token) == str(token)
+    assert str(token) == str(token)  # noqa: PLR0124
 
 
 def test_counter_less_than_zero():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'.'):
         CounterToken(-1)
 
 
@@ -56,7 +56,7 @@ def test_race_condition_for_counter(iterations, number_of_threads):
     results = []
     token = CounterToken(iterations)
 
-    def decrementer(number):
+    def decrementer(_number):
         counter = 0
         while not token.cancelled:
             counter += 1
@@ -75,7 +75,7 @@ def test_race_condition_for_counter(iterations, number_of_threads):
 
 
 @pytest.mark.parametrize(
-    'kwargs,expected_result',
+    ('kwargs', 'expected_result'),
     [
         ({}, 5),
         ({'direct': True}, 5),
@@ -102,11 +102,10 @@ def test_check_superpower_raised():
     with pytest.raises(CounterCancellationError):
         token.check()
 
-    try:
+    with pytest.raises(CounterCancellationError) as exc_info:
         token.check()
-    except CounterCancellationError as e:
-        assert str(e) == 'After 5 attempts, the counter was reset to zero.'
-        assert e.token is token
+    assert str(exc_info.value) == 'After 5 attempts, the counter was reset to zero.'
+    assert exc_info.value.token is token
 
 
 def test_check_superpower_raised_nested():
@@ -119,12 +118,11 @@ def test_check_superpower_raised_nested():
     with pytest.raises(CounterCancellationError):
         token.check()
 
-    try:
+    with pytest.raises(CounterCancellationError) as exc_info:
         token.check()
-    except CounterCancellationError as e:
-        assert str(e) == 'After 5 attempts, the counter was reset to zero.'
-        assert e.token is nested_token
-        assert e.token.exception is type(e)
+    assert str(exc_info.value) == 'After 5 attempts, the counter was reset to zero.'
+    assert exc_info.value.token is nested_token
+    assert exc_info.value.token.exception is type(exc_info.value)
 
 
 def test_get_report_cancelled():
@@ -141,7 +139,7 @@ def test_get_report_cancelled():
 
 
 @pytest.mark.parametrize(
-    'counter,counter_nested,from_token_is_nested',
+    ('counter', 'counter_nested', 'from_token_is_nested'),
     [
         (1, 0, True),
         (0, 1, False),
@@ -172,7 +170,7 @@ def test_get_report_cancelled_nested(counter, counter_nested, from_token_is_nest
     ],
 )
 @pytest.mark.parametrize(
-    'initial_counter, final_counter',
+    ('initial_counter', 'final_counter'),
     [
         (50, 49),
         (5, 4),
@@ -195,30 +193,27 @@ def test_check_is_decrementing_counter_when_nested_token_is_cancelled():
     nested_token = SimpleToken(cancelled=True)
     token = CounterToken(2, nested_token)
 
-    try:
+    with pytest.raises(Exception, match=r'.') as exc_info:
         token.check()
-    except Exception as e:
-        assert e.token is nested_token
-        assert type(e) is nested_token.exception
-        assert type(e) is not token.exception
+    assert exc_info.value.token is nested_token
+    assert type(exc_info.value) is nested_token.exception
+    assert type(exc_info.value) is not token.exception
 
     assert token.counter == 1
 
-    try:
+    with pytest.raises(Exception, match=r'.') as exc_info:
         token.check()
-    except Exception as e:
-        assert e.token is nested_token
-        assert type(e) is nested_token.exception
-        assert type(e) is not token.exception
+    assert exc_info.value.token is nested_token
+    assert type(exc_info.value) is nested_token.exception
+    assert type(exc_info.value) is not token.exception
 
     assert token.counter == 0
 
-    try:
+    with pytest.raises(Exception, match=r'.') as exc_info:
         token.check()
-    except Exception as e:
-        assert e.token is token
-        assert type(e) is token.exception
-        assert type(e) is not nested_token.exception
+    assert exc_info.value.token is token
+    assert type(exc_info.value) is token.exception
+    assert type(exc_info.value) is not nested_token.exception
 
 
 def test_decrement_counter_after_zero():

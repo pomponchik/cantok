@@ -1,5 +1,5 @@
-from sys import getsizeof, version_info
 from dataclasses import FrozenInstanceError
+from sys import getsizeof, version_info
 
 import pytest
 

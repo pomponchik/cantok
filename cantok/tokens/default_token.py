@@ -29,7 +29,7 @@ class DefaultToken(AbstractToken):
     def keep_on(self) -> bool:
         return True
 
-    def is_cancelled(self, direct: bool = True) -> bool:
+    def is_cancelled(self, direct: bool = True) -> bool:  # noqa: ARG002
         return False
 
     def cancel(self) -> 'AbstractToken':  # type: ignore[return]
