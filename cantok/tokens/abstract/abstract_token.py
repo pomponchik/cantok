@@ -14,10 +14,12 @@ from cantok.types import IterableWithTokens
 # temporary tokens (0 external refs) from stored tokens (1+ external refs)
 # by comparing getrefcount() against these thresholds.
 # The TimeoutToken branch runs before the loop (no tuple/loop-var refs), so
-# its threshold is lower (4) than the generic loop threshold (6).
+# its threshold is lower (4) than the generic loop threshold.
+# The generic loop threshold is 7 (not 6 as in the original inline code) because
+# calling is_temp(token) as a function adds 1 extra reference via the parameter binding.
 if sys.version_info < (3, 14):
     _TIMEOUT_TOKEN_REFCOUNT_THRESHOLD = 4
-    _GENERIC_TOKEN_REFCOUNT_THRESHOLD = 6
+    _GENERIC_TOKEN_REFCOUNT_THRESHOLD = 7
 
 
 class AbstractToken(ABC):
