@@ -12,32 +12,32 @@ from cantok.types import IterableWithTokens
 
 class AbstractToken(ABC):
     exception = CancellationError
-    rollback_if_nondirect_polling = False
+    _rollback_if_nondirect_polling = False
 
     def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
-        self.cached_report: Optional[CancellationReport] = None
+        self._cached_report: Optional[CancellationReport] = None
         self._cancelled: bool = cancelled
-        self.tokens: List[AbstractToken] = self.filter_tokens(tokens)
+        self._tokens: List[AbstractToken] = self._filter_tokens(tokens)
 
-        self.lock: RLock = RLock()
+        self._lock: RLock = RLock()
 
     def __repr__(self) -> str:
         chunks = []
-        superpower = self.text_representation_of_superpower()
+        superpower = self._text_representation_of_superpower()
         if superpower:
             chunks.append(superpower)
-        other_tokens = ', '.join([repr(x) for x in self.tokens])
+        other_tokens = ', '.join([repr(x) for x in self._tokens])
         if other_tokens:
             chunks.append(other_tokens)
-        report = self.get_report(direct=False)
+        report = self._get_report(direct=False)
         if report.cause == CancelCause.NOT_CANCELLED:
             extra_kwargs = {}
         elif report.from_token is self and report.cause == CancelCause.CANCELLED:
             extra_kwargs = {'cancelled': True}
         else:
             extra_kwargs = {}
-        extra_kwargs.update(**(self.get_extra_kwargs()))
-        text_representation_of_extra_kwargs = self.text_representation_of_kwargs(**extra_kwargs)
+        extra_kwargs.update(**(self._get_extra_kwargs()))
+        text_representation_of_extra_kwargs = self._text_representation_of_kwargs(**extra_kwargs)
         if text_representation_of_extra_kwargs:
             chunks.append(text_representation_of_extra_kwargs)
 
@@ -76,25 +76,25 @@ class AbstractToken(ABC):
         _self_is_temp = is_temp(self)
         _item_is_temp = is_temp(item)
 
-        if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken) and self.monotonic == item.monotonic:
-            if self.deadline >= item.deadline and _self_is_temp:
+        if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken) and self._monotonic == item._monotonic:
+            if self._deadline >= item._deadline and _self_is_temp:
                 if _item_is_temp:
-                    item.tokens.extend(self.tokens)
+                    item._tokens.extend(self._tokens)
                     return item
-                if self.tokens:
-                    return SimpleToken(*(self.tokens), item)
+                if self._tokens:
+                    return SimpleToken(*(self._tokens), item)
                 return item
-            if self.deadline < item.deadline and _item_is_temp:
+            if self._deadline < item._deadline and _item_is_temp:
                 if _self_is_temp:
-                    self.tokens.extend(item.tokens)
+                    self._tokens.extend(item._tokens)
                     return self
-                if item.tokens:
-                    return SimpleToken(*(item.tokens), self)
+                if item._tokens:
+                    return SimpleToken(*(item._tokens), self)
                 return self
 
         for token in self, item:
             if isinstance(token, SimpleToken) and is_temp(token):
-                nested_tokens.extend(token.tokens)
+                nested_tokens.extend(token._tokens)
             elif isinstance(token, DefaultToken):
                 pass
             elif not isinstance(token, SimpleToken) and is_temp(token) and container_token is None:
@@ -104,24 +104,11 @@ class AbstractToken(ABC):
 
         if container_token is None:
             return SimpleToken(*nested_tokens)
-        container_token.tokens.extend(container_token.filter_tokens(nested_tokens))
+        container_token._tokens.extend(container_token._filter_tokens(nested_tokens))
         return container_token
 
     def __bool__(self) -> bool:
         return self.keep_on()
-
-    def filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:
-        from cantok import DefaultToken  # noqa: PLC0415
-
-        result: List[AbstractToken] = []
-
-        for token in tokens:
-            if isinstance(token, DefaultToken):
-                pass
-            else:
-                result.append(token)
-
-        return result
 
     @property
     def cancelled(self) -> bool:
@@ -129,7 +116,7 @@ class AbstractToken(ABC):
 
     @cancelled.setter
     def cancelled(self, new_value: bool) -> None:
-        with self.lock:
+        with self._lock:
             if new_value == True:
                 self._cancelled = True
             elif self.is_cancelled():
@@ -139,7 +126,7 @@ class AbstractToken(ABC):
         return not self.is_cancelled()
 
     def is_cancelled(self, direct: bool = True) -> bool:
-        return self.get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
+        return self._get_report(direct=direct).cause != CancelCause.NOT_CANCELLED
 
     def wait(self, step: Union[int, float] = 0.0001, timeout: Optional[Union[int, float]] = None) -> Awaitable:  # type: ignore[type-arg]
         if step < 0:
@@ -158,24 +145,51 @@ class AbstractToken(ABC):
 
         return WaitCoroutineWrapper(step, self + token, token)
 
-    def get_report(self, direct: bool = True) -> CancellationReport:
+    def cancel(self) -> 'AbstractToken':
+        self._cancelled = True
+        return self
+
+    def check(self) -> None:
+        with self._lock:
+            report = self._get_report()
+
+            if report.cause == CancelCause.CANCELLED:
+                report.from_token._raise_cancelled_exception()
+
+            elif report.cause == CancelCause.SUPERPOWER:
+                report.from_token._raise_superpower_exception()
+
+    def _filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:
+        from cantok import DefaultToken  # noqa: PLC0415
+
+        result: List[AbstractToken] = []
+
+        for token in tokens:
+            if isinstance(token, DefaultToken):
+                pass
+            else:
+                result.append(token)
+
+        return result
+
+    def _get_report(self, direct: bool = True) -> CancellationReport:
         if self._cancelled:
             return CancellationReport(
                 cause=CancelCause.CANCELLED,
                 from_token=self,
             )
-        if self.check_superpower(direct):
+        if self._check_superpower(direct):
             return CancellationReport(
                 cause=CancelCause.SUPERPOWER,
                 from_token=self,
             )
-        if self.cached_report is not None:
-            return self.cached_report
+        if self._cached_report is not None:
+            return self._cached_report
 
-        for token in self.tokens:
-            report = token.get_report(direct=False)
+        for token in self._tokens:
+            report = token._get_report(direct=False)
             if report.cause != CancelCause.NOT_CANCELLED:
-                self.cached_report = report
+                self._cached_report = report
                 return report
 
         return CancellationReport(
@@ -183,62 +197,48 @@ class AbstractToken(ABC):
             from_token=self,
         )
 
-    def cancel(self) -> 'AbstractToken':
-        self._cancelled = True
-        return self
-
     @abstractmethod
-    def superpower(self) -> bool:  # pragma: no cover
+    def _superpower(self) -> bool:  # pragma: no cover
         pass
 
-    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover  # noqa: B027
+    def _superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover  # noqa: B027
         pass
 
-    def check_superpower(self, direct: bool) -> bool:
-        if self.rollback_if_nondirect_polling and not direct:
-            return self.check_superpower_with_rollback()
-        return self.superpower()
+    def _check_superpower(self, direct: bool) -> bool:
+        if self._rollback_if_nondirect_polling and not direct:
+            return self._check_superpower_with_rollback()
+        return self._superpower()
 
-    def check_superpower_with_rollback(self) -> bool:
-        with self.lock:
-            superpower_data = self.get_superpower_data()
-            result = self.superpower()
-            self.superpower_rollback(superpower_data)
+    def _check_superpower_with_rollback(self) -> bool:
+        with self._lock:
+            superpower_data = self._get_superpower_data()
+            result = self._superpower()
+            self._superpower_rollback(superpower_data)
             return result
 
-    def get_superpower_data(self) -> Dict[str, Any]:  # pragma: no cover
+    def _get_superpower_data(self) -> Dict[str, Any]:  # pragma: no cover
         return {}
 
     @abstractmethod
-    def text_representation_of_superpower(self) -> str:  # pragma: no cover
+    def _text_representation_of_superpower(self) -> str:  # pragma: no cover
         pass
 
-    def get_extra_kwargs(self) -> Dict[str, Any]:
+    def _get_extra_kwargs(self) -> Dict[str, Any]:
         return {}
 
-    def text_representation_of_extra_kwargs(self) -> str:
-        return self.text_representation_of_kwargs(**(self.get_extra_kwargs()))
+    def _text_representation_of_extra_kwargs(self) -> str:
+        return self._text_representation_of_kwargs(**(self._get_extra_kwargs()))
 
-    def text_representation_of_kwargs(self, **kwargs: Any) -> str:
+    def _text_representation_of_kwargs(self, **kwargs: Any) -> str:
         pairs: List[str] = [f'{key}={value!r}' for key, value in kwargs.items()]
         return ', '.join(pairs)
 
-    def check(self) -> None:
-        with self.lock:
-            report = self.get_report()
-
-            if report.cause == CancelCause.CANCELLED:
-                report.from_token.raise_cancelled_exception()
-
-            elif report.cause == CancelCause.SUPERPOWER:
-                report.from_token.raise_superpower_exception()
-
-    def raise_cancelled_exception(self) -> None:
+    def _raise_cancelled_exception(self) -> None:
         raise CancellationError('The token has been cancelled.', self)
 
-    def raise_superpower_exception(self) -> None:
-        raise self.exception(self.get_superpower_exception_message(), self)
+    def _raise_superpower_exception(self) -> None:
+        raise self.exception(self._get_superpower_exception_message(), self)
 
     @abstractmethod
-    def get_superpower_exception_message(self) -> str:  # pragma: no cover
+    def _get_superpower_exception_message(self) -> str:  # pragma: no cover
         return 'You have done the impossible to see this error.'

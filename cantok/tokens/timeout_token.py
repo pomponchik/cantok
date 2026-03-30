@@ -12,8 +12,8 @@ class TimeoutToken(ConditionToken):
         if timeout < 0:
             raise ValueError('You cannot specify a timeout less than zero.')
 
-        self.timeout = timeout
-        self.monotonic = monotonic
+        self._timeout = timeout
+        self._monotonic = monotonic
 
         timer: Callable[[], Union[int, float]]
         if monotonic:
@@ -27,19 +27,19 @@ class TimeoutToken(ConditionToken):
         def function() -> bool:
             return timer() >= deadline
 
-        self.deadline = deadline
+        self._deadline = deadline
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
-    def text_representation_of_superpower(self) -> str:
-        return str(self.timeout)
+    def _text_representation_of_superpower(self) -> str:
+        return str(self._timeout)
 
-    def get_extra_kwargs(self) -> Dict[str, Any]:
-        if self.monotonic:
+    def _get_extra_kwargs(self) -> Dict[str, Any]:
+        if self._monotonic:
             return {
-                'monotonic': self.monotonic,
+                'monotonic': self._monotonic,
             }
         return {}
 
-    def get_superpower_exception_message(self) -> str:
-        return f'The timeout of {self.timeout} seconds has expired.'
+    def _get_superpower_exception_message(self) -> str:
+        return f'The timeout of {self._timeout} seconds has expired.'

@@ -1,20 +1,3 @@
-<details>
-  <summary>ⓘ</summary>
-
-[![Downloads](https://static.pepy.tech/badge/cantok/month)](https://pepy.tech/project/cantok)
-[![Downloads](https://static.pepy.tech/badge/cantok)](https://pepy.tech/project/cantok)
-[![Coverage Status](https://coveralls.io/repos/github/pomponchik/cantok/badge.svg?branch=main)](https://coveralls.io/github/pomponchik/cantok?branch=main)
-[![Lines of code](https://sloc.xyz/github/pomponchik/cantok/?category=code)](https://github.com/boyter/scc/)
-[![Hits-of-Code](https://hitsofcode.com/github/pomponchik/cantok?branch=main)](https://hitsofcode.com/github/pomponchik/cantok/view?branch=main)
-[![Test-Package](https://github.com/pomponchik/cantok/actions/workflows/tests_and_coverage.yml/badge.svg)](https://github.com/pomponchik/cantok/actions/workflows/tests_and_coverage.yml)
-[![Python versions](https://img.shields.io/pypi/pyversions/cantok.svg)](https://pypi.python.org/pypi/cantok)
-[![PyPI version](https://badge.fury.io/py/cantok.svg)](https://badge.fury.io/py/cantok)
-[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/pomponchik/cantok)
-
-</details>
-
 ![logo](https://raw.githubusercontent.com/pomponchik/cantok/main/docs/assets/logo_5.png)
 
 

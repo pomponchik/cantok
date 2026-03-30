@@ -131,7 +131,7 @@ def test_get_report_cancelled():
     while not token.cancelled:
         pass
 
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.SUPERPOWER
@@ -150,7 +150,7 @@ def test_get_report_cancelled_nested(counter, counter_nested, from_token_is_nest
     nested_token = CounterToken(counter_nested)
     token = CounterToken(counter, nested_token)
 
-    report = token.get_report()
+    report = token._get_report()
 
     assert isinstance(report, CancellationReport)
     assert report.cause == CancelCause.SUPERPOWER
@@ -228,7 +228,7 @@ def test_quasitemp_counter_token_plus_temp_simple_token():
     token = CounterToken(0) + SimpleToken()
 
     assert isinstance(token, CounterToken)
-    assert len(token.tokens) == 0
+    assert len(token._tokens) == 0
 
 
 def test_not_quasitemp_counter_token_plus_temp_simple_token():
@@ -236,9 +236,9 @@ def test_not_quasitemp_counter_token_plus_temp_simple_token():
     token = counter_token + SimpleToken()
 
     assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], CounterToken)
-    assert token.tokens[0] is counter_token
+    assert len(token._tokens) == 1
+    assert isinstance(token._tokens[0], CounterToken)
+    assert token._tokens[0] is counter_token
 
 
 def test_quasitemp_counter_token_plus_not_temp_simple_token():
@@ -247,9 +247,9 @@ def test_quasitemp_counter_token_plus_not_temp_simple_token():
 
     assert isinstance(token, CounterToken)
     assert token is not simple_token
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], SimpleToken)
-    assert token.tokens[0] is simple_token
+    assert len(token._tokens) == 1
+    assert isinstance(token._tokens[0], SimpleToken)
+    assert token._tokens[0] is simple_token
 
 
 def test_not_quasitemp_counter_token_plus_not_temp_simple_token():
@@ -259,17 +259,17 @@ def test_not_quasitemp_counter_token_plus_not_temp_simple_token():
 
     assert isinstance(token, SimpleToken)
     assert token is not simple_token
-    assert len(token.tokens) == 2
-    assert isinstance(token.tokens[0], CounterToken)
-    assert token.tokens[0] is counter_token
-    assert token.tokens[1] is simple_token
+    assert len(token._tokens) == 2
+    assert isinstance(token._tokens[0], CounterToken)
+    assert token._tokens[0] is counter_token
+    assert token._tokens[1] is simple_token
 
 
 def test_quasitemp_counter_token_plus_temp_simple_token_reverse():
     token = SimpleToken() + CounterToken(1)
 
     assert isinstance(token, CounterToken)
-    assert len(token.tokens) == 0
+    assert len(token._tokens) == 0
 
 
 def test_not_quasitemp_counter_token_plus_temp_simple_token_reverse():
@@ -277,9 +277,9 @@ def test_not_quasitemp_counter_token_plus_temp_simple_token_reverse():
     token = SimpleToken() + counter_token
 
     assert isinstance(token, SimpleToken)
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], CounterToken)
-    assert token.tokens[0] is counter_token
+    assert len(token._tokens) == 1
+    assert isinstance(token._tokens[0], CounterToken)
+    assert token._tokens[0] is counter_token
 
 
 def test_quasitemp_counter_token_plus_not_temp_simple_token_reverse():
@@ -288,9 +288,9 @@ def test_quasitemp_counter_token_plus_not_temp_simple_token_reverse():
 
     assert isinstance(token, CounterToken)
     assert token is not simple_token
-    assert len(token.tokens) == 1
-    assert isinstance(token.tokens[0], SimpleToken)
-    assert token.tokens[0] is simple_token
+    assert len(token._tokens) == 1
+    assert isinstance(token._tokens[0], SimpleToken)
+    assert token._tokens[0] is simple_token
 
 
 def test_not_quasitemp_counter_token_plus_not_temp_simple_token_reverse():
@@ -300,14 +300,14 @@ def test_not_quasitemp_counter_token_plus_not_temp_simple_token_reverse():
 
     assert isinstance(token, SimpleToken)
     assert token is not simple_token
-    assert len(token.tokens) == 2
-    assert isinstance(token.tokens[1], CounterToken)
-    assert token.tokens[1] is counter_token
-    assert token.tokens[0] is simple_token
+    assert len(token._tokens) == 2
+    assert isinstance(token._tokens[1], CounterToken)
+    assert token._tokens[1] is counter_token
+    assert token._tokens[0] is simple_token
 
 
 def test_zero_counter_token_report_is_about_superpower():
-    for report in CounterToken(0).get_report(True), CounterToken(0).get_report(False):
+    for report in CounterToken(0)._get_report(True), CounterToken(0)._get_report(False):
         assert report.cause == CancelCause.SUPERPOWER
 
 

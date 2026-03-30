@@ -11,12 +11,12 @@ class CounterToken(ConditionToken):
         if counter < 0:
             raise ValueError('The counter must be greater than or equal to zero.')
 
-        self.initial_counter = counter
-        self.direct = direct
-        self.rollback_if_nondirect_polling = self.direct
+        self._initial_counter = counter
+        self._direct = direct
+        self._rollback_if_nondirect_polling = self._direct
 
         counter_bag = {'counter': counter}
-        self.counter_bag = counter_bag
+        self._counter_bag = counter_bag
 
         def function() -> bool:
             with counter_bag['lock']:  # type: ignore[attr-defined]
@@ -27,27 +27,27 @@ class CounterToken(ConditionToken):
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
-        self.counter_bag['lock'] = self.lock  # type: ignore[assignment]
+        self._counter_bag['lock'] = self._lock  # type: ignore[assignment]
 
     @property
     def counter(self) -> int:
-        return self.counter_bag['counter']
+        return self._counter_bag['counter']
 
-    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:
-        self.counter_bag['counter'] = superpower_data['counter']
+    def _superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:
+        self._counter_bag['counter'] = superpower_data['counter']
 
-    def text_representation_of_superpower(self) -> str:
-        return str(self.counter_bag['counter'])
+    def _text_representation_of_superpower(self) -> str:
+        return str(self._counter_bag['counter'])
 
-    def get_extra_kwargs(self) -> Dict[str, Any]:
-        if not self.direct:
+    def _get_extra_kwargs(self) -> Dict[str, Any]:
+        if not self._direct:
             return {
-                'direct': self.direct,
+                'direct': self._direct,
             }
         return {}
 
-    def get_superpower_data(self) -> Dict[str, Any]:
+    def _get_superpower_data(self) -> Dict[str, Any]:
         return {'counter': self.counter}
 
-    def get_superpower_exception_message(self) -> str:
-        return f'After {self.initial_counter} attempts, the counter was reset to zero.'
+    def _get_superpower_exception_message(self) -> str:
+        return f'After {self._initial_counter} attempts, the counter was reset to zero.'
