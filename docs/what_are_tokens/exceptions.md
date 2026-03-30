@@ -7,7 +7,7 @@ token = TimeoutToken(1)
 token.wait()
 token.check()
 #> ...
-#> cantok.errors.TimeoutCancellationError: The timeout of 1 seconds has expired.
+#> cantok.errors.TimeoutCancellationError: The timeout of 1 second has expired.
 ```
 
 Each type of token (except [`DefaultToken`](../types_of_tokens/DefaultToken.md)) has a corresponding type of exception that can be raised in this case:

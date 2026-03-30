@@ -1,4 +1,4 @@
-An unlimited number of other tokens can be embedded in one token as arguments during initialization. Each time checking whether it has been canceled, the token first checks its cancellation rules, and if it has not been canceled itself, then it checks the tokens nested in it. Thus, one cancelled token nested in another non-cancelled token cancels it:
+An unlimited number of other tokens can be embedded in one token as arguments during initialization. Each time checking whether it has been cancelled, the token first checks its cancellation rules, and if it has not been canceled itself, then it checks the tokens nested in it. Thus, one cancelled token nested in another non-cancelled token cancels it:
 
 ```python
 from cantok import SimpleToken

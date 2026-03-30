@@ -1,4 +1,4 @@
-`CounterToken` is the least intuitive of the tokens presented by this library. Do not use it if you are not sure that you understand how it works correctly. However, it can be very useful in situations where you want to limit the number of attempts to perform an operation.
+`CounterToken` is the least intuitive of the tokens provided by this library. Do not use it if you are not sure that you understand how it works correctly. However, it can be very useful in situations where you want to limit the number of attempts to perform an operation.
 
 `CounterToken` is initialized with an integer greater than or equal to zero. Each time cancellation is checked, this number is decremented by one. When this number becomes zero, the token is considered cancelled:
 
@@ -20,7 +20,7 @@ The counter inside the `CounterToken` is decremented under one of three conditio
 - Calling the `is_cancelled()` method.
 - Calling the `keep_on()` method.
 
-If you use `CounterToken` inside other tokens, the wrapping token can query the status of the `CounterToken`. To avoid unintended side effects, this operation does not decrease the counter. However, if for some reason you need it to decrease, pass `direct` - `False` as an argument:
+If you use `CounterToken` inside other tokens, the wrapping token can query the status of the `CounterToken`. To avoid unintended side effects, this operation does not decrease the counter. However, if for some reason you need it to decrease, pass `direct=False` as an argument:
 
 ```python
 from cantok import SimpleToken, CounterToken

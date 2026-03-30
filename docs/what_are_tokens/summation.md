@@ -18,7 +18,7 @@ def function(token: AbstractToken):
   ...
 ```
 
-The token summation operation always generates a new token. If at least one of the operand tokens is cancelled, the sum will also be cancelled. It is also guaranteed that the cancellation of this token does not lead to the cancellation of operands. That is, the sum of two tokens always behaves as if it were a [`SimpleToken`](../types_of_tokens/SimpleToken.md) in which both operands were [nested](embedding.md). However, it is difficult to say exactly which token will result from summation, since the library strives to minimize the generated graph of tokens for performance reasons.
+The token summation operation always generates a new token. If at least one of the operand tokens is cancelled, the sum will also be cancelled. It is also guaranteed that the cancellation of this token does not lead to the cancellation of the operands. That is, the sum of two tokens always behaves as if it were a [`SimpleToken`](../types_of_tokens/SimpleToken.md) in which both operands were [nested](embedding.md). However, it is difficult to say exactly which token will result from summation, since the library strives to minimize the generated graph of tokens for performance reasons.
 
 You may notice that some tokens disappear altogether during summation:
 

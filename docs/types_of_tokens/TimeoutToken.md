@@ -16,7 +16,7 @@ Just like `ConditionToken`, `TimeoutToken` can include other tokens:
 token = TimeoutToken(45, SimpleToken(), TimeoutToken(5), CounterToken(20))  # Includes all additional restrictions of the passed tokens.
 ```
 
-By default, time is measured using [`perf_counter`](https://docs.python.org/3/library/time.html#time.perf_counter) as the most accurate option. In extremely rare cases, you may need to use [monotonic](https://docs.python.org/3/library/time.html#time.monotonic_ns)-time; for this, use the appropriate initialization argument:
+By default, time is measured using [`perf_counter`](https://docs.python.org/3/library/time.html#time.perf_counter) as the most accurate option. In extremely rare cases, you may need to use [monotonic](https://docs.python.org/3/library/time.html#time.monotonic_ns) time; for this, use the appropriate initialization argument:
 
 ```python
 token = TimeoutToken(33, monotonic=True)
