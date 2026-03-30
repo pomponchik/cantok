@@ -19,6 +19,7 @@ class TimeoutToken(ConditionToken):
                       clock adjustments. Defaults to False.
 
     >>> import time
+    >>>
     >>> token = TimeoutToken(0.1)
     >>> token.cancelled
     False
