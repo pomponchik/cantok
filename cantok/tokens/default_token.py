@@ -8,15 +8,6 @@ class DefaultToken(AbstractToken):
     def __init__(self) -> None:
         super().__init__()
 
-    def _superpower(self) -> bool:
-        return False
-
-    def _text_representation_of_superpower(self) -> str:
-        return ''
-
-    def _get_superpower_exception_message(self) -> str:
-        return 'You cannot cancel a default token.'  # pragma: no cover
-
     @property
     def cancelled(self) -> bool:
         return False
@@ -34,3 +25,12 @@ class DefaultToken(AbstractToken):
 
     def cancel(self) -> 'AbstractToken':  # type: ignore[return]
         self._raise_superpower_exception()
+
+    def _superpower(self) -> bool:
+        return False
+
+    def _text_representation_of_superpower(self) -> str:
+        return ''
+
+    def _get_superpower_exception_message(self) -> str:
+        return 'You cannot cancel a default token.'  # pragma: no cover
