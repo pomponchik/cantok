@@ -39,7 +39,7 @@ class CounterToken(ConditionToken):
     def _text_representation_of_superpower(self) -> str:
         return str(self.counter_bag['counter'])
 
-    def get_extra_kwargs(self) -> Dict[str, Any]:
+    def _get_extra_kwargs(self) -> Dict[str, Any]:
         if not self.direct:
             return {
                 'direct': self.direct,

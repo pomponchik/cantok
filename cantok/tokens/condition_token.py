@@ -64,7 +64,7 @@ class ConditionToken(AbstractToken):
 
         return repr(self.function)
 
-    def get_extra_kwargs(self) -> Dict[str, Any]:
+    def _get_extra_kwargs(self) -> Dict[str, Any]:
         result = {}
 
         if not self.suppress_exceptions:

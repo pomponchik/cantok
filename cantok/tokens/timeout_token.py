@@ -34,7 +34,7 @@ class TimeoutToken(ConditionToken):
     def _text_representation_of_superpower(self) -> str:
         return str(self.timeout)
 
-    def get_extra_kwargs(self) -> Dict[str, Any]:
+    def _get_extra_kwargs(self) -> Dict[str, Any]:
         if self.monotonic:
             return {
                 'monotonic': self.monotonic,
