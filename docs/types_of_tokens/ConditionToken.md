@@ -54,7 +54,7 @@ token.check()
 #> 2
 ```
 
-`ConditionToken` has another feature. If the condition has detonated at least once and canceled it, then the condition is no longer polled and the token is permanently considered canceled. You can change this by manipulating the `caching` parameter when creating a token. By setting it to `False`, you will make sure that the condition is polled every time.
+`ConditionToken` has another feature. If the condition has triggered at least once and canceled it, then the condition is no longer polled and the token is permanently considered canceled. You can change this by manipulating the `caching` parameter when creating a token. By setting it to `False`, you will make sure that the condition is polled every time.
 
 ```python
 counter = 0
