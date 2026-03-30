@@ -168,7 +168,7 @@ class AbstractToken(ABC):
                 cause=CancelCause.CANCELLED,
                 from_token=self,
             )
-        if self.check_superpower(direct):
+        if self._check_superpower(direct):
             return CancellationReport(
                 cause=CancelCause.SUPERPOWER,
                 from_token=self,
@@ -194,7 +194,7 @@ class AbstractToken(ABC):
     def _superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover  # noqa: B027
         pass
 
-    def check_superpower(self, direct: bool) -> bool:
+    def _check_superpower(self, direct: bool) -> bool:
         if self.rollback_if_nondirect_polling and not direct:
             return self.check_superpower_with_rollback()
         return self._superpower()
