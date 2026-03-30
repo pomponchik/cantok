@@ -11,7 +11,7 @@ class DefaultToken(AbstractToken):
     def _superpower(self) -> bool:
         return False
 
-    def text_representation_of_superpower(self) -> str:
+    def _text_representation_of_superpower(self) -> str:
         return ''
 
     def get_superpower_exception_message(self) -> str:

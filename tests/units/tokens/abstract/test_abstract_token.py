@@ -108,7 +108,7 @@ def test_set_cancelled_false_if_this_token_is_not_cancelled_but_nested_token_is(
 def test_repr(token_fabric):
     token = token_fabric()
 
-    superpower_text = token.text_representation_of_superpower()
+    superpower_text = token._text_representation_of_superpower()
     extra_kwargs_text = token.text_representation_of_extra_kwargs()
 
     elements = ', '.join([x for x in (superpower_text, extra_kwargs_text) if x])
@@ -124,7 +124,7 @@ def test_repr_with_another_token(token_fabric):
     nested_token = token_fabric()
     token = token_fabric(nested_token)
 
-    superpower_text = token.text_representation_of_superpower()
+    superpower_text = token._text_representation_of_superpower()
     extra_kwargs_text = token.text_representation_of_extra_kwargs()
 
     assert repr(token) == type(token).__name__ + '(' + ('' if not superpower_text else f'{superpower_text}, ') + repr(nested_token) + (', ' + extra_kwargs_text if extra_kwargs_text else '') + ')'

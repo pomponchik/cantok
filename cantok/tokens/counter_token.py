@@ -36,7 +36,7 @@ class CounterToken(ConditionToken):
     def _superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:
         self.counter_bag['counter'] = superpower_data['counter']
 
-    def text_representation_of_superpower(self) -> str:
+    def _text_representation_of_superpower(self) -> str:
         return str(self.counter_bag['counter'])
 
     def get_extra_kwargs(self) -> Dict[str, Any]:

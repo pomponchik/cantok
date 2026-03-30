@@ -53,7 +53,7 @@ class ConditionToken(AbstractToken):
 
         return result
 
-    def text_representation_of_superpower(self) -> str:
+    def _text_representation_of_superpower(self) -> str:
         if hasattr(self.function, '__name__'):
             result = self.function.__name__
 

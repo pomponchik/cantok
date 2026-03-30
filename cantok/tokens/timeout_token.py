@@ -31,7 +31,7 @@ class TimeoutToken(ConditionToken):
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
-    def text_representation_of_superpower(self) -> str:
+    def _text_representation_of_superpower(self) -> str:
         return str(self.timeout)
 
     def get_extra_kwargs(self) -> Dict[str, Any]:

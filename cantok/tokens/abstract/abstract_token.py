@@ -23,7 +23,7 @@ class AbstractToken(ABC):
 
     def __repr__(self) -> str:
         chunks = []
-        superpower = self.text_representation_of_superpower()
+        superpower = self._text_representation_of_superpower()
         if superpower:
             chunks.append(superpower)
         other_tokens = ', '.join([repr(x) for x in self.tokens])
@@ -210,7 +210,7 @@ class AbstractToken(ABC):
         return {}
 
     @abstractmethod
-    def text_representation_of_superpower(self) -> str:  # pragma: no cover
+    def _text_representation_of_superpower(self) -> str:  # pragma: no cover
         pass
 
     def get_extra_kwargs(self) -> Dict[str, Any]:
