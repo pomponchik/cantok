@@ -1,5 +1,5 @@
-from typing import Callable, Dict, Any
 from contextlib import suppress
+from typing import Any, Callable, Dict
 
 from cantok import AbstractToken
 from cantok.errors import ConditionCancellationError
@@ -29,17 +29,16 @@ class ConditionToken(AbstractToken):
             self.after()
             return result
 
-        else:
-            result = self.default
+        result = self.default
 
-            with suppress(Exception):
-                self.before()
-            with suppress(Exception):
-                result = self.run_function()
-            with suppress(Exception):
-                self.after()
+        with suppress(Exception):
+            self.before()
+        with suppress(Exception):
+            result = self.run_function()
+        with suppress(Exception):
+            self.after()
 
-            return result
+        return result
 
     def run_function(self) -> bool:
         result = self.function()
@@ -47,12 +46,10 @@ class ConditionToken(AbstractToken):
         if not isinstance(result, bool):
             if not self.suppress_exceptions:
                 raise TypeError(f'The condition function can only return a bool value. The passed function returned "{result}" ({type(result).__name__}).')
-            else:
-                return self.default
+            return self.default
 
-        else:
-            if result:
-                self.was_cancelled_by_condition = True
+        if result:
+            self.was_cancelled_by_condition = True
 
         return result
 
@@ -65,8 +62,7 @@ class ConditionToken(AbstractToken):
 
             return result
 
-        else:
-            return repr(self.function)
+        return repr(self.function)
 
     def get_extra_kwargs(self) -> Dict[str, Any]:
         result = {}

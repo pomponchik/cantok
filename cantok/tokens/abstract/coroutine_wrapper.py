@@ -1,10 +1,10 @@
 import sys
 import weakref
-from typing import Dict, Union, Optional, Any
-from types import TracebackType
+from asyncio import sleep as async_sleep
 from collections.abc import Coroutine
 from time import sleep as sync_sleep
-from asyncio import sleep as async_sleep
+from types import TracebackType
+from typing import Any, Dict, Optional, Union
 
 from displayhooks import not_display
 

@@ -1,7 +1,6 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
-from cantok import AbstractToken
-from cantok import ConditionToken
+from cantok import AbstractToken, ConditionToken
 from cantok.errors import CounterCancellationError
 
 

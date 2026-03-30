@@ -1,9 +1,8 @@
-from typing import Dict
 from dataclasses import dataclass
 from sys import version_info
+from typing import Dict
 
 from cantok.tokens.abstract.cancel_cause import CancelCause
-
 
 if version_info >= (3, 10):
     addictional_fields: Dict[str, bool] = {'slots': True}  # pragma: no cover
