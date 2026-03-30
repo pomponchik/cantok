@@ -19,7 +19,7 @@ Each of them has its own characteristics, but they also have something in common
 
 - Token cancellation is a one-way operation. A token that has already been cancelled cannot be restored.
 
-- All token classes inherit from `AbstractToken` and have a single interface that defines how they can be cancelled, how to find out their status, how to wait for their cancellation and much more. If you are writing a function that accepts an unknown token type, you can use `AbstractToken` to hint types:
+- All token classes inherit from `AbstractToken` and have a single interface that defines how they can be cancelled, how to find out their status, how to wait for their cancellation and much more. If you are writing a function that accepts an unknown token type, you can use `AbstractToken` for type hints:
 
 ```python
 from cantok import AbstractToken

@@ -28,7 +28,7 @@ async def main():
 asyncio.run(main())
 ```
 
-Yes, it looks like magic — it is magic. The method itself finds out how it was used: inside an expression with or without the `await` keyword. In the first case, it runs in CPU-saving mode, in the second - in non-blocking event-loop mode.
+Yes, it looks like magic — it is magic. The method itself finds out how it was used: inside an expression with or without the `await` keyword. In the first case, it runs in CPU-saving mode, in the second — in non-blocking event-loop mode.
 
 In addition to the above, the `wait()` method has two optional arguments:
 

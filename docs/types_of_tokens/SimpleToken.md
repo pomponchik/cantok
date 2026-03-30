@@ -1,4 +1,4 @@
-The base token is `SimpleToken`. It has no built-in automation that can cancel it. The only way to cancel `SimpleToken` is to explicitly call the `cancel()` method from it.
+The base token is `SimpleToken`. It has no built-in automation that can cancel it. The only way to cancel `SimpleToken` is to explicitly call the `cancel()` method on it.
 
 ```python
 from cantok import SimpleToken
