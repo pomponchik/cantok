@@ -19,10 +19,10 @@ def function(): raise ValueError
 
 token = ConditionToken(function, suppress_exceptions=False)
 
-token.cancelled #  ValueError has risen.
+token.cancelled #  ValueError has been raised.
 ```
 
-If you still use exception suppression mode, by default, in case of an exception, the `canceled` attribute will contain `False`. If you want to change this, pass it there as the `default` parameter - `True`.
+If you still use exception suppression mode, by default, in case of an exception, the `cancelled` attribute will contain `False`. If you want to change this, pass it there as the `default` parameter - `True`.
 
 ```python
 def function(): raise ValueError

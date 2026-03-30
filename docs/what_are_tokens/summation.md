@@ -7,7 +7,7 @@ print(repr(first_token + second_token))
 #> SimpleToken(TimeoutToken(5), ConditionToken(λ))
 ```
 
-This feature is convenient to use if your function has received a token with certain restrictions and wants to throw it into other called functions, imposing additional restrictions:
+This feature is convenient to use if your function has received a token with certain restrictions and wants to pass it to other called functions, imposing additional restrictions:
 
 ```python
 from cantok import AbstractToken, TimeoutToken
@@ -29,7 +29,7 @@ print(repr(SimpleToken(cancelled=True) + TimeoutToken(5)))
 #> SimpleToken(cancelled=True)
 ```
 
-In addition, you can not be afraid to sum more than 2 tokens - this does not generate anything superfluous:
+In addition, you can safely sum more than 2 tokens - this does not generate anything superfluous:
 
 ```python
 print(repr(TimeoutToken(5) + ConditionToken(lambda: False) + CounterToken(23)))

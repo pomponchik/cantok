@@ -1,6 +1,6 @@
-`CounterToken` is the most ambiguous of the tokens presented by this library. Do not use it if you are not sure that you understand how it works correctly. However, it can be very useful in situations where you want to limit the number of attempts to perform an operation.
+`CounterToken` is the least intuitive of the tokens presented by this library. Do not use it if you are not sure that you understand how it works correctly. However, it can be very useful in situations where you want to limit the number of attempts to perform an operation.
 
-`CounterToken` is initialized with an integer greater than zero. At each calculation of the answer to the question whether it is canceled, this number is reduced by one. When this number becomes zero, the token is considered canceled:
+`CounterToken` is initialized with an integer greater than or equal to zero. At each calculation of the answer to the question whether it is canceled, this number is reduced by one. When this number becomes zero, the token is considered canceled:
 
 ```python
 from cantok import CounterToken
