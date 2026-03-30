@@ -37,7 +37,7 @@ class AbstractToken(ABC):
         else:
             extra_kwargs = {}
         extra_kwargs.update(**(self._get_extra_kwargs()))
-        text_representation_of_extra_kwargs = self.text_representation_of_kwargs(**extra_kwargs)
+        text_representation_of_extra_kwargs = self._text_representation_of_kwargs(**extra_kwargs)
         if text_representation_of_extra_kwargs:
             chunks.append(text_representation_of_extra_kwargs)
 
@@ -217,9 +217,9 @@ class AbstractToken(ABC):
         return {}
 
     def _text_representation_of_extra_kwargs(self) -> str:
-        return self.text_representation_of_kwargs(**(self._get_extra_kwargs()))
+        return self._text_representation_of_kwargs(**(self._get_extra_kwargs()))
 
-    def text_representation_of_kwargs(self, **kwargs: Any) -> str:
+    def _text_representation_of_kwargs(self, **kwargs: Any) -> str:
         pairs: List[str] = [f'{key}={value!r}' for key, value in kwargs.items()]
         return ', '.join(pairs)
 
