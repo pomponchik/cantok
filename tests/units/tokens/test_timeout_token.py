@@ -94,9 +94,9 @@ def test_timeout_expired(options):
 
 
 def test_text_representaion_of_extra_kwargs():
-    assert TimeoutToken(5, monotonic=False).text_representation_of_extra_kwargs() == ''
-    assert TimeoutToken(5, monotonic=True).text_representation_of_extra_kwargs() == 'monotonic=True'
-    assert TimeoutToken(5).text_representation_of_extra_kwargs() == ''
+    assert TimeoutToken(5, monotonic=False)._text_representation_of_extra_kwargs() == ''
+    assert TimeoutToken(5, monotonic=True)._text_representation_of_extra_kwargs() == 'monotonic=True'
+    assert TimeoutToken(5)._text_representation_of_extra_kwargs() == ''
 
 
 @pytest.mark.parametrize(

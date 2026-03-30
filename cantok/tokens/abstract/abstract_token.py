@@ -216,7 +216,7 @@ class AbstractToken(ABC):
     def _get_extra_kwargs(self) -> Dict[str, Any]:
         return {}
 
-    def text_representation_of_extra_kwargs(self) -> str:
+    def _text_representation_of_extra_kwargs(self) -> str:
         return self.text_representation_of_kwargs(**(self._get_extra_kwargs()))
 
     def text_representation_of_kwargs(self, **kwargs: Any) -> str:
