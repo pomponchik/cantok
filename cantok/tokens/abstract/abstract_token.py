@@ -149,6 +149,16 @@ class AbstractToken(ABC):
         self._cancelled = True
         return self
 
+    def check(self) -> None:
+        with self.lock:
+            report = self._get_report()
+
+            if report.cause == CancelCause.CANCELLED:
+                report.from_token.raise_cancelled_exception()
+
+            elif report.cause == CancelCause.SUPERPOWER:
+                report.from_token.raise_superpower_exception()
+
     def _filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:
         from cantok import DefaultToken  # noqa: PLC0415
 
@@ -222,16 +232,6 @@ class AbstractToken(ABC):
     def _text_representation_of_kwargs(self, **kwargs: Any) -> str:
         pairs: List[str] = [f'{key}={value!r}' for key, value in kwargs.items()]
         return ', '.join(pairs)
-
-    def check(self) -> None:
-        with self.lock:
-            report = self._get_report()
-
-            if report.cause == CancelCause.CANCELLED:
-                report.from_token.raise_cancelled_exception()
-
-            elif report.cause == CancelCause.SUPERPOWER:
-                report.from_token.raise_superpower_exception()
 
     def raise_cancelled_exception(self) -> None:
         raise CancellationError('The token has been cancelled.', self)
