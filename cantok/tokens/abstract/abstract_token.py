@@ -196,10 +196,10 @@ class AbstractToken(ABC):
 
     def _check_superpower(self, direct: bool) -> bool:
         if self.rollback_if_nondirect_polling and not direct:
-            return self.check_superpower_with_rollback()
+            return self._check_superpower_with_rollback()
         return self._superpower()
 
-    def check_superpower_with_rollback(self) -> bool:
+    def _check_superpower_with_rollback(self) -> bool:
         with self.lock:
             superpower_data = self.get_superpower_data()
             result = self._superpower()
