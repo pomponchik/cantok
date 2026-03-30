@@ -25,14 +25,6 @@ jobs:
         shell: bash
         run: pip install .
 
-      - name: Run mypy
-        shell: bash
-        run: mypy cantok --strict
-
-      - name: Run mypy for tests
-        shell: bash
-        run: mypy tests
-
       - name: Run ruff
         shell: bash
         run: ruff check cantok
@@ -40,3 +32,11 @@ jobs:
       - name: Run ruff for tests
         shell: bash
         run: ruff check tests
+
+      - name: Run mypy
+        shell: bash
+        run: mypy --strict cantok
+
+      - name: Run mypy for tests
+        shell: bash
+        run: mypy tests
