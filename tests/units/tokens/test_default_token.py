@@ -99,7 +99,7 @@ def test_temp_default_token_plus_temp_timeout_token():
     token = DefaultToken() + TimeoutToken(1)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 0
 
 
@@ -107,5 +107,5 @@ def test_temp_timeout_token_plus_temp_default_token():
     token = TimeoutToken(1) + DefaultToken()
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 0

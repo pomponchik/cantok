@@ -228,7 +228,7 @@ def test_quasitemp_timeout_token_plus_temp_simple_token():
 
     assert isinstance(token, TimeoutToken)
     assert len(token._tokens) == 0
-    assert token.timeout == 1
+    assert token._timeout == 1
 
 
 def test_not_quasitemp_timeout_token_plus_temp_simple_token():
@@ -270,7 +270,7 @@ def test_quasitemp_timeout_token_plus_temp_simple_token_reverse():
 
     assert isinstance(token, TimeoutToken)
     assert len(token._tokens) == 0
-    assert token.timeout == 1
+    assert token._timeout == 1
 
 
 def test_not_quasitemp_timeout_token_plus_temp_simple_token_reverse():
@@ -288,7 +288,7 @@ def test_quasitemp_timeout_token_plus_not_temp_simple_token_reverse():
     token = simple_token + TimeoutToken(1)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert token is not simple_token
     assert len(token._tokens) == 1
     assert isinstance(token._tokens[0], SimpleToken)
@@ -345,7 +345,7 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monoto
     token = TimeoutToken(2, **addictional_kwargs) + TimeoutToken(1, **addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 0
 
 
@@ -362,11 +362,11 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_mo
     token = TimeoutToken(2, **left_addictional_kwargs) + TimeoutToken(1, **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
+    assert token._timeout == 2
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == 1
+    assert token._tokens[0]._timeout == 1
 
 
 @pytest.mark.parametrize(
@@ -388,7 +388,7 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
     token = TimeoutToken(1, **addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, **addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 0
 
 
@@ -412,11 +412,11 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
     token = TimeoutToken(1, **left_addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[0]._timeout == timeout_for_equal_or_bigger_token
 
 
 @pytest.mark.parametrize(
@@ -433,11 +433,11 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_f
 
     assert isinstance(token, TimeoutToken)
     assert token is not left_timeout_token
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == 2
+    assert token._tokens[0]._timeout == 2
     assert token._tokens[0] is left_timeout_token
 
 
@@ -455,11 +455,11 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_not_same_monoton
     token = left_timeout_token + TimeoutToken(1, **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == 2
+    assert token._tokens[0]._timeout == 2
     assert token._tokens[0] is left_timeout_token
 
 
@@ -476,7 +476,7 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
     token = left_timeout_token + TimeoutToken(2, **addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 0
 
 
@@ -494,11 +494,11 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
     token = left_timeout_token + TimeoutToken(2, **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
+    assert token._timeout == 2
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == 1
+    assert token._tokens[0]._timeout == 1
     assert token._tokens[0] is left_timeout_token
 
 
@@ -515,7 +515,7 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_f
     token = TimeoutToken(2, **addictional_kwargs) + right_timeout_token
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 0
 
 
@@ -533,11 +533,11 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_not_same_monoton
     token = TimeoutToken(2, **left_addictional_kwargs) + right_timeout_token
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
+    assert token._timeout == 2
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == 1
+    assert token._tokens[0]._timeout == 1
     assert token._tokens[0] is right_timeout_token
 
 
@@ -554,10 +554,10 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
     token = TimeoutToken(1, **addictional_kwargs) + right_timeout_token
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
-    assert token._tokens[0].timeout == 2
+    assert token._tokens[0]._timeout == 2
     assert token._tokens[0] is right_timeout_token
 
 
@@ -575,11 +575,11 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
     token = TimeoutToken(1, **left_addictional_kwargs) + right_timeout_token
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == 2
+    assert token._tokens[0]._timeout == 2
     assert token._tokens[0] is right_timeout_token
 
 
@@ -603,8 +603,8 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag(a
     assert len(token._tokens[1]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[0].timeout == 2
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[0]._timeout == 2
+    assert token._tokens[1]._timeout == 1
     assert token._tokens[0] is left
     assert token._tokens[1] is right
 
@@ -630,8 +630,8 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_not_same_monotonic_fl
     assert len(token._tokens[1]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[0].timeout == 2
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[0]._timeout == 2
+    assert token._tokens[1]._timeout == 1
     assert token._tokens[0] is left
     assert token._tokens[1] is right
 
@@ -663,8 +663,8 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert len(token._tokens[1]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[0].timeout == 1
-    assert token._tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[0]._timeout == 1
+    assert token._tokens[1]._timeout == timeout_for_equal_or_bigger_token
     assert token._tokens[0] is left
     assert token._tokens[1] is right
 
@@ -697,8 +697,8 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert len(token._tokens[1]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[0].timeout == 1
-    assert token._tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[0]._timeout == 1
+    assert token._tokens[1]._timeout == timeout_for_equal_or_bigger_token
     assert token._tokens[0] is left
     assert token._tokens[1] is right
 
@@ -715,7 +715,7 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monoto
     token = TimeoutToken(2, **addictional_kwargs) + TimeoutToken(1, ConditionToken(lambda: True), **addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert isinstance(token._tokens[0], ConditionToken)
     assert len(token._tokens[0]._tokens) == 0
@@ -734,11 +734,11 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_mo
     token = TimeoutToken(2, **left_addictional_kwargs) + TimeoutToken(1, ConditionToken(lambda: True), **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
+    assert token._timeout == 2
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 1
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == 1
+    assert token._tokens[0]._timeout == 1
     assert isinstance(token._tokens[0]._tokens[0], ConditionToken)
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
 
@@ -762,7 +762,7 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
     token = TimeoutToken(1, **addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, ConditionToken(lambda: True), **addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], ConditionToken)
@@ -788,11 +788,11 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
     token = TimeoutToken(1, **left_addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, ConditionToken(lambda: True), **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 1
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[0]._timeout == timeout_for_equal_or_bigger_token
     assert isinstance(token._tokens[0]._tokens[0], ConditionToken)
 
 
@@ -810,13 +810,13 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_f
 
     assert isinstance(token, TimeoutToken)
     assert token is not left_timeout_token
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
     assert isinstance(token._tokens[0], ConditionToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 2
+    assert token._tokens[1]._timeout == 2
 
 
 @pytest.mark.parametrize(
@@ -833,14 +833,14 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_not_same_monoton
     token = left_timeout_token + TimeoutToken(1, ConditionToken(lambda: True), **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
     assert isinstance(token._tokens[0], ConditionToken)
     assert token._tokens[0] is not left_timeout_token
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 2
+    assert token._tokens[1]._timeout == 2
     assert token._tokens[1] is left_timeout_token
 
 
@@ -862,7 +862,7 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
     assert len(token._tokens[1]._tokens) == 0
     assert isinstance(token._tokens[0], ConditionToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[1]._timeout == 1
 
 
 @pytest.mark.parametrize(
@@ -879,14 +879,14 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
     token = left_timeout_token + TimeoutToken(2, ConditionToken(lambda: True), **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
+    assert token._timeout == 2
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
     assert isinstance(token._tokens[0], ConditionToken)
     assert token._tokens[0] is not left_timeout_token
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[1]._timeout == 1
     assert token._tokens[1] is left_timeout_token
 
 
@@ -903,7 +903,7 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_f
     token = TimeoutToken(2, **addictional_kwargs) + right_timeout_token
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], ConditionToken)
@@ -924,12 +924,12 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_not_same_monoton
     token = TimeoutToken(2, **left_addictional_kwargs) + right_timeout_token
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
+    assert token._timeout == 2
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 1
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == 1
+    assert token._tokens[0]._timeout == 1
     assert token._tokens[0] is right_timeout_token
     assert isinstance(token._tokens[0]._tokens[0], ConditionToken)
 
@@ -947,11 +947,11 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
     token = TimeoutToken(1, **addictional_kwargs) + right_timeout_token
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 1
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
-    assert token._tokens[0].timeout == 2
+    assert token._tokens[0]._timeout == 2
     assert token._tokens[0] is right_timeout_token
     assert isinstance(token._tokens[0]._tokens[0], ConditionToken)
 
@@ -970,12 +970,12 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
     token = TimeoutToken(1, **left_addictional_kwargs) + right_timeout_token
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 1
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
-    assert token._tokens[0].timeout == 2
+    assert token._tokens[0]._timeout == 2
     assert token._tokens[0] is right_timeout_token
     assert isinstance(token._tokens[0]._tokens[0], ConditionToken)
 
@@ -1001,8 +1001,8 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_w
     assert len(token._tokens[1]._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[0].timeout == 2
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[0]._timeout == 2
+    assert token._tokens[1]._timeout == 1
     assert token._tokens[0] is left
     assert token._tokens[1] is right
     assert isinstance(token._tokens[1]._tokens[0], ConditionToken)
@@ -1030,8 +1030,8 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_not_same_monotonic_fl
     assert len(token._tokens[1]._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[0].timeout == 2
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[0]._timeout == 2
+    assert token._tokens[1]._timeout == 1
     assert token._tokens[0] is left
     assert token._tokens[1] is right
     assert isinstance(token._tokens[1]._tokens[0], ConditionToken)
@@ -1065,8 +1065,8 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert len(token._tokens[1]._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[0].timeout == 1
-    assert token._tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[0]._timeout == 1
+    assert token._tokens[1]._timeout == timeout_for_equal_or_bigger_token
     assert token._tokens[0] is left
     assert token._tokens[1] is right
     assert isinstance(token._tokens[1]._tokens[0], ConditionToken)
@@ -1101,8 +1101,8 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert len(token._tokens[1]._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], TimeoutToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[0].timeout == 1
-    assert token._tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[0]._timeout == 1
+    assert token._tokens[1]._timeout == timeout_for_equal_or_bigger_token
     assert token._tokens[0] is left
     assert token._tokens[1] is right
     assert isinstance(token._tokens[1]._tokens[0], ConditionToken)
@@ -1120,7 +1120,7 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monoto
     token = TimeoutToken(2, CounterToken(5), **addictional_kwargs) + TimeoutToken(1, ConditionToken(lambda: True), **addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
@@ -1141,11 +1141,11 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_mo
     token = TimeoutToken(2, CounterToken(5), **left_addictional_kwargs) + TimeoutToken(1, ConditionToken(lambda: True), **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
+    assert token._timeout == 2
     assert len(token._tokens) == 2
     assert len(token._tokens[1]._tokens) == 1
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[1]._timeout == 1
     assert isinstance(token._tokens[1]._tokens[0], ConditionToken)
     assert len(token._tokens[1]._tokens[0]._tokens) == 0
     assert len(token._tokens[0]._tokens) == 0
@@ -1171,7 +1171,7 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
     token = TimeoutToken(1, CounterToken(5), **addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, ConditionToken(lambda: True), **addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
@@ -1198,7 +1198,7 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
     token = TimeoutToken(1, CounterToken(5), **left_addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, ConditionToken(lambda: True), **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 1
@@ -1206,7 +1206,7 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
     assert isinstance(token._tokens[0], CounterToken)
     assert isinstance(token._tokens[1], TimeoutToken)
     assert isinstance(token._tokens[1]._tokens[0], ConditionToken)
-    assert token._tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[1]._timeout == timeout_for_equal_or_bigger_token
 
 
 @pytest.mark.parametrize(
@@ -1224,14 +1224,14 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_f
     assert isinstance(token, TimeoutToken)
     assert token is not left_timeout_token
     assert token._tokens[1] is left_timeout_token
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 1
     assert len(token._tokens[1]._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], ConditionToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 2
+    assert token._tokens[1]._timeout == 2
     assert isinstance(token._tokens[1]._tokens[0], CounterToken)
 
 
@@ -1251,14 +1251,14 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_not_same_monoton
     assert isinstance(token, TimeoutToken)
     assert token is not left_timeout_token
     assert token._tokens[1] is left_timeout_token
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 1
     assert len(token._tokens[1]._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], ConditionToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 2
+    assert token._tokens[1]._timeout == 2
     assert isinstance(token._tokens[1]._tokens[0], CounterToken)
 
 
@@ -1281,7 +1281,7 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
     assert len(token._tokens[1]._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], ConditionToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[1]._timeout == 1
     assert isinstance(token._tokens[1]._tokens[0], CounterToken)
 
 
@@ -1299,7 +1299,7 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
     token = left_timeout_token + TimeoutToken(2, ConditionToken(lambda: True), **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
+    assert token._timeout == 2
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 1
@@ -1307,7 +1307,7 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
     assert isinstance(token._tokens[0], ConditionToken)
     assert token._tokens[0] is not left_timeout_token
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[1]._timeout == 1
     assert token._tokens[1] is left_timeout_token
     assert isinstance(token._tokens[1]._tokens[0], CounterToken)
 
@@ -1328,7 +1328,7 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_f
     assert isinstance(token._tokens[0], CounterToken)
     assert isinstance(token._tokens[1], TimeoutToken)
     assert isinstance(token._tokens[1]._tokens[0], ConditionToken)
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[1]._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 1
@@ -1353,8 +1353,8 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_not_same_monoton
     assert isinstance(token._tokens[0], CounterToken)
     assert isinstance(token._tokens[1], TimeoutToken)
     assert isinstance(token._tokens[1]._tokens[0], ConditionToken)
-    assert token._tokens[1].timeout == 1
-    assert token.timeout == 2
+    assert token._tokens[1]._timeout == 1
+    assert token._timeout == 2
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 1
@@ -1378,13 +1378,13 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
     TimeoutToken(1, CounterToken(5), TimeoutToken(2, ConditionToken(lambda: True)))
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 1
     assert len(token._tokens[1]._tokens[0]._tokens) == 0
-    assert token.timeout == 1
-    assert token._tokens[1].timeout == 2
+    assert token._timeout == 1
+    assert token._tokens[1]._timeout == 2
     assert token._tokens[1] is right_timeout_token
     assert isinstance(token._tokens[1]._tokens[0], ConditionToken)
     assert isinstance(token._tokens[0], CounterToken)
@@ -1409,8 +1409,8 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
     assert isinstance(token._tokens[0], CounterToken)
     assert isinstance(token._tokens[1], TimeoutToken)
     assert isinstance(token._tokens[1]._tokens[0], ConditionToken)
-    assert token.timeout == 1
-    assert token._tokens[1].timeout == 2
+    assert token._timeout == 1
+    assert token._tokens[1]._timeout == 2
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 1
@@ -1445,8 +1445,8 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_w
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
     assert token._tokens[0] is left
     assert token._tokens[1] is right
-    assert token._tokens[0].timeout == 2
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[0]._timeout == 2
+    assert token._tokens[1]._timeout == 1
 
 
 @pytest.mark.parametrize(
@@ -1476,8 +1476,8 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_not_same_monotonic_fl
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
     assert token._tokens[0] is left
     assert token._tokens[1] is right
-    assert token._tokens[0].timeout == 2
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[0]._timeout == 2
+    assert token._tokens[1]._timeout == 1
 
 
 @pytest.mark.parametrize(
@@ -1513,8 +1513,8 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
     assert token._tokens[0] is left
     assert token._tokens[1] is right
-    assert token._tokens[0].timeout == 1
-    assert token._tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[0]._timeout == 1
+    assert token._tokens[1]._timeout == timeout_for_equal_or_bigger_token
 
 
 @pytest.mark.parametrize(
@@ -1551,8 +1551,8 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
     assert token._tokens[0] is left
     assert token._tokens[1] is right
-    assert token._tokens[0].timeout == 1
-    assert token._tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[0]._timeout == 1
+    assert token._tokens[1]._timeout == timeout_for_equal_or_bigger_token
 
 
 @pytest.mark.parametrize(
@@ -1567,7 +1567,7 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monoto
     token = TimeoutToken(2, CounterToken(5), **addictional_kwargs) + TimeoutToken(1, **addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], CounterToken)
@@ -1586,13 +1586,13 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_mo
     token = TimeoutToken(2, CounterToken(5), **left_addictional_kwargs) + TimeoutToken(1, **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 2
+    assert token._timeout == 2
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
     assert isinstance(token._tokens[0], CounterToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[1]._timeout == 1
 
 
 @pytest.mark.parametrize(
@@ -1615,7 +1615,7 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
 
     assert isinstance(token, TimeoutToken)
     assert isinstance(token._tokens[0], CounterToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert isinstance(token._tokens[0], CounterToken)
@@ -1641,8 +1641,8 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
     token = TimeoutToken(1, CounterToken(5), **left_addictional_kwargs) + TimeoutToken(timeout_for_equal_or_bigger_token, **right_addictional_kwargs)
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
-    assert token._tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert token._timeout == 1
+    assert token._tokens[1]._timeout == timeout_for_equal_or_bigger_token
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
@@ -1667,8 +1667,8 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_f
     assert isinstance(token._tokens[0]._tokens[0], CounterToken)
     assert token is not left_timeout_token
     assert token._tokens[0] is left_timeout_token
-    assert token.timeout == 1
-    assert token._tokens[0].timeout == 2
+    assert token._timeout == 1
+    assert token._tokens[0]._timeout == 2
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 1
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
@@ -1692,8 +1692,8 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_not_same_monoton
     assert isinstance(token._tokens[0]._tokens[0], CounterToken)
     assert token is not left_timeout_token
     assert token._tokens[0] is left_timeout_token
-    assert token.timeout == 1
-    assert token._tokens[0].timeout == 2
+    assert token._timeout == 1
+    assert token._tokens[0]._timeout == 2
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 1
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
@@ -1716,7 +1716,7 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 0
     assert token is left_timeout_token
-    assert token.timeout == 1
+    assert token._timeout == 1
 
 
 @pytest.mark.parametrize(
@@ -1735,11 +1735,11 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
     assert isinstance(token, TimeoutToken)
     assert isinstance(token._tokens[0], TimeoutToken)
     assert isinstance(token._tokens[0]._tokens[0], CounterToken)
-    assert token.timeout == 2
-    assert token._tokens[0].timeout == 1
+    assert token._timeout == 2
+    assert token._tokens[0]._timeout == 1
     assert token._tokens[0] is left_timeout_token
     assert token is not left_timeout_token
-    assert token.timeout == 2
+    assert token._timeout == 2
     assert len(token._tokens) == 1
     assert len(token._tokens[0]._tokens) == 1
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
@@ -1760,7 +1760,7 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_f
     assert isinstance(token, SimpleToken)
     assert isinstance(token._tokens[0], CounterToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[1]._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
@@ -1783,8 +1783,8 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_not_same_monoton
     assert isinstance(token, TimeoutToken)
     assert isinstance(token._tokens[0], CounterToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token._tokens[1].timeout == 1
-    assert token.timeout == 2
+    assert token._tokens[1]._timeout == 1
+    assert token._timeout == 2
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
@@ -1805,11 +1805,11 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
     token = TimeoutToken(1, CounterToken(5), **addictional_kwargs) + right_timeout_token
 
     assert isinstance(token, TimeoutToken)
-    assert token.timeout == 1
+    assert token._timeout == 1
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
-    assert token._tokens[1].timeout == 2
+    assert token._tokens[1]._timeout == 2
     assert token._tokens[1] is right_timeout_token
     assert isinstance(token._tokens[0], CounterToken)
     assert isinstance(token._tokens[1], TimeoutToken)
@@ -1831,8 +1831,8 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
     assert isinstance(token, TimeoutToken)
     assert isinstance(token._tokens[0], CounterToken)
     assert isinstance(token._tokens[1], TimeoutToken)
-    assert token.timeout == 1
-    assert token._tokens[1].timeout == 2
+    assert token._timeout == 1
+    assert token._tokens[1]._timeout == 2
     assert len(token._tokens) == 2
     assert len(token._tokens[0]._tokens) == 0
     assert len(token._tokens[1]._tokens) == 0
@@ -1864,8 +1864,8 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_w
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
     assert token._tokens[0] is left
     assert token._tokens[1] is right
-    assert token._tokens[0].timeout == 2
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[0]._timeout == 2
+    assert token._tokens[1]._timeout == 1
 
 
 @pytest.mark.parametrize(
@@ -1893,8 +1893,8 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_not_same_monotonic_fl
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
     assert token._tokens[0] is left
     assert token._tokens[1] is right
-    assert token._tokens[0].timeout == 2
-    assert token._tokens[1].timeout == 1
+    assert token._tokens[0]._timeout == 2
+    assert token._tokens[1]._timeout == 1
 
 
 @pytest.mark.parametrize(
@@ -1928,8 +1928,8 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
     assert token._tokens[0] is left
     assert token._tokens[1] is right
-    assert token._tokens[0].timeout == 1
-    assert token._tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[0]._timeout == 1
+    assert token._tokens[1]._timeout == timeout_for_equal_or_bigger_token
 
 
 @pytest.mark.parametrize(
@@ -1964,8 +1964,8 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
     assert len(token._tokens[0]._tokens[0]._tokens) == 0
     assert token._tokens[0] is left
     assert token._tokens[1] is right
-    assert token._tokens[0].timeout == 1
-    assert token._tokens[1].timeout == timeout_for_equal_or_bigger_token
+    assert token._tokens[0]._timeout == 1
+    assert token._tokens[1]._timeout == timeout_for_equal_or_bigger_token
 
 
 def test_temp_negative_timeout_token_plus_temp_timeout_token():
