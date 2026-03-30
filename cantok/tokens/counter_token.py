@@ -11,9 +11,9 @@ class CounterToken(ConditionToken):
         if counter < 0:
             raise ValueError('The counter must be greater than or equal to zero.')
 
-        self.initial_counter = counter
-        self.direct = direct
-        self.rollback_if_nondirect_polling = self.direct
+        self._initial_counter = counter
+        self._direct = direct
+        self._rollback_if_nondirect_polling = self._direct
 
         counter_bag = {'counter': counter}
         self.counter_bag = counter_bag
@@ -40,9 +40,9 @@ class CounterToken(ConditionToken):
         return str(self.counter_bag['counter'])
 
     def _get_extra_kwargs(self) -> Dict[str, Any]:
-        if not self.direct:
+        if not self._direct:
             return {
-                'direct': self.direct,
+                'direct': self._direct,
             }
         return {}
 
@@ -50,4 +50,4 @@ class CounterToken(ConditionToken):
         return {'counter': self.counter}
 
     def _get_superpower_exception_message(self) -> str:
-        return f'After {self.initial_counter} attempts, the counter was reset to zero.'
+        return f'After {self._initial_counter} attempts, the counter was reset to zero.'

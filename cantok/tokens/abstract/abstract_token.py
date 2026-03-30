@@ -12,7 +12,7 @@ from cantok.types import IterableWithTokens
 
 class AbstractToken(ABC):
     exception = CancellationError
-    rollback_if_nondirect_polling = False
+    _rollback_if_nondirect_polling = False
 
     def __init__(self, *tokens: 'AbstractToken', cancelled: bool = False) -> None:
         self._cached_report: Optional[CancellationReport] = None
@@ -205,7 +205,7 @@ class AbstractToken(ABC):
         pass
 
     def _check_superpower(self, direct: bool) -> bool:
-        if self.rollback_if_nondirect_polling and not direct:
+        if self._rollback_if_nondirect_polling and not direct:
             return self._check_superpower_with_rollback()
         return self._superpower()
 
