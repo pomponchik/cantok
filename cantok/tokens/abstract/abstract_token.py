@@ -58,11 +58,11 @@ class AbstractToken(ABC):
         cancelled_flag = 'cancelled' if self.is_cancelled(direct=False) else 'not cancelled'
         return f'<{type(self).__name__} ({cancelled_flag})>'
 
-    def __add__(self, item: 'AbstractToken') -> 'AbstractToken':
+    def __add__(self, item: 'AbstractToken') -> 'AbstractToken':  # noqa: PLR0911
         if not isinstance(item, AbstractToken):
             raise TypeError('Cancellation Token can only be combined with another Cancellation Token.')
 
-        from cantok import DefaultToken, SimpleToken, TimeoutToken
+        from cantok import DefaultToken, SimpleToken, TimeoutToken  # noqa: PLC0415
 
         if self._cancelled or item._cancelled:
             return SimpleToken(cancelled=True)
@@ -83,10 +83,7 @@ class AbstractToken(ABC):
                 for v in _caller_locals:
                     if v is token:
                         return False
-                for v in _caller_globals:
-                    if v is token:
-                        return False
-                return True
+                return all(v is not token for v in _caller_globals)
 
             _self_is_temp = is_temp(self)
             _item_is_temp = is_temp(item)
@@ -132,7 +129,7 @@ class AbstractToken(ABC):
         return self.keep_on()
 
     def filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:
-        from cantok import DefaultToken
+        from cantok import DefaultToken  # noqa: PLC0415
 
         result: List[AbstractToken] = []
 
@@ -171,10 +168,10 @@ class AbstractToken(ABC):
             raise ValueError('The total timeout of waiting cannot be less than the time of one iteration of the token polling.')
 
         if timeout is None:
-            from cantok import SimpleToken
+            from cantok import SimpleToken  # noqa: PLC0415
             token: AbstractToken = SimpleToken()
         else:
-            from cantok import TimeoutToken
+            from cantok import TimeoutToken  # noqa: PLC0415
             token = TimeoutToken(timeout)
 
         return WaitCoroutineWrapper(step, self + token, token)
@@ -212,7 +209,7 @@ class AbstractToken(ABC):
     def superpower(self) -> bool:  # pragma: no cover
         pass
 
-    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover
+    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover  # noqa: B027
         pass
 
     def check_superpower(self, direct: bool) -> bool:

@@ -4,18 +4,18 @@ from contextlib import redirect_stdout
 
 import pytest
 
-from cantok import SimpleToken, TimeoutToken, ConditionToken, CounterToken
+from cantok import ConditionToken, CounterToken, SimpleToken, TimeoutToken
 
 
 @pytest.mark.parametrize(
-    ['create_value', 'expected_string'],
+    ('create_value', 'expected_string'),
     [
         (lambda: SimpleToken(cancelled=True).wait(), ''),
         (lambda: TimeoutToken(0.0001).wait(), ''),
         (lambda: ConditionToken(lambda: True).wait(), ''),
         (lambda: CounterToken(0).wait(), ''),
         (lambda: 1, '1\n'),
-        (lambda: 'kek', f'{repr("kek")}\n'),
+        (lambda: 'kek', f'{"kek"!r}\n'),
     ],
 )
 def test_displayhook_printing_coroutine_wrappers_and_other_objects(create_value, expected_string):

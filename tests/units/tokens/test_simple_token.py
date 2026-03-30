@@ -1,7 +1,7 @@
 import pytest
 
+from cantok import CancellationError, ConditionToken, SimpleToken, TimeoutToken
 from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
-from cantok import SimpleToken, TimeoutToken, ConditionToken, CancellationError
 
 
 def test_just_created_token_without_arguments():
@@ -16,7 +16,7 @@ def test_just_created_token_with_argument_cancelled():
     assert SimpleToken(cancelled=True).keep_on() == False
 
 
-@pytest.mark.parametrize('arguments,expected_cancelled_status', [
+@pytest.mark.parametrize(('arguments', 'expected_cancelled_status'), [
     ([SimpleToken(), SimpleToken().cancel()], True),
     ([SimpleToken()], False),
     ([SimpleToken().cancel()], True),
@@ -54,12 +54,11 @@ def test_check_superpower_raised():
     with pytest.raises(CancellationError):
         token.check()
 
-    try:
+    with pytest.raises(CancellationError) as exc_info:
         token.check()
-    except CancellationError as e:
-        assert type(e) is CancellationError
-        assert str(e) == 'The token has been cancelled.'
-        assert e.token is token
+    assert type(exc_info.value) is CancellationError
+    assert str(exc_info.value) == 'The token has been cancelled.'
+    assert exc_info.value.token is token
 
 
 def test_check_superpower_raised_nested():
@@ -71,13 +70,12 @@ def test_check_superpower_raised_nested():
     with pytest.raises(CancellationError):
         token.check()
 
-    try:
+    with pytest.raises(CancellationError) as exc_info:
         token.check()
-    except CancellationError as e:
-        assert type(e) is CancellationError
-        assert str(e) == 'The token has been cancelled.'
-        assert e.token is nested_token
-        assert e.token.exception is type(e)
+    assert type(exc_info.value) is CancellationError
+    assert str(exc_info.value) == 'The token has been cancelled.'
+    assert exc_info.value.token is nested_token
+    assert exc_info.value.token.exception is type(exc_info.value)
 
 
 def test_get_report_cancelled():
@@ -91,7 +89,7 @@ def test_get_report_cancelled():
 
 
 @pytest.mark.parametrize(
-    'cancelled_flag,cancelled_flag_nested,from_token_is_nested',
+    ('cancelled_flag', 'cancelled_flag_nested', 'from_token_is_nested'),
     [
         (True, True, False),
         (True, False, False),

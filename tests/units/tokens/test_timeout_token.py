@@ -1,10 +1,16 @@
 import asyncio
-from time import sleep, perf_counter
+from time import perf_counter, sleep
 
 import pytest
 
+from cantok import (
+    ConditionToken,
+    CounterToken,
+    SimpleToken,
+    TimeoutCancellationError,
+    TimeoutToken,
+)
 from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
-from cantok import SimpleToken, TimeoutToken, ConditionToken, CounterToken, TimeoutCancellationError
 
 
 @pytest.mark.parametrize(
@@ -49,7 +55,7 @@ def test_zero_timeout(zero_timeout, options):
     ],
 )
 def test_less_than_zero_timeout(options, timeout):
-    with pytest.raises(ValueError, match='You cannot specify a timeout less than zero.'):
+    with pytest.raises(ValueError, match=r'You cannot specify a timeout less than zero\.'):
         TimeoutToken(timeout, **options)
 
 
@@ -94,7 +100,7 @@ def test_text_representaion_of_extra_kwargs():
 
 
 @pytest.mark.parametrize(
-    ['options', 'repr_string'],
+    ('options', 'repr_string'),
     [
         ({}, 'TimeoutToken(1)'),
         ({'monotonic': True}, 'TimeoutToken(1, monotonic=True)'),
@@ -114,11 +120,10 @@ def test_check_superpower_raised():
     with pytest.raises(TimeoutCancellationError):
         token.check()
 
-    try:
+    with pytest.raises(TimeoutCancellationError) as exc_info:
         token.check()
-    except TimeoutCancellationError as e:
-        assert str(e) == 'The timeout of 0.125 seconds has expired.'
-        assert e.token is token
+    assert str(exc_info.value) == 'The timeout of 0.125 seconds has expired.'
+    assert exc_info.value.token is token
 
 
 @pytest.mark.parametrize(
@@ -138,12 +143,11 @@ def test_check_superpower_raised_nested(timeout):
     with pytest.raises(TimeoutCancellationError):
         token.check()
 
-    try:
+    with pytest.raises(TimeoutCancellationError) as exc_info:
         token.check()
-    except TimeoutCancellationError as e:
-        assert str(e) == f'The timeout of {timeout} seconds has expired.'
-        assert e.token is nested_token
-        assert e.token.exception is type(e)
+    assert str(exc_info.value) == f'The timeout of {timeout} seconds has expired.'
+    assert exc_info.value.token is nested_token
+    assert exc_info.value.token.exception is type(exc_info.value)
 
 
 def test_get_report_cancelled():
@@ -160,7 +164,7 @@ def test_get_report_cancelled():
 
 
 @pytest.mark.parametrize(
-    'timeout,timeout_nested,from_token_is_nested',
+    ('timeout', 'timeout_nested', 'from_token_is_nested'),
     [
         (0, 0, False),
         (1, 0, True),
@@ -330,11 +334,11 @@ def test_zero_timeout_token_report_is_about_superpower():
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag(addictional_kwargs):
@@ -346,7 +350,7 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monoto
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -366,18 +370,18 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_mo
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_temp_not_monotonic_timeout_token_with_same_monotonic_flag(timeout_for_equal_or_bigger_token, addictional_kwargs):
@@ -389,14 +393,14 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -416,11 +420,11 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag(addictional_kwargs):
@@ -438,7 +442,7 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_f
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -460,11 +464,11 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_not_same_monoton
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout_token_with_same_monotonic_flag(addictional_kwargs):
@@ -477,7 +481,7 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -499,11 +503,11 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_flag(addictional_kwargs):
@@ -516,7 +520,7 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_f
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -538,11 +542,11 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_not_same_monoton
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout_token_with_same_monotonic_flag(addictional_kwargs):
@@ -558,7 +562,7 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -580,11 +584,11 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag(addictional_kwargs):
@@ -606,7 +610,7 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag(a
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -633,18 +637,18 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_not_same_monotonic_fl
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_monotonic_timeout_token_with_same_monotonic_flag(timeout_for_equal_or_bigger_token, addictional_kwargs):
@@ -666,14 +670,14 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -700,11 +704,11 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right(addictional_kwargs):
@@ -718,7 +722,7 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monoto
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -740,18 +744,18 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_mo
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_temp_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right(timeout_for_equal_or_bigger_token, addictional_kwargs):
@@ -765,14 +769,14 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -793,11 +797,11 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right(addictional_kwargs):
@@ -816,7 +820,7 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_f
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -841,11 +845,11 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_not_same_monoton
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right(addictional_kwargs):
@@ -862,7 +866,7 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -887,11 +891,11 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right(addictional_kwargs):
@@ -907,7 +911,7 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_f
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -931,11 +935,11 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_not_same_monoton
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right(addictional_kwargs):
@@ -953,7 +957,7 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -977,11 +981,11 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right(addictional_kwargs):
@@ -1005,7 +1009,7 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_w
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1034,18 +1038,18 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_not_same_monotonic_fl
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right(timeout_for_equal_or_bigger_token, addictional_kwargs):
@@ -1069,14 +1073,14 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1105,11 +1109,11 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
@@ -1125,7 +1129,7 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monoto
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1149,18 +1153,18 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_mo
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_temp_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(timeout_for_equal_or_bigger_token, addictional_kwargs):
@@ -1175,14 +1179,14 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1206,11 +1210,11 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
@@ -1232,7 +1236,7 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_f
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1259,11 +1263,11 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_not_same_monoton
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
@@ -1282,7 +1286,7 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1309,11 +1313,11 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
@@ -1333,7 +1337,7 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_f
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1360,11 +1364,11 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_not_same_monoton
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
@@ -1387,7 +1391,7 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1416,11 +1420,11 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(addictional_kwargs):
@@ -1446,7 +1450,7 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_w
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1477,18 +1481,18 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_not_same_monotonic_fl
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_condition_token_at_right_and_counter_token_at_left(timeout_for_equal_or_bigger_token, addictional_kwargs):
@@ -1514,14 +1518,14 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1552,11 +1556,11 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
@@ -1570,7 +1574,7 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_same_monoto
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1592,18 +1596,18 @@ def test_bigger_temp_timeout_token_plus_less_temp_timeout_token_with_not_same_mo
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_temp_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(timeout_for_equal_or_bigger_token, addictional_kwargs):
@@ -1618,14 +1622,14 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1647,11 +1651,11 @@ def test_less_or_equal_temp_not_monotonic_timeout_token_plus_bigger_or_equal_tem
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
@@ -1671,7 +1675,7 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_same_monotonic_f
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1696,11 +1700,11 @@ def test_bigger_timeout_token_plus_less_temp_timeout_token_with_not_same_monoton
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
@@ -1716,7 +1720,7 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1742,11 +1746,11 @@ def test_less_not_monotonic_timeout_token_plus_bigger_temp_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
@@ -1764,7 +1768,7 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_same_monotonic_f
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1789,11 +1793,11 @@ def test_bigger_temp_timeout_token_plus_less_timeout_token_with_not_same_monoton
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
@@ -1812,7 +1816,7 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1837,11 +1841,11 @@ def test_less_temp_not_monotonic_timeout_token_plus_bigger_not_monotonic_timeout
 
 
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(addictional_kwargs):
@@ -1865,7 +1869,7 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_same_monotonic_flag_w
 
 
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),
@@ -1894,18 +1898,18 @@ def test_bigger_timeout_token_plus_less_timeout_token_with_not_same_monotonic_fl
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['addictional_kwargs'],
+    'addictional_kwargs',
     [
-        ({'monotonic': False},),
-        ({},),
-        ({'monotonic': True},),
+        {'monotonic': False},
+        {},
+        {'monotonic': True},
     ],
 )
 def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_monotonic_timeout_token_with_same_monotonic_flag_with_temp_counter_token_at_left(timeout_for_equal_or_bigger_token, addictional_kwargs):
@@ -1929,14 +1933,14 @@ def test_less_or_equal_not_monotonic_timeout_token_plus_bigger_or_equal_not_mono
 
 
 @pytest.mark.parametrize(
-    ['timeout_for_equal_or_bigger_token'],
+    'timeout_for_equal_or_bigger_token',
     [
-        (1,),
-        (2,),
+        1,
+        2,
     ],
 )
 @pytest.mark.parametrize(
-    ['left_addictional_kwargs', 'right_addictional_kwargs'],
+    ('left_addictional_kwargs', 'right_addictional_kwargs'),
     [
         ({'monotonic': False}, {'monotonic': True}),
         ({}, {'monotonic': True}),

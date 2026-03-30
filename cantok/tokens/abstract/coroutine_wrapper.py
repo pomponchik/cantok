@@ -56,7 +56,7 @@ class WaitCoroutineWrapper(Coroutine):  # type: ignore[type-arg]
     async def async_wait(step: Union[int, float], flags: Dict[str, bool], token_for_wait: 'AbstractToken', token_for_check: 'AbstractToken') -> None:  # type: ignore[name-defined]
         flags['used'] = True
 
-        while token_for_wait:
+        while token_for_wait:  # noqa: ASYNC110
             await async_sleep(step)
 
         await async_sleep(0)

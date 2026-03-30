@@ -1,9 +1,9 @@
 import sys
 
-import pytest
 import full_match
+import pytest
 
-from cantok import DefaultToken, SimpleToken, TimeoutToken, ImpossibleCancelError
+from cantok import DefaultToken, ImpossibleCancelError, SimpleToken, TimeoutToken
 
 
 def test_dafault_token_is_not_cancelled_by_default():
@@ -87,12 +87,12 @@ def test_default_token_plus_temp_simple_token():
 
 def test_default_token_plus_not_temp_simple_token():
     simple_token = SimpleToken()
-    sum = DefaultToken() + simple_token
+    total = DefaultToken() + simple_token
 
-    assert isinstance(sum, SimpleToken)
-    assert len(sum.tokens) == 1
-    assert sum is not simple_token
-    assert sum.tokens[0] is simple_token
+    assert isinstance(total, SimpleToken)
+    assert len(total.tokens) == 1
+    assert total is not simple_token
+    assert total.tokens[0] is simple_token
 
 
 def test_temp_default_token_plus_temp_timeout_token():

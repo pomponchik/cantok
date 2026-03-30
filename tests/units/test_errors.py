@@ -1,5 +1,15 @@
-from cantok import SimpleToken, ConditionToken, TimeoutToken, CounterToken, DefaultToken
-from cantok import CancellationError, ConditionCancellationError, TimeoutCancellationError, CounterCancellationError, ImpossibleCancelError
+from cantok import (
+    CancellationError,
+    ConditionCancellationError,
+    ConditionToken,
+    CounterCancellationError,
+    CounterToken,
+    DefaultToken,
+    ImpossibleCancelError,
+    SimpleToken,
+    TimeoutCancellationError,
+    TimeoutToken,
+)
 
 
 def test_exception_inheritance_hierarchy():

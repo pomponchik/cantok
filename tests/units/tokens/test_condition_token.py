@@ -1,17 +1,17 @@
 import asyncio
-from time import perf_counter
 from functools import partial
+from time import perf_counter
 
 import pytest
 
+from cantok import ConditionCancellationError, ConditionToken, SimpleToken
 from cantok.tokens.abstract.abstract_token import CancelCause, CancellationReport
-from cantok import SimpleToken, ConditionToken, ConditionCancellationError
 
 
 def test_condition_counter():
     loop_size = 5
     def condition():
-        for number in range(loop_size):
+        for _number in range(loop_size):
             yield False
         while True:
             yield True
@@ -37,7 +37,7 @@ def test_condition_true():
     assert ConditionToken(lambda: True).keep_on() == False
 
 
-@pytest.mark.parametrize('arguments,expected_cancelled_status', [
+@pytest.mark.parametrize(('arguments', 'expected_cancelled_status'), [
     ([SimpleToken(), SimpleToken().cancel()], True),
     ([SimpleToken(), ConditionToken(lambda: True)], True),
     ([ConditionToken(lambda: False), ConditionToken(lambda: True)], True),
@@ -69,8 +69,8 @@ def test_suppress_exception_false():
 
     token = ConditionToken(condition, suppress_exceptions=False)
 
-    with pytest.raises(ValueError):
-        token.cancelled
+    with pytest.raises(ValueError, match=r'.'):
+        _ = token.cancelled
 
 
 def test_suppress_exception_true():
@@ -96,7 +96,7 @@ def test_condition_function_returning_not_bool_value():
     assert ConditionToken(lambda: 'kek').cancelled == False
 
     with pytest.raises(TypeError):
-        ConditionToken(lambda: 'kek', suppress_exceptions=False).cancelled
+        _ = ConditionToken(lambda: 'kek', suppress_exceptions=False).cancelled
 
 
 @pytest.mark.parametrize(
@@ -131,11 +131,10 @@ def test_check_superpower_raised():
     with pytest.raises(ConditionCancellationError):
         token.check()
 
-    try:
+    with pytest.raises(ConditionCancellationError) as exc_info:
         token.check()
-    except ConditionCancellationError as e:
-        assert str(e) == 'The cancellation condition was satisfied.'
-        assert e.token is token
+    assert str(exc_info.value) == 'The cancellation condition was satisfied.'
+    assert exc_info.value.token is token
 
 
 def test_check_superpower_raised_nested():
@@ -145,12 +144,11 @@ def test_check_superpower_raised_nested():
     with pytest.raises(ConditionCancellationError):
         token.check()
 
-    try:
+    with pytest.raises(ConditionCancellationError) as exc_info:
         token.check()
-    except ConditionCancellationError as e:
-        assert str(e) == 'The cancellation condition was satisfied.'
-        assert e.token is nested_token
-        assert e.token.exception is type(e)
+    assert str(exc_info.value) == 'The cancellation condition was satisfied.'
+    assert exc_info.value.token is nested_token
+    assert exc_info.value.token.exception is type(exc_info.value)
 
 
 def test_get_report_cancelled():
@@ -164,7 +162,7 @@ def test_get_report_cancelled():
 
 
 @pytest.mark.parametrize(
-    'cancelled,cancelled_nested,from_token_is_nested',
+    ('cancelled', 'cancelled_nested', 'from_token_is_nested'),
     [
         (True, False, False),
         (False, True, True),
@@ -190,7 +188,7 @@ def test_async_wait_condition():
     timeout = 0.001
     token = ConditionToken(lambda: flag)
 
-    async def cancel_with_timeout(token):
+    async def cancel_with_timeout(_token):
         nonlocal flag
         await asyncio.sleep(timeout)
         flag = True
