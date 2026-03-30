@@ -77,14 +77,14 @@ class AbstractToken(ABC):
         _item_is_temp = is_temp(item)
 
         if isinstance(self, TimeoutToken) and isinstance(item, TimeoutToken) and self.monotonic == item.monotonic:
-            if self.deadline >= item.deadline and _self_is_temp:
+            if self._deadline >= item._deadline and _self_is_temp:
                 if _item_is_temp:
                     item._tokens.extend(self._tokens)
                     return item
                 if self._tokens:
                     return SimpleToken(*(self._tokens), item)
                 return item
-            if self.deadline < item.deadline and _item_is_temp:
+            if self._deadline < item._deadline and _item_is_temp:
                 if _self_is_temp:
                     self._tokens.extend(item._tokens)
                     return self

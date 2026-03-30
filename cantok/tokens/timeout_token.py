@@ -27,7 +27,7 @@ class TimeoutToken(ConditionToken):
         def function() -> bool:
             return timer() >= deadline
 
-        self.deadline = deadline
+        self._deadline = deadline
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
