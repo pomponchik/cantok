@@ -27,7 +27,7 @@ class CounterToken(ConditionToken):
 
         super().__init__(function, *tokens, cancelled=cancelled)
 
-        self.counter_bag['lock'] = self.lock  # type: ignore[assignment]
+        self.counter_bag['lock'] = self._lock  # type: ignore[assignment]
 
     @property
     def counter(self) -> int:

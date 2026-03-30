@@ -19,7 +19,7 @@ class AbstractToken(ABC):
         self._cancelled: bool = cancelled
         self._tokens: List[AbstractToken] = self._filter_tokens(tokens)
 
-        self.lock: RLock = RLock()
+        self._lock: RLock = RLock()
 
     def __repr__(self) -> str:
         chunks = []
@@ -116,7 +116,7 @@ class AbstractToken(ABC):
 
     @cancelled.setter
     def cancelled(self, new_value: bool) -> None:
-        with self.lock:
+        with self._lock:
             if new_value == True:
                 self._cancelled = True
             elif self.is_cancelled():
@@ -150,7 +150,7 @@ class AbstractToken(ABC):
         return self
 
     def check(self) -> None:
-        with self.lock:
+        with self._lock:
             report = self._get_report()
 
             if report.cause == CancelCause.CANCELLED:
@@ -210,7 +210,7 @@ class AbstractToken(ABC):
         return self._superpower()
 
     def _check_superpower_with_rollback(self) -> bool:
-        with self.lock:
+        with self._lock:
             superpower_data = self._get_superpower_data()
             result = self._superpower()
             self._superpower_rollback(superpower_data)
