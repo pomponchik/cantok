@@ -24,7 +24,7 @@ class DefaultToken(AbstractToken):
     @cancelled.setter
     def cancelled(self, new_value: bool) -> None:
         if new_value == True:
-            self.raise_superpower_exception()
+            self._raise_superpower_exception()
 
     def keep_on(self) -> bool:
         return True
@@ -33,4 +33,4 @@ class DefaultToken(AbstractToken):
         return False
 
     def cancel(self) -> 'AbstractToken':  # type: ignore[return]
-        self.raise_superpower_exception()
+        self._raise_superpower_exception()

@@ -157,7 +157,7 @@ class AbstractToken(ABC):
                 report.from_token._raise_cancelled_exception()
 
             elif report.cause == CancelCause.SUPERPOWER:
-                report.from_token.raise_superpower_exception()
+                report.from_token._raise_superpower_exception()
 
     def _filter_tokens(self, tokens: IterableWithTokens) -> List['AbstractToken']:
         from cantok import DefaultToken  # noqa: PLC0415
@@ -236,7 +236,7 @@ class AbstractToken(ABC):
     def _raise_cancelled_exception(self) -> None:
         raise CancellationError('The token has been cancelled.', self)
 
-    def raise_superpower_exception(self) -> None:
+    def _raise_superpower_exception(self) -> None:
         raise self.exception(self.get_superpower_exception_message(), self)
 
     @abstractmethod
