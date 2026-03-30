@@ -1,7 +1,7 @@
 import sys
 
-from full_match import match
 import pytest
+from full_match import match
 
 from cantok import DefaultToken, ImpossibleCancelError, SimpleToken, TimeoutToken
 

@@ -3,8 +3,8 @@ from functools import partial
 from threading import Thread
 from time import perf_counter, sleep
 
-from full_match import match
 import pytest
+from full_match import match
 
 from cantok import (
     CancellationError,
