@@ -8,7 +8,7 @@ from cantok.errors import ConditionCancellationError
 class ConditionToken(AbstractToken):
     exception = ConditionCancellationError
 
-    def __init__(self, function: Callable[[], bool], *tokens: AbstractToken, cancelled: bool = False, suppress_exceptions: bool = True, default: bool = False, before: Callable[[], Any] = lambda: None, after: Callable[[], Any] = lambda: None, caching: bool = True):
+    def __init__(self, function: Callable[[], bool], *tokens: AbstractToken, cancelled: bool = False, suppress_exceptions: bool = True, default: bool = False, before: Callable[[], Any] = lambda: None, after: Callable[[], Any] = lambda: None, caching: bool = True):  # noqa: PLR0913
         super().__init__(*tokens, cancelled=cancelled)
 
         self.function = function
