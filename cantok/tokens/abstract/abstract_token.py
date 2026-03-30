@@ -191,7 +191,7 @@ class AbstractToken(ABC):
     def _superpower(self) -> bool:  # pragma: no cover
         pass
 
-    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover  # noqa: B027
+    def _superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:  # pragma: no cover  # noqa: B027
         pass
 
     def check_superpower(self, direct: bool) -> bool:
@@ -203,7 +203,7 @@ class AbstractToken(ABC):
         with self.lock:
             superpower_data = self.get_superpower_data()
             result = self._superpower()
-            self.superpower_rollback(superpower_data)
+            self._superpower_rollback(superpower_data)
             return result
 
     def get_superpower_data(self) -> Dict[str, Any]:  # pragma: no cover

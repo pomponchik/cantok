@@ -33,7 +33,7 @@ class CounterToken(ConditionToken):
     def counter(self) -> int:
         return self.counter_bag['counter']
 
-    def superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:
+    def _superpower_rollback(self, superpower_data: Dict[str, Any]) -> None:
         self.counter_bag['counter'] = superpower_data['counter']
 
     def text_representation_of_superpower(self) -> str:
