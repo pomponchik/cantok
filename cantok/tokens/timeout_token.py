@@ -13,7 +13,7 @@ class TimeoutToken(ConditionToken):
             raise ValueError('You cannot specify a timeout less than zero.')
 
         self._timeout = timeout
-        self.monotonic = monotonic
+        self._monotonic = monotonic
 
         timer: Callable[[], Union[int, float]]
         if monotonic:
@@ -35,9 +35,9 @@ class TimeoutToken(ConditionToken):
         return str(self._timeout)
 
     def _get_extra_kwargs(self) -> Dict[str, Any]:
-        if self.monotonic:
+        if self._monotonic:
             return {
-                'monotonic': self.monotonic,
+                'monotonic': self._monotonic,
             }
         return {}
 
