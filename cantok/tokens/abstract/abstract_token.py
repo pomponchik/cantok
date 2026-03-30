@@ -154,7 +154,7 @@ class AbstractToken(ABC):
             report = self._get_report()
 
             if report.cause == CancelCause.CANCELLED:
-                report.from_token.raise_cancelled_exception()
+                report.from_token._raise_cancelled_exception()
 
             elif report.cause == CancelCause.SUPERPOWER:
                 report.from_token.raise_superpower_exception()
@@ -233,7 +233,7 @@ class AbstractToken(ABC):
         pairs: List[str] = [f'{key}={value!r}' for key, value in kwargs.items()]
         return ', '.join(pairs)
 
-    def raise_cancelled_exception(self) -> None:
+    def _raise_cancelled_exception(self) -> None:
         raise CancellationError('The token has been cancelled.', self)
 
     def raise_superpower_exception(self) -> None:
