@@ -72,7 +72,7 @@ class AbstractToken(ABC):
         nested_tokens = []
         container_token: Optional[AbstractToken] = None
 
-        if sys.version_info >= (3, 14):
+        if sys.version_info >= (3, 14):  # pragma: no cover
             # In Python 3.14+, LOAD_FAST_BORROW does not increment refcounts,
             # making refcount-based detection of temporary tokens unreliable.
             # Instead, inspect the caller's frame: a token is "temporary" if it
