@@ -32,15 +32,15 @@ jobs:
       - name: Run tests and show coverage on the command line
         run: coverage run --source=cantok --omit="*tests*" -m pytest --cache-clear --assert=plain && coverage report -m --fail-under=100
 
-      - name: Upload reports to codecov
-        env:
-          CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
+      - name: Upload coverage to Coveralls
         if: runner.os == 'Linux'
-        run: |
-          curl -Os https://uploader.codecov.io/latest/linux/codecov
-          find . -iregex "codecov.*"
-          chmod +x codecov
-          ./codecov -t ${CODECOV_TOKEN}
+        env:
+          COVERALLS_REPO_TOKEN: ${{secrets.COVERALLS_REPO_TOKEN}}
+        uses: coverallsapp/github-action@v2
+        with:
+          format: cobertura
+          file: coverage.xml
+        continue-on-error: true
 
       - name: Run tests and show the branch coverage on the command line
         run: coverage run --branch --source=cantok --omit="*tests*" -m pytest --cache-clear --assert=plain && coverage report -m --fail-under=100
