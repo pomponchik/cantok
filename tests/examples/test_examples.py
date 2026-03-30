@@ -41,6 +41,7 @@ def test_waiting_of_cancelled_token():
         token = SimpleToken()
         await do_something(token)
         await token.wait()
+        print('Something has been done!')
 
     buffer = StringIO()
     with redirect_stdout(buffer):
@@ -57,6 +58,7 @@ def test_waiting_of_cancelled_token_with_gather():
     async def main():
         token = SimpleToken()
         await asyncio.gather(do_something(token), token.wait())
+        print('Something has been done!')
 
     buffer = StringIO()
     with redirect_stdout(buffer):

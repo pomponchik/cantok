@@ -65,7 +65,7 @@ def test_raise_without_first_argument():
 
 def test_suppress_exception_false():
     def condition():
-        raise ValueError
+        raise ValueError('error')
 
     token = ConditionToken(condition, suppress_exceptions=False)
 
