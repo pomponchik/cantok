@@ -7,7 +7,7 @@ print(repr(first_token + second_token))
 #> SimpleToken(TimeoutToken(5), ConditionToken(λ))
 ```
 
-This feature is convenient to use if your function has received a token with certain restrictions and wants to pass it to other called functions, imposing additional restrictions:
+This feature is convenient to use if your function has received a token with certain restrictions and needs to pass it to other called functions, imposing additional restrictions:
 
 ```python
 from cantok import AbstractToken, TimeoutToken
