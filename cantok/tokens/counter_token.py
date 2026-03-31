@@ -13,9 +13,10 @@ class CounterToken(ConditionToken):
     iterations of a loop without tracking state externally.
 
     :param counter: Number of iterations before cancellation. Must be >= 0.
-    :param direct: If True (default), counter decrements even when polled
-                   indirectly through a parent token. If False, indirect polls
-                   are rolled back, so only direct checks consume the counter.
+    :param direct: If False, the counter decrements even when polled
+                   indirectly through a parent token. If True (default),
+                   indirect polls are rolled back, so only direct checks
+                   consume the counter.
 
     >>> token = CounterToken(3)
     >>> while token:

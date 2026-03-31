@@ -7,7 +7,7 @@ print(repr(first_token + second_token))
 #> SimpleToken(TimeoutToken(5), ConditionToken(λ))
 ```
 
-This feature is convenient to use if your function has received a token with certain restrictions and wants to pass it to other called functions, imposing additional restrictions:
+This feature is convenient to use if your function has received a token with certain restrictions and needs to pass it to other called functions, imposing additional restrictions:
 
 ```python
 from cantok import AbstractToken, TimeoutToken
@@ -18,7 +18,7 @@ def function(token: AbstractToken):
   ...
 ```
 
-The token summation operation always generates a new token. If at least one of the operand tokens is cancelled, the sum will also be cancelled. It is also guaranteed that the cancellation of this token does not lead to the cancellation of the operands. That is, the sum of two tokens always behaves as if it were a [`SimpleToken`](../types_of_tokens/SimpleToken.md) in which both operands were [nested](embedding.md). However, it is difficult to say exactly which token will result from summation, since the library strives to minimize the generated graph of tokens for performance reasons.
+The token summation operation always generates a new token. If at least one of the operand tokens is cancelled, the sum will also be cancelled. It is also guaranteed that the cancellation of this token does not lead to the cancellation of the operands. That is, the sum of two tokens always behaves as if it were a [`SimpleToken`](../types_of_tokens/SimpleToken.md) in which both operands were [nested](embedding.md). However, it is difficult to say exactly which token will result from the summation, since the library strives to minimize the generated graph of tokens for performance reasons.
 
 You may notice that some tokens disappear altogether during summation:
 
@@ -29,7 +29,7 @@ print(repr(SimpleToken(cancelled=True) + TimeoutToken(5)))
 #> SimpleToken(cancelled=True)
 ```
 
-In addition, you can safely sum more than 2 tokens - this does not generate anything superfluous:
+In addition, you can safely sum more than 2 tokens — this does not generate anything superfluous:
 
 ```python
 print(repr(TimeoutToken(5) + ConditionToken(lambda: False) + CounterToken(23)))

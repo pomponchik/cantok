@@ -1,4 +1,4 @@
-Each token object has a `cancelled` attribute and a `cancel()` method. By the attribute, you can find out whether this token has been cancelled:
+Each token object has a `cancelled` attribute and a `cancel()` method. Using the attribute, you can find out whether this token has been cancelled:
 
 ```python
 from cantok import SimpleToken
@@ -9,7 +9,7 @@ token.cancel()
 print(token.cancelled)  #> True
 ```
 
-The cancelled attribute is dynamically calculated and takes into account, among other things, specific conditions that are checked by a specific token. Here is an example with a [token that measures time](../types_of_tokens/TimeoutToken.md):
+The cancelled attribute is dynamically calculated and takes into account, among other things, conditions specific to that token type. Here is an example with a [token that measures time](../types_of_tokens/TimeoutToken.md):
 
 ```python
 from time import sleep
@@ -62,7 +62,7 @@ print(bool(token))  #> False
 print(token.keep_on())  #> False
 ```
 
-There is another method that is close in meaning to `is_cancelled()` — `check()`. It does nothing if the token is not cancelled, or raises an exception if cancelled. If the token was cancelled by calling the `cancel()` method, a `CancellationError` exception will be raised:
+There is another method that is close in meaning to `is_cancelled()` — `check()`. It does nothing if the token is not cancelled, or raises an exception if it is cancelled. If the token was cancelled by calling the `cancel()` method, a `CancellationError` exception will be raised:
 
 ```python
 from cantok import SimpleToken

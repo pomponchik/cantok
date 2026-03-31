@@ -5,11 +5,11 @@ from typing import Dict
 from cantok.tokens.abstract.cancel_cause import CancelCause
 
 if version_info >= (3, 10):
-    addictional_fields: Dict[str, bool] = {'slots': True}  # pragma: no cover
+    additional_fields: Dict[str, bool] = {'slots': True}  # pragma: no cover
 else:
-    addictional_fields = {}  # pragma: no cover
+    additional_fields = {}  # pragma: no cover
 
-@dataclass(frozen=True, **addictional_fields)  # type: ignore[call-overload, unused-ignore]
+@dataclass(frozen=True, **additional_fields)  # type: ignore[call-overload, unused-ignore]
 class CancellationReport:
     cause: CancelCause
     from_token: 'AbstractToken'  # type: ignore[name-defined]

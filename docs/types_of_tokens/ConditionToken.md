@@ -1,4 +1,4 @@
-`ConditionToken` has a superpower: it can check arbitrary conditions. In addition to this, it can do all the same things as [`SimpleToken`](../types_of_tokens/SimpleToken.md). The condition is a function that returns an answer to the question "has the token been cancelled" (`True`/`False`), it is passed to the token as the first required argument during initialization:
+`ConditionToken` has a superpower: it can check arbitrary conditions. In addition to this, it can do all the same things as [`SimpleToken`](../types_of_tokens/SimpleToken.md). The condition is a function that returns an answer to the question "should the token be cancelled" (`True`/`False`); it is passed to the token as the first required argument during initialization:
 
 ```python
 from cantok import ConditionToken
@@ -19,10 +19,10 @@ def function(): raise ValueError
 
 token = ConditionToken(function, suppress_exceptions=False)
 
-token.cancelled #  ValueError has been raised.
+token.cancelled # ValueError will be raised.
 ```
 
-When using exception suppression mode, the `cancelled` attribute will contain `False` by default in case of an exception. If you want to change this, pass `default=True`.
+When using exception suppression mode, the `cancelled` attribute will be `False` by default in case of an exception. If you want to change this, pass `default=True`.
 
 ```python
 def function(): raise ValueError
@@ -44,7 +44,7 @@ token.check()
 #> 2
 ```
 
-By analogy with `before`, you can pass a function that will be executed after checking the condition as the `after` argument:
+By analogy with `before`, you can pass a function as the `after` argument that will be executed after checking the condition:
 
 ```python
 token = ConditionToken(lambda: print(1), after=lambda: print(2))
@@ -54,7 +54,7 @@ token.check()
 #> 2
 ```
 
-`ConditionToken` has another feature. If the condition has evaluated to True at least once and cancelled the token, then the condition is no longer polled and the token is permanently considered cancelled. You can change this by manipulating the `caching` parameter when creating a token. By setting it to `False`, you will make sure that the condition is polled every time.
+`ConditionToken` has another feature. If the condition has returned True at least once and cancelled the token, then the condition is no longer polled and the token is permanently considered cancelled. You can change this by manipulating the `caching` parameter when creating a token. By setting it to `False`, you will make sure that the condition is polled every time.
 
 ```python
 counter = 0
