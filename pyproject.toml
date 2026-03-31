@@ -10,9 +10,9 @@ description = 'Implementation of the "Cancellation Token" pattern'
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-    'typing_extensions ; python_version <= "3.9"',
     'displayhooks>=0.0.6',
     'transfunctions>=0.0.12',
+    'typing_extensions ; python_version <= "3.9"',
 ]
 classifiers = [
     "Operating System :: OS Independent",
