@@ -1,4 +1,4 @@
-`DefaultToken` is a type of token that cannot be cancelled. Otherwise, it behaves like a regular token, but if you try to cancel it, you will get an exception:
+`DefaultToken` is a type of token that cannot be cancelled. In all other respects, it behaves like a regular token:
 
 ```python
 from cantok import AbstractToken, DefaultToken

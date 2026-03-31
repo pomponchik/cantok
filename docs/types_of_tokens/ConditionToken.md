@@ -44,7 +44,7 @@ token.check()
 #> 2
 ```
 
-By analogy with `before`, you can pass a function that will be executed after checking the condition as the `after` argument:
+By analogy with `before`, you can pass a function as the `after` argument that will be executed after checking the condition:
 
 ```python
 token = ConditionToken(lambda: print(1), after=lambda: print(2))

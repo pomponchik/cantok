@@ -29,7 +29,7 @@ print(repr(SimpleToken(cancelled=True) + TimeoutToken(5)))
 #> SimpleToken(cancelled=True)
 ```
 
-In addition, you can safely sum more than 2 tokens - this does not generate anything superfluous:
+In addition, you can safely sum more than 2 tokens — this does not generate anything superfluous:
 
 ```python
 print(repr(TimeoutToken(5) + ConditionToken(lambda: False) + CounterToken(23)))
