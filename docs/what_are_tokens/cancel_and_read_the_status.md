@@ -62,7 +62,7 @@ print(bool(token))  #> False
 print(token.keep_on())  #> False
 ```
 
-There is another method that is close in meaning to `is_cancelled()` — `check()`. It does nothing if the token is not cancelled, or raises an exception if cancelled. If the token was cancelled by calling the `cancel()` method, a `CancellationError` exception will be raised:
+There is another method that is close in meaning to `is_cancelled()` — `check()`. It does nothing if the token is not cancelled, or raises an exception if it is cancelled. If the token was cancelled by calling the `cancel()` method, a `CancellationError` exception will be raised:
 
 ```python
 from cantok import SimpleToken

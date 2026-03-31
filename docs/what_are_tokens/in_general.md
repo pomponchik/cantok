@@ -13,7 +13,7 @@ Additionally, there is a 5th type that cannot be cancelled:
 
 Each of them has its own characteristics, but they also have something in common:
 
-- Each token (except [`DefaultToken`](../types_of_tokens/DefaultToken.md)) can be cancelled manually, and some types of tokens can cancel themselves when a condition or timeout occurs. It doesn't matter how the token was cancelled, you work with it the same way.
+- Each token (except [`DefaultToken`](../types_of_tokens/DefaultToken.md)) can be cancelled manually, and some types of tokens can cancel themselves when a condition or timeout occurs. It doesn't matter how the token was cancelled; you work with it the same way.
 
 - All types of tokens are thread-safe and can be used from multiple threads/coroutines. However, they are not intended to be shared across multiple processes.
 

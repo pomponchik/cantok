@@ -1,4 +1,4 @@
-`ConditionToken` has a superpower: it can check arbitrary conditions. In addition to this, it can do all the same things as [`SimpleToken`](../types_of_tokens/SimpleToken.md). The condition is a function that returns an answer to the question "has the token been cancelled" (`True`/`False`), it is passed to the token as the first required argument during initialization:
+`ConditionToken` has a superpower: it can check arbitrary conditions. In addition to this, it can do all the same things as [`SimpleToken`](../types_of_tokens/SimpleToken.md). The condition is a function that returns an answer to the question "has the token been cancelled" (`True`/`False`); it is passed to the token as the first required argument during initialization:
 
 ```python
 from cantok import ConditionToken
@@ -19,7 +19,7 @@ def function(): raise ValueError
 
 token = ConditionToken(function, suppress_exceptions=False)
 
-token.cancelled #  ValueError has been raised.
+token.cancelled #  ValueError will be raised.
 ```
 
 When using exception suppression mode, the `cancelled` attribute will be `False` by default in case of an exception. If you want to change this, pass `default=True`.

@@ -19,7 +19,7 @@ Each type of token (except [`DefaultToken`](../types_of_tokens/DefaultToken.md))
 
 When you call the `check()` method on any token, one of two things will happen. If it (or any of the tokens nested in it) has been cancelled by calling the `cancel()` method, `CancellationError` will always be raised. But if the cancellation occurred as a result of the unique ability of the token, such as for `TimeoutToken` — timeout expiration, then an exception specific to this type of token will be raised.
 
-`ConditionCancellationError`, `TimeoutCancellationError` and `CounterCancellationError` are inherited from `CancellationError`, so if you're not sure which exception specifically you're catching, catch `CancellationError`. But also all the listed exceptions can always be imported separately:
+`ConditionCancellationError`, `TimeoutCancellationError` and `CounterCancellationError` are inherited from `CancellationError`, so if you're not sure which exception specifically you're catching, catch `CancellationError`. All of the listed exceptions can also be imported separately:
 
 ```python
 from cantok import CancellationError, ConditionCancellationError, TimeoutCancellationError, CounterCancellationError
