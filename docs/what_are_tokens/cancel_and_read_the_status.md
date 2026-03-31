@@ -1,4 +1,4 @@
-Each token object has a `cancelled` attribute and a `cancel()` method. By the attribute, you can find out whether this token has been cancelled:
+Each token object has a `cancelled` attribute and a `cancel()` method. Using the attribute, you can find out whether this token has been cancelled:
 
 ```python
 from cantok import SimpleToken

@@ -19,7 +19,7 @@ def function(): raise ValueError
 
 token = ConditionToken(function, suppress_exceptions=False)
 
-token.cancelled #  ValueError will be raised.
+token.cancelled # ValueError will be raised.
 ```
 
 When using exception suppression mode, the `cancelled` attribute will be `False` by default in case of an exception. If you want to change this, pass `default=True`.
@@ -54,7 +54,7 @@ token.check()
 #> 2
 ```
 
-`ConditionToken` has another feature. If the condition has evaluated to True at least once and cancelled the token, then the condition is no longer polled and the token is permanently considered cancelled. You can change this by manipulating the `caching` parameter when creating a token. By setting it to `False`, you will make sure that the condition is polled every time.
+`ConditionToken` has another feature. If the condition has returned True at least once and cancelled the token, then the condition is no longer polled and the token is permanently considered cancelled. You can change this by manipulating the `caching` parameter when creating a token. By setting it to `False`, you will make sure that the condition is polled every time.
 
 ```python
 counter = 0

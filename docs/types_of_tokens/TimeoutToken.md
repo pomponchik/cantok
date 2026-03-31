@@ -10,7 +10,7 @@ sleep(10)
 print(token.cancelled)  #> True
 ```
 
-Just like `ConditionToken`, `TimeoutToken` can include other tokens:
+Just like `ConditionToken`, `TimeoutToken` can embed other tokens:
 
 ```python
 token = TimeoutToken(45, SimpleToken(), TimeoutToken(5), CounterToken(20))  # Includes all additional restrictions of the passed tokens.
