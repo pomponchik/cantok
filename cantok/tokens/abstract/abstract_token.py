@@ -210,7 +210,7 @@ class AbstractToken(ABC):
         >>>
         >>> token = TimeoutToken(5)
         >>> token.wait()   # blocks for ~5 seconds, then returns
-        >>> asyncio.run(token.wait())   # non-blocking, inside an asyncio event loop
+        >>> asyncio.run(TimeoutToken(5).wait())   # non-blocking, inside an asyncio event loop
         """
         if step < 0:
             raise ValueError('The token polling iteration time cannot be less than zero.')
